@@ -3,8 +3,10 @@ import StatsCounter from "@/components/StatsCounter";
 import FeaturedProjects from "@/components/FeaturedProjects";
 import ActivityFeed from "@/components/ActivityFeed";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, Lightbulb, Target, Compass } from "lucide-react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
 import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
 import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
@@ -33,6 +35,79 @@ export default function Home() {
       <Hero />
       
       <StatsCounter />
+
+      <section className="py-20 px-6 bg-gradient-to-b from-primary/5 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center gap-3 mb-6">
+              <Lightbulb className="w-8 h-8 text-primary" />
+              <h2 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Our Motto
+              </h2>
+              <Lightbulb className="w-8 h-8 text-primary" />
+            </div>
+            <motion.p
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-3xl font-semibold text-foreground max-w-3xl mx-auto leading-relaxed"
+            >
+              "What we create today inspires tomorrow."
+            </motion.p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <Card className="h-full backdrop-blur-xl bg-card/50 border-primary/20 hover-elevate">
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 rounded-lg bg-primary/10">
+                      <Target className="w-7 h-7 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-bold">Our Mission</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed text-lg">
+                    "At our core, it's about people—customers, teams, and communities. Through fearless collaboration, cutting-edge innovation, and operational brilliance, we deliver solutions that solve today's challenges and define tomorrow's standard."
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <Card className="h-full backdrop-blur-xl bg-card/50 border-primary/20 hover-elevate">
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 rounded-lg bg-primary/10">
+                      <Compass className="w-7 h-7 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-bold">Our Vision</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed text-lg">
+                    To inspire excellence in our industry by delivering unmatched customer experiences, championing innovation, and cultivating empowered teams.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
