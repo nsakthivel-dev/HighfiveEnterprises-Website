@@ -1,0 +1,117 @@
+Build a modern, responsive, and AI-assisted startup website called “Solution Squad Hub” using Next.js, Tailwind CSS, and SCSS, with pnpm as the package manager.
+
+The website should feel interactive, futuristic, and professional — designed for a tech startup team to showcase their work, members, and services.
+
+🌐 Structure & Pages
+
+Create five main pages:
+
+Home – Display the team logo, name, tagline, and a welcome message with a call-to-action button. Include:
+
+Live activity feed showing latest projects or joined members
+
+Animated counters for total projects, team size, and clients
+
+Featured project rotation
+
+Smooth parallax scrolling, page transitions, and dark/light mode toggle
+
+Team Members – Interactive team section with:
+
+Profile cards showing name, role, and skill tags
+
+Availability status badges (Available / Busy / On Project)
+
+Animated bios or “Meet the Team” video section
+
+“Team Member of the Month” spotlight
+
+Services – Highlight team services and expertise:
+
+Interactive service cards with hover effects
+
+Side-by-side service package comparison tool
+
+Embedded chatbot for quick service inquiries
+
+Option to schedule meetings (Calendly-style integration)
+
+Projects – Dynamic project showcase with:
+
+Filter by category, tech stack, or completion status
+
+Progress bars for ongoing projects
+
+Featured projects carousel
+
+Client testimonials linked to relevant projects
+
+Case studies using a Problem → Solution → Result layout
+
+Option to download entire portfolio as PDF
+
+Contact – Engaging contact system:
+
+Inquiry form referencing specific projects
+
+AI chatbot for initial queries
+
+Social media icons and newsletter signup
+
+Embedded YouTube/Instagram feed
+
+⚙️ Admin Panel Features
+
+Add a backend or protected admin route for managing content:
+
+Drag-and-drop reordering of projects and team members
+
+Bulk upload support
+
+Analytics dashboard for most viewed projects
+
+Content scheduling (publish later)
+
+Version history and SEO meta auto-generation
+
+Preview mode before publishing
+
+💬 Engagement & Visuals
+
+Client logo carousel
+
+Live visitor counter
+
+Project completion & years of experience stats
+
+Hover micro-interactions and smooth animations (Framer Motion)
+
+Branded loading animations using team logo
+
+Responsive for all screen sizes
+
+🔧 Technical Enhancements
+
+PWA support (offline mode, add to home screen, push notifications)
+
+Multi-language support (English + regional toggle)
+
+Image optimization on upload
+
+Blog section for updates and resources
+
+Newsletter integration (Mailchimp or Resend)
+
+🎨 Design Guidelines
+
+Theme: Teal primary with dark and light modes
+
+Style: Modern, glassmorphic, minimalist aesthetic
+
+Font: Poppins or Inter
+
+Animations: Subtle, responsive, and smooth using Framer Motion
+
+Build with clean and modular architecture (Next.js App Router structure).
+Use reusable components for project cards, profile cards, testimonial blocks, counters, and service comparisons.
+Optimize performance and SEO automatically.
