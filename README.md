@@ -99,17 +99,13 @@ HighFiveEnterprises/
    ```
 
 3. **Set up environment variables**
-   Copy the example environment file and fill in your actual values:
-   ```bash
-   cp .env.example .env
+   Create a `.env` file in the root directory:
+   ```env
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_SERVICE_ROLE=your_service_role_key
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
    ```
-   
-   Then edit `.env` and add your actual API keys:
-   - Get Supabase credentials from https://app.supabase.com
-   - Generate a strong SESSION_SECRET for production
-   - Add OpenAI API key if using AI features
-   
-   **⚠️ IMPORTANT:** Never commit your `.env` file to Git. It's already in `.gitignore`.
 
 4. **Run database migrations**
    ```bash
@@ -167,33 +163,16 @@ The admin panel provides secure access to manage all content. Features include:
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! To contribute:
+This is our team's collaborative project. To contribute:
 
-1. Fork the repository
-2. Create a new branch for your feature (`git checkout -b feature/amazing-feature`)
-3. Make your changes following our coding standards
-4. Test thoroughly before committing
-5. Commit your changes (`git commit -m 'Add some amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
-
-### Code of Conduct
-
-- Write clean, maintainable code
-- Follow existing code style and conventions
-- Add comments for complex logic
-- Test your changes thoroughly
-- Update documentation as needed
-
-### Security
-
-Please review our [Security Policy](SECURITY.md) before contributing. Never commit sensitive data like API keys or passwords.
+1. Create a new branch for your feature
+2. Make your changes following our coding standards
+3. Test thoroughly before committing
+4. Submit for team review
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-Copyright 2025 HighFive Enterprises
+This project is proprietary and maintained by the HighFive Enterprises team.
 
 ## 📧 Contact
 
