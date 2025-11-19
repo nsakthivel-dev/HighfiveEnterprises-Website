@@ -1,74 +1,88 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ProjectCard from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
 import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
 import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
 import project4 from "@assets/generated_images/SaaS_platform_thumbnail_3b96aeba.png";
 
+type ApiProject = { 
+  id: string; 
+  title: string; 
+  description?: string | null; 
+  image_url?: string | null; 
+  thumbnail_url?: string | null;
+  project_photos?: string[] | null;
+  status?: string | null; 
+  url?: string | null;
+  category?: string | null;
+  tech_stack?: string[] | { frontend?: string[]; backend?: string[]; database?: string[]; other?: string[] } | null;
+  tagline?: string | null;
+};
+
 export default function Projects() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
-  const projects = [
-    {
-      title: "E-Commerce Platform",
-      description: "Modern online shopping experience with AI-powered product recommendations and real-time inventory management",
-      image: project1,
-      techStack: ["React", "Node.js", "MongoDB", "Stripe"],
-      status: "completed" as const,
-      category: "E-Commerce",
-      caseStudy: {
-        problem: "Client needed a scalable e-commerce solution to handle growing customer base and inventory complexity",
-        solution: "Built a microservices architecture with real-time inventory sync, AI recommendations, and seamless payment processing",
-        result: "300% increase in sales, 99.9% uptime, and 40% improvement in customer satisfaction scores",
-      },
+  const { data: apiProjects = [], isLoading, isError } = useQuery<ApiProject[]>({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const r = await fetch("/api/projects");
+      if (!r.ok) throw new Error("Failed to load projects");
+      return r.json();
     },
-    {
-      title: "Mobile Banking App",
-      description: "Secure financial management application with biometric authentication and real-time transactions",
-      image: project2,
-      techStack: ["React Native", "Python", "PostgreSQL", "AWS"],
-      status: "active" as const,
-      progress: 75,
-      category: "Mobile App",
-      caseStudy: {
-        problem: "Traditional banking app had poor UX and lacked modern security features",
-        solution: "Redesigned from ground up with biometric auth, intuitive UI, and real-time fraud detection",
-        result: "Currently in beta testing with 10,000+ active users and 4.8 star rating",
-      },
-    },
-    {
-      title: "Corporate Website",
-      description: "Professional online presence for enterprise clients with custom CMS and multi-language support",
-      image: project3,
-      techStack: ["Next.js", "Tailwind", "Sanity CMS", "Vercel"],
-      status: "completed" as const,
-      category: "Web Development",
-      caseStudy: {
-        problem: "Outdated corporate website with difficult content management and poor SEO",
-        solution: "Modern JAMstack architecture with headless CMS, automated SEO optimization, and CDN distribution",
-        result: "5x faster load times, 200% increase in organic traffic, easy content updates for marketing team",
-      },
-    },
-    {
-      title: "SaaS Analytics Platform",
-      description: "Advanced analytics dashboard with real-time data visualization and AI insights",
-      image: project4,
-      techStack: ["Vue.js", "Django", "Redis", "Chart.js"],
-      status: "active" as const,
-      progress: 60,
-      category: "SaaS",
-      caseStudy: {
-        problem: "Company had data scattered across multiple tools with no unified analytics view",
-        solution: "Centralized platform integrating all data sources with custom dashboards and AI-powered insights",
-        result: "Currently processing 1M+ events daily, saving clients 15+ hours per week on reporting",
-      },
-    },
-  ];
+  });
 
-  const categories = ["all", "E-Commerce", "Mobile App", "Web Development", "SaaS"];
+  const fallbacks = [project1, project2, project3, project4];
+  const projects = useMemo(() => apiProjects.map((p, i) => {
+    // Extract tech stack - handle both array and object formats
+    let techStack: string[] = [];
+    if (p.tech_stack) {
+      if (Array.isArray(p.tech_stack)) {
+        techStack = p.tech_stack;
+      } else if (typeof p.tech_stack === 'object') {
+        const ts = p.tech_stack as any;
+        techStack = [
+          ...(ts.frontend || []),
+          ...(ts.backend || []),
+          ...(ts.database || []),
+          ...(ts.other || [])
+        ];
+      }
+    }
+
+    // Determine status
+    const status = p.status?.toLowerCase() === 'completed' 
+      ? 'completed' 
+      : (p.status?.toLowerCase() === 'in progress' || p.status?.toLowerCase() === 'active-maintenance' || p.status?.toLowerCase() === 'active')
+        ? 'active'
+        : 'active';
+
+    // Get image - prefer thumbnail_url, then image_url, then project_photos[0], then fallback
+    const image = p.thumbnail_url || p.image_url || p.project_photos?.[0] || fallbacks[i % fallbacks.length];
+
+    return {
+      id: p.id,
+      title: p.title,
+      description: p.description ?? p.tagline ?? "",
+      image: image,
+      techStack: techStack,
+      status: status as 'completed' | 'active',
+      progress: undefined,
+      category: p.category || "General",
+      caseStudy: undefined,
+      url: p.url,
+    };
+  }), [apiProjects]);
+
+  // Extract unique categories from projects
+  const categories = useMemo(() => {
+    const uniqueCategories = new Set(apiProjects.map(p => p.category || "General").filter(Boolean));
+    return ["all", ...Array.from(uniqueCategories).sort()];
+  }, [apiProjects]);
+  
   const statuses = ["all", "active", "completed"];
 
   const filteredProjects = projects.filter((project) => {
@@ -78,7 +92,7 @@ export default function Projects() {
   });
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <section className="py-20 px-6 bg-gradient-to-b from-primary/10 to-transparent">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Our Projects</h1>
@@ -88,60 +102,69 @@ export default function Projects() {
         </div>
       </section>
 
-      <section className="py-12 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-4 mb-8">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-muted-foreground self-center">Category:</span>
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  data-testid={`filter-category-${category}`}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        {isLoading && (
+          <div className="text-center text-muted-foreground">Loading projects…</div>
+        )}
+        {isError && (
+          <div className="text-center text-destructive">Failed to load projects</div>
+        )}
 
-            <div className="flex flex-wrap gap-2">
-              <span className="text-sm font-medium text-muted-foreground self-center">Status:</span>
-              {statuses.map((status) => (
-                <Button
-                  key={status}
-                  variant={selectedStatus === status ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedStatus(status)}
-                  data-testid={`filter-status-${status}`}
-                >
-                  {status}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredProjects.length} of {projects.length} projects
-            </p>
-            <Badge variant="outline">Click cards to view case studies</Badge>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {filteredProjects.map((project) => (
-              <ProjectCard key={project.title} {...project} />
+        <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground self-center">Category:</span>
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                data-testid={`filter-category-${category}`}
+              >
+                {category}
+              </Button>
             ))}
           </div>
 
-          {filteredProjects.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-lg text-muted-foreground">No projects match your filters</p>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-sm font-medium text-muted-foreground self-center">Status:</span>
+            {statuses.map((status) => (
+              <Button
+                key={status}
+                variant={selectedStatus === status ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedStatus(status)}
+                data-testid={`filter-status-${status}`}
+              >
+                {status}
+              </Button>
+            ))}
+          </div>
         </div>
-      </section>
+
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredProjects.length} of {projects.length} projects
+          </p>
+          <Badge variant="outline">Click cards to view project details</Badge>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {filteredProjects.map((project) => (
+            <ProjectCard 
+              key={project.id} 
+              {...project} 
+              projectUrl={`/project/${project.id}`}
+            />
+          ))}
+        </div>
+
+        {filteredProjects.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-lg text-muted-foreground">No projects match your filters</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

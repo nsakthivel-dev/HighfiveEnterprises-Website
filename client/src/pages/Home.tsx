@@ -10,25 +10,55 @@ import { motion } from "framer-motion";
 import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
 import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
 import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
+import { useQuery } from "@tanstack/react-query";
+
+type ApiProject = { 
+  id: string; 
+  title: string; 
+  description?: string | null; 
+  image_url?: string | null; 
+  status?: string | null; 
+  tech_stack?: string[] | null;
+  url?: string | null;
+  github_url?: string | null;
+};
 
 export default function Home() {
-  const featuredProjects = [
-    {
-      title: "E-Commerce Revolution",
-      description: "Modern shopping platform with AI-powered recommendations and real-time inventory",
-      image: project1,
+  const { data: apiProjects = [] } = useQuery<ApiProject[]>({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const r = await fetch("/api/projects");
+      if (!r.ok) throw new Error("Failed to load projects");
+      return r.json();
     },
-    {
-      title: "Mobile Banking App",
-      description: "Secure financial management application with biometric authentication",
-      image: project2,
-    },
-    {
-      title: "Corporate Website Redesign",
-      description: "Professional online presence for enterprise clients with CMS integration",
-      image: project3,
-    },
-  ];
+  });
+
+  const fallbacks = [project1, project2, project3];
+  const activeProjects = apiProjects.filter(p => (p.status || "active") !== "completed");
+  const featuredProjects = (activeProjects.length ? activeProjects : apiProjects)
+    .slice(0, 3)
+    .map((p, i) => {
+      const status = p.status?.toLowerCase();
+      let projectStatus: "active" | "completed" | "in-progress" = "active";
+      
+      if (status === 'completed') {
+        projectStatus = "completed";
+      } else if (status === 'in progress') {
+        projectStatus = "in-progress";
+      }
+      
+      return {
+        id: p.id,
+        title: p.title,
+        description: p.description ?? "",
+        image: p.image_url || fallbacks[i % fallbacks.length],
+        status: projectStatus,
+        techStack: p.tech_stack || [],
+        link: p.url || "",
+        github: p.github_url || "",
+        featured: true,
+      };
+    });
 
   return (
     <div>

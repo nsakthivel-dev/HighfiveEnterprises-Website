@@ -1,77 +1,71 @@
 import ServiceCard from "@/components/ServiceCard";
 import ComparisonTable from "@/components/ComparisonTable";
 import ChatbotWidget from "@/components/ChatbotWidget";
-import { Code2, Smartphone, Cloud, Palette, Database, Shield } from "lucide-react";
+import { Code2, Palette } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+
+type ApiService = {
+  id: string;
+  title: string;
+  description?: string | null;
+  features?: string[] | null;
+  icon?: string | null;
+  sort_order?: number | null;
+  is_active?: boolean | null;
+};
 
 export default function Services() {
-  const services = [
+  const { data: apiServices = [], isError } = useQuery<ApiService[]>({
+    queryKey: ["services"],
+    queryFn: async () => {
+      const r = await fetch("/api/services");
+      if (!r.ok) throw new Error("Failed to load services");
+      return r.json();
+    },
+  });
+
+  const iconMap: Record<string, JSX.Element> = {
+    Code2: <Code2 className="w-6 h-6" />,
+    Palette: <Palette className="w-6 h-6" />,
+  };
+
+  const fallback = [
     {
       icon: <Code2 className="w-6 h-6" />,
       title: "Web Development",
-      description: "Custom web applications built with modern technologies and best practices",
+      description: "We design and develop all types of websites — including static and dynamic sites.",
       features: [
-        "Responsive design for all devices",
-        "Fast performance optimization",
-        "SEO-friendly architecture",
-        "Scalable and maintainable code",
-      ],
-    },
-    {
-      icon: <Smartphone className="w-6 h-6" />,
-      title: "Mobile App Development",
-      description: "Native and cross-platform mobile applications for iOS and Android",
-      features: [
-        "React Native & Flutter development",
-        "Native performance optimization",
-        "App store submission support",
-        "Ongoing maintenance and updates",
-      ],
-    },
-    {
-      icon: <Cloud className="w-6 h-6" />,
-      title: "Cloud Solutions",
-      description: "Scalable cloud infrastructure and deployment services",
-      features: [
-        "AWS, Azure, and GCP expertise",
-        "DevOps and CI/CD pipelines",
-        "Auto-scaling and load balancing",
-        "24/7 monitoring and support",
+        "Database-driven websites for better functionality",
+        "Responsive, modern, and user-friendly designs",
+        "Custom web applications development",
+        "Performance optimization and maintenance",
       ],
     },
     {
       icon: <Palette className="w-6 h-6" />,
-      title: "UI/UX Design",
-      description: "Beautiful and intuitive user interfaces that users love",
+      title: "Logo Design",
+      description: "We create unique and creative logos that perfectly represent your brand.",
       features: [
-        "User research and testing",
-        "Wireframing and prototyping",
-        "Design system creation",
-        "Accessibility compliance",
-      ],
-    },
-    {
-      icon: <Database className="w-6 h-6" />,
-      title: "Database Design",
-      description: "Robust database architecture and optimization services",
-      features: [
-        "SQL and NoSQL expertise",
-        "Performance optimization",
-        "Data migration services",
-        "Backup and recovery strategies",
-      ],
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: "Security & Compliance",
-      description: "Enterprise-grade security and compliance solutions",
-      features: [
-        "Security audits and testing",
-        "GDPR and compliance consulting",
-        "Penetration testing",
-        "Secure coding practices",
+        "Custom logo designs tailored to your vision",
+        "Multiple design concepts and revisions",
+        "Brand identity development",
+        "Full copyright ownership",
       ],
     },
   ];
+
+  const services = useMemo(() => {
+    if (!apiServices || apiServices.length === 0 || isError) return fallback;
+    return apiServices
+      .filter((s) => s.is_active !== false)
+      .map((s) => ({
+        icon: s.icon && iconMap[s.icon] ? iconMap[s.icon] : <Code2 className="w-6 h-6" />,
+        title: s.title,
+        description: s.description ?? "",
+        features: s.features ?? [],
+      }));
+  }, [apiServices, isError]);
 
   return (
     <div className="min-h-screen">

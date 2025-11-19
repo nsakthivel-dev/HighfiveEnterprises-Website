@@ -70,12 +70,48 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  const envPort = process.env.PORT;
+  let desiredPort = envPort ? parseInt(envPort, 10) : 0; // 0 => choose a random free port each run
+  const host = process.env.HOST || '127.0.0.1';
+
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  const tryListen = (p: number) => {
+    server.removeAllListeners('error');
+    if (p === 0) {
+      // Ephemeral port: no retry logic needed; OS assigns a free port
+      server.listen({ port: 0, host }, () => {
+        const addr = server.address();
+        const actualPort = typeof addr === 'object' && addr ? addr.port : p;
+        log(`serving on http://${host}:${actualPort}`);
+      });
+      return;
+    }
+
+    server.on('error', (err: any) => {
+      if (err && err.code === 'EADDRINUSE') {
+        attempts += 1;
+        if (attempts <= maxAttempts) {
+          const nextPort = p + 1;
+          log(`EADDRINUSE on ${host}:${p}, retrying on ${nextPort}…`);
+          tryListen(nextPort);
+        } else {
+          log(`EADDRINUSE: Exhausted retries up to ${p}.`);
+          throw err;
+        }
+      } else if (err && err.code === 'ENOTSUP') {
+        log(`ENOTSUP: Failed to bind to ${host}:${p}`);
+        throw err;
+      } else {
+        throw err;
+      }
+    });
+
+    server.listen({ port: p, host }, () => {
+      log(`serving on http://${host}:${p}`);
+    });
+  };
+
+  tryListen(desiredPort);
 })();

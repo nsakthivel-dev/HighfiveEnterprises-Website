@@ -1,39 +1,37 @@
 import ContactForm from "@/components/ContactForm";
 import ChatbotWidget from "@/components/ChatbotWidget";
+import FeedbackForm from "@/components/FeedbackForm";
+import FeedbackDisplay from "@/components/FeedbackDisplay";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, MapPin, Phone } from "lucide-react";
-import { SiGithub, SiLinkedin, SiX } from "react-icons/si";
+import { Mail, MapPin } from "lucide-react";
+import { SiGithub, SiLinkedin, SiInstagram, SiFacebook } from "react-icons/si";
 
 export default function Contact() {
   const contactInfo = [
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      value: "hello@solutionsquad.com",
-      href: "mailto:hello@solutionsquad.com",
-    },
-    {
-      icon: <Phone className="w-5 h-5" />,
-      label: "Phone",
-      value: "+1 (555) 123-4567",
-      href: "tel:+15551234567",
+      value: "teamhfive25@gmail.com",
+      href: "mailto:teamhfive25@gmail.com",
     },
     {
       icon: <MapPin className="w-5 h-5" />,
       label: "Location",
-      value: "San Francisco, CA",
+      value: "Puducherry, Tamilnadu",
       href: null,
     },
   ];
 
   const socialLinks = [
-    { icon: <SiGithub className="w-5 h-5" />, label: "GitHub", href: "#" },
-    { icon: <SiLinkedin className="w-5 h-5" />, label: "LinkedIn", href: "#" },
-    { icon: <SiX className="w-5 h-5" />, label: "X", href: "#" },
+    { icon: <SiGithub className="w-5 h-5" />, label: "GitHub", href: "https://github.com/highfive-tech" },
+    { icon: <SiLinkedin className="w-5 h-5" />, label: "LinkedIn", href: "https://www.linkedin.com/in/highfive-enterprises/" },
+    { icon: <SiInstagram className="w-5 h-5" />, label: "Instagram", href: "https://instagram.com/highfive.ent" },
+    { icon: <SiFacebook className="w-5 h-5" />, label: "Facebook", href: "https://www.facebook.com/HighFiveEnterprises" },
   ];
 
   return (
     <div className="min-h-screen">
+      {/* Header Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-primary/10 to-transparent">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Get in Touch</h1>
@@ -43,14 +41,17 @@ export default function Contact() {
         </div>
       </section>
 
+      {/* Contact Form and Info Section */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-5 gap-8">
-            <div className="lg:col-span-3">
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Contact Form - Takes 2 columns */}
+            <div className="lg:col-span-2">
               <ContactForm />
             </div>
 
-            <div className="lg:col-span-2 space-y-6">
+            {/* Contact Information Sidebar */}
+            <div className="space-y-6">
               <Card className="overflow-visible">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-6">Contact Information</h3>
@@ -101,26 +102,44 @@ export default function Contact() {
 
               <Card className="overflow-visible bg-gradient-to-br from-primary/5 to-chart-2/5">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-3">Newsletter</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Subscribe to our newsletter for the latest updates and insights
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      type="email"
-                      placeholder="your@email.com"
-                      className="flex-1 px-3 py-2 rounded-md border bg-background text-sm"
-                      data-testid="input-newsletter"
-                    />
-                    <button
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover-elevate active-elevate-2"
-                      data-testid="button-subscribe"
-                    >
-                      Subscribe
-                    </button>
+                  <h3 className="text-xl font-bold mb-3">Business Hours</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Monday - Friday</span>
+                      <span className="font-medium">9:00 AM - 6:00 PM</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Saturday</span>
+                      <span className="font-medium">10:00 AM - 4:00 PM</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Sunday</span>
+                      <span className="font-medium">Closed</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feedback Section */}
+      <section className="py-16 px-6 bg-gradient-to-b from-muted/50 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4">What Our Clients Say</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Don't just take our word for it - hear from our satisfied clients and see our overall rating
+            </p>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="order-2 lg:order-1">
+              <FeedbackDisplay />
+            </div>
+            <div className="order-1 lg:order-2">
+              <FeedbackForm />
             </div>
           </div>
         </div>

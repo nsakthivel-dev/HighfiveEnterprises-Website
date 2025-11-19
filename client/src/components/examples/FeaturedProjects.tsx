@@ -7,23 +7,37 @@ export default function FeaturedProjectsExample() {
   const projects = [
     {
       title: "E-Commerce Revolution",
-      description: "Modern shopping platform with AI recommendations",
+      description: "Modern shopping platform with AI-powered product recommendations, real-time inventory management, and seamless checkout experience. Built with cutting-edge technologies for optimal performance.",
       image: project1,
+      status: "active" as const,
+      techStack: ["React", "Node.js", "PostgreSQL", "Redis"],
+      link: "https://example.com/ecommerce",
+      github: "https://github.com/example/ecommerce",
+      featured: true,
     },
     {
       title: "Mobile Banking App",
-      description: "Secure financial management on the go",
+      description: "Secure financial management application with biometric authentication, real-time transaction monitoring, and intelligent spending analytics for modern banking needs.",
       image: project2,
+      status: "completed" as const,
+      techStack: ["React Native", "TypeScript", "Firebase", "Stripe"],
+      link: "https://example.com/banking",
+      github: "https://github.com/example/banking",
+      featured: true,
     },
     {
       title: "Corporate Website",
-      description: "Professional online presence for enterprises",
+      description: "Professional enterprise website with dynamic content management, multi-language support, and advanced analytics integration for global business presence.",
       image: project3,
+      status: "in-progress" as const,
+      techStack: ["Next.js", "Tailwind", "Strapi", "Vercel"],
+      link: "https://example.com/corporate",
+      featured: true,
     },
   ];
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="mx-auto max-w-6xl p-10">
       <FeaturedProjects projects={projects} />
     </div>
   );

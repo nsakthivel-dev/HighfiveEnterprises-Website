@@ -1,20 +1,49 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
-interface Activity {
-  type: "project" | "member";
+type Activity = {
+  id: string;
+  type: "project" | "member" | "announcement" | string;
   title: string;
-  time: string;
+  created_at?: string;
+};
+
+function timeAgo(iso?: string) {
+  if (!iso) return "";
+  const now = new Date();
+  const then = new Date(iso);
+  const diff = Math.floor((now.getTime() - then.getTime()) / 1000);
+  const units: [number, Intl.RelativeTimeFormatUnit][] = [
+    [60, "second"],
+    [60, "minute"],
+    [24, "hour"],
+    [7, "day"],
+    [4.345, "week"],
+    [12, "month"],
+    [Number.POSITIVE_INFINITY, "year"],
+  ];
+  let duration = diff;
+  let unit: Intl.RelativeTimeFormatUnit = "second";
+  for (const [step, u] of units) {
+    if (duration < step) { unit = u; break; }
+    duration = Math.floor(duration / step);
+    unit = u;
+  }
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+  return rtf.format(-duration, unit);
 }
 
 export default function ActivityFeed() {
-  const activities: Activity[] = [
-    { type: "project", title: "E-Commerce Platform launched", time: "2 hours ago" },
-    { type: "member", title: "Alex Chen joined the team", time: "5 hours ago" },
-    { type: "project", title: "Mobile App update deployed", time: "1 day ago" },
-    { type: "member", title: "Sarah promoted to Lead Developer", time: "2 days ago" },
-  ];
+  const { data: activities = [] } = useQuery<Activity[]>({
+    queryKey: ["activity"],
+    queryFn: async () => {
+      const r = await fetch("/api/activity");
+      if (!r.ok) throw new Error("Failed to load activity");
+      return r.json();
+    },
+  });
 
   return (
     <Card className="glass-morphic overflow-visible">
@@ -23,8 +52,11 @@ export default function ActivityFeed() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          {activities.length === 0 && (
+            <div className="text-sm text-muted-foreground">No recent activity yet.</div>
+          )}
           {activities.map((activity, index) => (
-            <div key={index} className="flex items-start gap-3" data-testid={`activity-${index}`}>
+            <div key={activity.id ?? index} className="flex items-start gap-3" data-testid={`activity-${index}`}>
               <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{activity.title}</p>
@@ -34,7 +66,7 @@ export default function ActivityFeed() {
                   </Badge>
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    {activity.time}
+                    {timeAgo(activity.created_at)}
                   </span>
                 </div>
               </div>

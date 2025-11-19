@@ -21,7 +21,7 @@ export default function Hero() {
         </div>
 
         <h1 className="text-5xl md:text-7xl font-bold mb-6 text-primary-foreground leading-tight">
-          Solution Squad Hub
+          HighFive Enterprises
         </h1>
 
         <p className="text-xl md:text-2xl text-primary-foreground/90 mb-12 max-w-2xl mx-auto">

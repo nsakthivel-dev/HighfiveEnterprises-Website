@@ -1,4 +1,4 @@
-# Solution Squad Hub - Design Guidelines
+# HighFive Enterprises - Design Guidelines
 
 ## Design Approach
 **Reference-Based Design**: Drawing inspiration from modern tech startups (Linear, Vercel, Stripe) combined with the user's specified glassmorphic aesthetic. The design balances futuristic innovation with professional credibility, emphasizing interactivity and smooth transitions throughout.
@@ -49,7 +49,7 @@
 ### Hero Section (Home Page)
 - Full-viewport height (min-h-screen) with gradient background overlay
 - Large hero image showing team collaboration or futuristic tech workspace (wide, professional stock photo)
-- Centered content: Logo mark, "Solution Squad Hub" heading, tagline, dual CTAs (primary + secondary with blurred backgrounds)
+- Centered content: Logo mark, "HighFive Enterprises" heading, tagline, dual CTAs (primary + secondary with blurred backgrounds)
 - Floating elements: Live activity feed card (top right), animated stats counter (bottom)
 - Smooth parallax scroll effect on background image
 

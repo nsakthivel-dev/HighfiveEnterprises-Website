@@ -14,6 +14,8 @@ export default function Navigation() {
     { path: "/team", label: "Team" },
     { path: "/services", label: "Services" },
     { path: "/projects", label: "Projects" },
+    { path: "/events", label: "Events" },
+    { path: "/our-network", label: "Our Network" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -24,9 +26,9 @@ export default function Navigation() {
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md -ml-3">
               <div className="w-10 h-10 gradient-teal rounded-md flex items-center justify-center text-white font-bold text-xl">
-                SS
+                HF
               </div>
-              <span className="text-xl font-bold font-heading">Solution Squad</span>
+              <span className="text-xl font-bold font-heading">HighFive Enterprises</span>
             </div>
           </Link>
 
@@ -53,20 +55,17 @@ export default function Navigation() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
+              aria-label="Toggle theme"
               data-testid="button-theme-toggle"
               className="hidden md:flex"
             >
               {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </Button>
-            <Link href="/admin">
-              <Button variant="default" className="hidden md:inline-flex" data-testid="button-admin">
-                Admin
-              </Button>
-            </Link>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               className="md:hidden"
               data-testid="button-mobile-menu"
             >
@@ -94,15 +93,11 @@ export default function Navigation() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
+                aria-label="Toggle theme"
                 data-testid="button-mobile-theme"
               >
                 {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
               </Button>
-              <Link href="/admin">
-                <Button variant="default" className="flex-1" data-testid="button-mobile-admin">
-                  Admin Panel
-                </Button>
-              </Link>
             </div>
           </div>
         )}
