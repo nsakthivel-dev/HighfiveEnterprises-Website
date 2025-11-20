@@ -20,6 +20,13 @@ This repository contains the source code for **HighFive Enterprises**, a modern,
 - Multiple image management for project galleries
 - Real-time content updates
 
+### 📋 New Recruitment & Partnership Pages
+- **About Page** – Comprehensive company story, values, differentiators, and working approach
+- **Join Team Page** – Team member recruitment form with portfolio and social profile links
+- **Become Partner Page** – Partnership opportunity form with business type and collaboration type selection
+- Interactive forms with FormSubmit integration for direct email notifications
+- Success confirmation screens with smooth user experience
+
 ### 🎨 User Experience
 - Responsive and modern UI design
 - Dark/Light theme support
@@ -59,23 +66,85 @@ This repository contains the source code for **HighFive Enterprises**, a modern,
 ## 📁 Project Structure
 
 ```
-HighFiveEnterprises/
-├── client/               # Frontend application
-│   └── src/
-│       ├── app/         # Next.js App Router pages
-│       ├── components/  # Reusable UI components
-│       ├── pages/       # Main pages and admin panel
-│       ├── hooks/       # Custom React hooks
-│       ├── lib/         # Utilities and configurations
-│       └── types/       # TypeScript type definitions
-├── server/              # Backend API
-│   ├── index.ts        # Server entry point
-│   ├── routes.ts       # API routes
-│   ├── supabase.ts     # Database client
-│   └── storage.ts      # File storage logic
-├── shared/              # Shared types and schemas
-├── migrations/          # Database migrations
-└── public/              # Static assets
+SolutionSquadHub/
+├── client/                           # Frontend application (React + Next.js)
+│   ├── src/
+│   │   ├── app/
+│   │   │   └── api/projects/        # API routes for projects
+│   │   │       ├── [id]/route.ts    # Dynamic project endpoint
+│   │   │       └── route.ts         # Project list endpoint
+│   │   ├── components/
+│   │   │   ├── ui/                  # Shadcn/ui components (accordion, button, card, etc.)
+│   │   │   ├── examples/            # Component examples (Hero, Navigation, ProjectCard, etc.)
+│   │   │   ├── AdminLayout.tsx      # Admin dashboard layout
+│   │   │   ├── FileUpload.tsx       # Single file upload component
+│   │   │   ├── MultipleFileUpload.tsx # Multiple file upload
+│   │   │   ├── FeedbackForm.tsx     # Feedback submission form
+│   │   │   ├── FeedbackDisplay.tsx  # Feedback display component
+│   │   │   ├── EventCard.tsx        # Event display card
+│   │   │   ├── EventModal.tsx       # Event creation/edit modal
+│   │   │   ├── TeamMemberCard.tsx   # Team member profile card
+│   │   │   ├── TeamMemberModal.tsx  # Team member form modal
+│   │   │   ├── TeamNetwork.tsx      # Network visualization
+│   │   │   ├── ChatbotWidget.tsx    # AI chatbot widget
+│   │   │   └── ThemeProvider.tsx    # Dark/Light theme provider
+│   │   ├── pages/
+│   │   │   ├── admin/               # Admin panel pages
+│   │   │   ├── Home.tsx             # Landing page
+│   │   │   ├── About.tsx            # Company story and values
+│   │   │   ├── Services.tsx         # Services overview
+│   │   │   ├── Projects.tsx         # Project portfolio
+│   │   │   ├── ProjectView.tsx      # Individual project detail
+│   │   │   ├── Team.tsx             # Team members page
+│   │   │   ├── JoinTeam.tsx         # Team recruitment form
+│   │   │   ├── OurNetwork.tsx       # Network and partnerships
+│   │   │   ├── BecomePartner.tsx    # Partnership form
+│   │   │   ├── Events.tsx           # Events calendar
+│   │   │   ├── Contact.tsx          # Contact form
+│   │   │   ├── Admin.tsx            # Main admin dashboard
+│   │   │   ├── Apply.tsx            # Application page
+│   │   │   ├── Privacy.tsx          # Privacy policy
+│   │   │   ├── Terms.tsx            # Terms of service
+│   │   │   └── not-found.tsx        # 404 page
+│   │   ├── hooks/
+│   │   │   ├── use-mobile.tsx       # Mobile detection hook
+│   │   │   ├── use-toast.ts         # Toast notification hook
+│   │   │   └── useWindowSize.ts     # Window resize hook
+│   │   ├── lib/
+│   │   │   ├── supabase.ts          # Supabase client initialization
+│   │   │   ├── queryClient.ts       # React Query setup
+│   │   │   └── utils.ts             # Utility functions
+│   │   ├── types/
+│   │   │   ├── Event.ts             # Event type definitions
+│   │   │   └── Feedback.ts          # Feedback type definitions
+│   │   ├── App.tsx                  # Main app component
+│   │   ├── index.css                # Global styles
+│   │   └── main.tsx                 # Entry point
+│   ├── index.html                   # HTML template
+│   └── public/                      # Static assets (favicon, images)
+├── server/                          # Backend API (Express.js)
+│   ├── index.ts                     # Server entry point
+│   ├── routes.ts                    # API route definitions
+│   ├── supabase.ts                  # Supabase database client
+│   ├── storage.ts                   # File storage logic
+│   ├── vite.ts                      # Vite server integration
+│   └── uuid.d.ts                    # UUID type definitions
+├── shared/
+│   └── schema.ts                    # Shared Zod/Drizzle schemas
+├── src/                             # Legacy components (migration in progress)
+│   ├── components/
+│   ├── styles/
+│   └── types/
+├── README.md                        # Project documentation
+├── design_guidelines.md             # Design system documentation
+├── package.json                     # Project dependencies
+├── pnpm-workspace.yaml              # Monorepo workspace config
+├── tsconfig.json                    # TypeScript configuration
+├── vite.config.ts                   # Vite bundler configuration
+├── tailwind.config.ts               # Tailwind CSS configuration
+├── postcss.config.js                # PostCSS configuration
+├── drizzle.config.ts                # Drizzle ORM configuration
+└── components.json                  # Shadcn/ui components config
 ```
 
 ## 🚀 Getting Started
@@ -142,10 +211,13 @@ HighFiveEnterprises/
 ## 🌟 Key Pages
 
 - **Home** – Hero section, featured projects, and call-to-action
+- **About** – Company story, core values, differentiators, and development approach with interactive animations
 - **Services** – Service offerings with detailed features and pricing
 - **Projects** – Filterable portfolio with project details and case studies
 - **Team** – Team member profiles with social links
+- **Join Team** – Team recruitment application form with portfolio submission
 - **Our Network** – Partnerships and collaborations
+- **Become Partner** – Partnership proposal form for collaboration opportunities
 - **Events** – Upcoming and past events calendar
 - **Contact** – Contact form with feedback and ratings display
 - **Admin** – Comprehensive dashboard for content management
