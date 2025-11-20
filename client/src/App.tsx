@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
+import About from "@/pages/About";
 import Team from "@/pages/Team";
 import Services from "@/pages/Services";
 import Projects from "@/pages/Projects";
@@ -18,6 +19,8 @@ import NotFound from "@/pages/not-found";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Apply from "@/pages/Apply";
+import JoinTeam from "@/pages/JoinTeam";
+import BecomePartner from "@/pages/BecomePartner";
 import OurNetwork from "@/pages/OurNetwork";
 import Events from "@/pages/Events";
 // Admin pages
@@ -34,6 +37,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
       <Route path="/team" component={Team} />
       <Route path="/services" component={Services} />
       <Route path="/projects" component={Projects} />
@@ -43,6 +47,8 @@ function Router() {
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/apply" component={Apply} />
+      <Route path="/join-team" component={JoinTeam} />
+      <Route path="/become-partner" component={BecomePartner} />
       <Route path="/events" component={Events} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin-panel">

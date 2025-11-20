@@ -196,7 +196,7 @@ export default function Team() {
           <p className="text-muted-foreground mb-6">We’re growing across engineering, design, and product. Come build with us.</p>
           <div className="flex gap-3 justify-center">
             <Button asChild>
-              <a href="/apply" aria-label="Get in team">Get In Team</a>
+              <a href="/join-team" aria-label="Get in team">Get In Team</a>
             </Button>
             <Button variant="outline" asChild>
               <a href="/contact" aria-label="Get in touch">Get in Touch</a>

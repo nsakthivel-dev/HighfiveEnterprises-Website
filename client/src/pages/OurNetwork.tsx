@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRight, Globe2, Handshake, Building2 } from "lucide-react";
+import { ArrowRight, Globe2, Handshake, Building2, Users } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
@@ -39,6 +39,9 @@ export default function OurNetwork() {
   });
 
   const showEmptyState = !collaborationsLoading && !partnersLoading && collaborations.length === 0 && partners.length === 0;
+  const hasCollaborations = collaborations.length > 0;
+  const hasPartners = partners.length > 0;
+  const isLoading = collaborationsLoading || partnersLoading;
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,7 +77,7 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
-      ) : collaborations.length > 0 ? (
+      ) : hasCollaborations ? (
         <section className="py-12 px-6">
           <div className="max-w-5xl mx-auto">
             <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Handshake className="w-4 h-4" /> Collaborated Companies</Badge>
@@ -104,6 +107,28 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
+      ) : !isLoading && hasPartners ? (
+        <section className="py-12 px-6">
+          <div className="max-w-5xl mx-auto">
+            <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Handshake className="w-4 h-4" /> Collaborated Companies</Badge>
+            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
+              <CardContent className="p-12 text-center space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Handshake className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">We are looking for associate companies</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  We're actively seeking collaboration opportunities with innovative companies to create meaningful partnerships.
+                </p>
+                <Link href="/contact">
+                  <Button variant="outline" className="mt-4">
+                    Contact Us to Collaborate
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       ) : null}
 
       {partnersLoading ? (
@@ -123,7 +148,7 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
-      ) : partners.length > 0 ? (
+      ) : hasPartners ? (
         <section className="py-12 px-6">
           <div className="max-w-5xl mx-auto">
             <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Building2 className="w-4 h-4" /> Official Partners</Badge>
@@ -153,12 +178,60 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
+      ) : !isLoading && hasCollaborations ? (
+        <section className="py-12 px-6">
+          <div className="max-w-5xl mx-auto">
+            <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Building2 className="w-4 h-4" /> Official Partners</Badge>
+            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
+              <CardContent className="p-12 text-center space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Building2 className="w-8 h-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold">We are looking for partners</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  We're seeking strategic partnerships with organizations that share our vision and values.
+                </p>
+                <Link href="/become-partner">
+                  <Button variant="outline" className="mt-4">
+                    Become a Partner
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       ) : null}
 
       {showEmptyState && (
-        <section className="py-10 px-6">
-          <div className="max-w-3xl mx-auto text-center space-y-4">
-            <p className="text-lg text-muted-foreground">Till now there are no partners and collaborators. We are looking for it.</p>
+        <section className="py-16 px-6">
+          <div className="max-w-4xl mx-auto">
+            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
+              <CardContent className="p-16 text-center space-y-6">
+                <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Users className="w-10 h-10 text-primary" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold">We are looking for partners and associate companies</h3>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    We're actively building our network of partners and collaborators. Join us in creating meaningful impact through strategic partnerships.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Link href="/contact">
+                    <Button size="lg" className="inline-flex items-center gap-2">
+                      <Handshake className="w-4 h-4" />
+                      Collaborate with Us
+                    </Button>
+                  </Link>
+                  <Link href="/become-partner">
+                    <Button size="lg" variant="outline" className="inline-flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
+                      Become a Partner
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
       )}
@@ -195,7 +268,7 @@ export default function OurNetwork() {
           <p className="text-muted-foreground text-lg">
             We’re always excited to explore new collaborations. Tell us about your goals and we’ll craft the path forward together.
           </p>
-          <Link href="/contact">
+          <Link href="/become-partner">
             <Button size="lg" className="inline-flex items-center gap-2">
               Become a Partner <ArrowRight className="w-4 h-4" />
             </Button>
