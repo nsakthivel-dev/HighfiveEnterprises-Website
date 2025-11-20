@@ -2,9 +2,12 @@ import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Bell, ChevronLeft, ChevronRight, Handshake, Home, Menu, Package2, Settings, ShoppingCart, Users, Calendar, PackageOpen } from 'lucide-react';
+import logo from '@assets/logos/logo-light.png';
+import logoDark from '@assets/logos/logo-dark.png';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Input } from './ui/input';
+import { useTheme } from './ThemeProvider';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -14,6 +17,8 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
   const [location] = useLocation();
+  const { theme } = useTheme();
+  const currentLogo = theme === 'dark' ? logoDark : logo;
 
   const navLinks = [
     { href: '/admin-panel/dashboard', icon: Home, label: 'Dashboard' },
@@ -32,7 +37,7 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6" />
+              <img src={currentLogo} alt="HighFive Enterprises Logo" className="h-8 w-8 object-contain" />
               <span className="">HighFive Enterprises</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
@@ -90,7 +95,7 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
                   href="#"
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
-                  <Package2 className="h-6 w-6" />
+                  <img src={currentLogo} alt="HighFive Enterprises Logo" className="h-8 w-8 object-contain" />
                   <span className="sr-only">HighFive Enterprises</span>
                 </Link>
                 {navLinks.map(({ href, icon: Icon, label }) => (

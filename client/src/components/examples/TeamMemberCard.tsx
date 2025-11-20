@@ -1,5 +1,5 @@
 import TeamMemberCard from "../TeamMemberCard";
-import teamMember1 from "@assets/generated_images/Team_member_portrait_1_7d29333a.png";
+import teamMember1 from "@assets/team/team-member-1.png";
 
 export default function TeamMemberCardExample() {
   return (

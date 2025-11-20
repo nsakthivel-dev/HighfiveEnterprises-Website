@@ -1,9 +1,10 @@
 import FeaturedProjects from "../FeaturedProjects";
-import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
-import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
-import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
 
 export default function FeaturedProjectsExample() {
+  const project1 = "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop";
+  const project2 = "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop";
+  const project3 = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop";
+
   const projects = [
     {
       title: "E-Commerce Revolution",

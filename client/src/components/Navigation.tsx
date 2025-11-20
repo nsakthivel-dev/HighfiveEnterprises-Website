@@ -3,11 +3,14 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import logo from "@assets/logos/logo-light.png";
+import logoDark from "@assets/logos/logo-dark.png";
 
 export default function Navigation() {
   const [location] = useLocation();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const currentLogo = theme === "dark" ? logoDark : logo;
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -25,9 +28,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md -ml-3">
-              <div className="w-10 h-10 gradient-teal rounded-md flex items-center justify-center text-white font-bold text-xl">
-                HF
-              </div>
+              <img src={currentLogo} alt="HighFive Enterprises Logo" className="w-10 h-10 object-contain" />
               <span className="text-xl font-bold font-heading">HighFive Enterprises</span>
             </div>
           </Link>

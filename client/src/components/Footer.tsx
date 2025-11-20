@@ -1,13 +1,22 @@
 import { Link } from "wouter";
 import { Facebook, Github, Instagram, Linkedin } from "lucide-react";
+import logo from "@assets/logos/logo-light.png";
+import logoDark from "@assets/logos/logo-dark.png";
+import { useTheme } from "./ThemeProvider";
 
 export default function Footer() {
+  const { theme } = useTheme();
+  const currentLogo = theme === "dark" ? logoDark : logo;
+  
   return (
     <footer className="border-t bg-background text-foreground">
       <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
-            <div className="text-2xl font-bold tracking-tight">HighFive Enterprises</div>
+            <div className="flex items-center gap-3">
+              <img src={currentLogo} alt="HighFive Enterprises Logo" className="h-10 w-10 object-contain" />
+              <div className="text-2xl font-bold tracking-tight">HighFive Enterprises</div>
+            </div>
             <p className="text-sm text-muted-foreground">
               Building modern, AI-assisted solutions for startups and enterprises.
             </p>

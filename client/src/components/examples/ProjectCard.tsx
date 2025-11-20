@@ -1,7 +1,8 @@
 import ProjectCard from "../ProjectCard";
-import projectImage from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
 
 export default function ProjectCardExample() {
+  const projectImage = "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop";
+
   return (
     <div className="p-8 max-w-sm">
       <ProjectCard

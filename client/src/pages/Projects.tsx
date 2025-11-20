@@ -3,10 +3,6 @@ import ProjectCard from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
-import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
-import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
-import project4 from "@assets/generated_images/SaaS_platform_thumbnail_3b96aeba.png";
 
 type ApiProject = { 
   id: string; 
@@ -35,7 +31,12 @@ export default function Projects() {
     },
   });
 
-  const fallbacks = [project1, project2, project3, project4];
+  const fallbacks = [
+    "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop"
+  ];
   const projects = useMemo(() => apiProjects.map((p, i) => {
     // Extract tech stack - handle both array and object formats
     let techStack: string[] = [];

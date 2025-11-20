@@ -1,6 +1,6 @@
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@assets/generated_images/Hero_background_workspace_15d20244.png";
+import heroImage from "@assets/hero/hero-background.png";
 
 export default function Hero() {
   return (

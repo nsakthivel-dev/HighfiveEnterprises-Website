@@ -15,10 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import avatar1 from "@assets/generated_images/Team_member_portrait_1_7d29333a.png";
-import avatar2 from "@assets/generated_images/Team_member_portrait_2_8107c9e7.png";
-import avatar3 from "@assets/generated_images/Team_member_portrait_3_ca1ed7e2.png";
-import avatar4 from "@assets/generated_images/Team_member_portrait_4_adb08dec.png";
+import avatar1 from "@assets/team/team-member-1.png";
+import avatar2 from "@assets/team/team-member-2.png";
+import avatar3 from "@assets/team/team-member-3.png";
+import avatar4 from "@assets/team/team-member-4.png";
 
 async function api<T>(url: string, init?: RequestInit): Promise<T> {
     const res = await fetch(url, { headers: { "Content-Type": "application/json" }, ...init });

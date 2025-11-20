@@ -7,9 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Lightbulb, Target, Compass } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import project1 from "@assets/generated_images/E-commerce_project_thumbnail_beaf8988.png";
-import project2 from "@assets/generated_images/Mobile_app_project_thumbnail_2e2899be.png";
-import project3 from "@assets/generated_images/Corporate_website_thumbnail_f78b8018.png";
 import { useQuery } from "@tanstack/react-query";
 
 type ApiProject = { 
@@ -33,7 +30,11 @@ export default function Home() {
     },
   });
 
-  const fallbacks = [project1, project2, project3];
+  const fallbacks = [
+    "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
+  ];
   const activeProjects = apiProjects.filter(p => (p.status || "active") !== "completed");
   const featuredProjects = (activeProjects.length ? activeProjects : apiProjects)
     .slice(0, 3)
