@@ -7,7 +7,7 @@ services:
     # Build command - install dependencies and build the project
     buildCommand: |
       npm install -g pnpm
-      pnpm install --frozen-lockfile
+      pnpm install
       pnpm run build
     
     # Start command - run the production server
