@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: solutionsquadhub
+    env: node
+    plan: free
+    
+    # Build command - install dependencies and build the project
+    buildCommand: |
+      npm install -g pnpm
+      pnpm install --frozen-lockfile
+      pnpm run build
+    
+    # Start command - run the production server
+    startCommand: pnpm start
+    
+    # Port configuration
+    port: 5000
+    
+    # Environment variables
+    envVars:
+      # These will be set in the Render dashboard
+      - key: NODE_ENV
+        value: production
+      
+      - key: PORT
+        value: 5000
+      
+      - key: HOST
+        value: 0.0.0.0
+      
+      # Supabase configuration (set these in Render dashboard)
+      - key: VITE_SUPABASE_URL
+        sync: false
+      
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      
+      - key: SUPABASE_URL
+        sync: false
+      
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+    
+    # Health check
+    healthCheckPath: /
+    
+    # Auto-deploy on push to main branch
+    autoDeploy: true

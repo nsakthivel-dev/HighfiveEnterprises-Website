@@ -217,7 +217,7 @@ export default function OurNetwork() {
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-                <Link href="/contact">
+                <Link href="/become-partner">
                     <Button size="lg" className="inline-flex items-center gap-2">
                       <Handshake className="w-4 h-4" />
                       Collaborate with Us
@@ -262,17 +262,19 @@ export default function OurNetwork() {
       )}
 
       <section className="py-20 px-6 bg-gradient-to-t from-primary/10 to-transparent">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <Badge variant="secondary">Let’s Collaborate</Badge>
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <Badge variant="secondary">Let's Collaborate</Badge>
           <h2 className="text-3xl font-bold">Interested in partnering with us?</h2>
-          <p className="text-muted-foreground text-lg">
-            We’re always excited to explore new collaborations. Tell us about your goals and we’ll craft the path forward together.
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            We're always excited to explore new collaborations. Tell us about your goals and we'll craft the path forward together.
           </p>
-          <Link href="/become-partner">
-            <Button size="lg" className="inline-flex items-center gap-2">
-              Become a Partner <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          <div className="pt-4">
+            <Link href="/become-partner">
+              <Button size="lg" className="inline-flex items-center gap-2">
+                Become a Partner <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>
