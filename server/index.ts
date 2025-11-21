@@ -71,8 +71,8 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const envPort = process.env.PORT;
-  let desiredPort = envPort ? parseInt(envPort, 10) : 0; // 0 => choose a random free port each run
-  const host = process.env.HOST || '127.0.0.1';
+  let desiredPort = envPort ? parseInt(envPort, 10) : 5000;
+  const host = process.env.HOST || '0.0.0.0';
 
   let attempts = 0;
   const maxAttempts = 10;
