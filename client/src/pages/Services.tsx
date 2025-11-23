@@ -1,6 +1,5 @@
 import ServiceCard from "@/components/ServiceCard";
 import ComparisonTable from "@/components/ComparisonTable";
-import ChatbotWidget from "@/components/ChatbotWidget";
 import { Code2, Palette } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -56,11 +55,12 @@ export default function Services() {
   ];
 
   const services = useMemo(() => {
-    if (!apiServices || apiServices.length === 0 || isError) return fallback;
+    if (isError || apiServices.length === 0) return fallback;
     return apiServices
-      .filter((s) => s.is_active !== false)
+      .filter((s) => s.is_active)
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
       .map((s) => ({
-        icon: s.icon && iconMap[s.icon] ? iconMap[s.icon] : <Code2 className="w-6 h-6" />,
+        icon: iconMap[s.icon || ""] || <Code2 className="w-6 h-6" />,
         title: s.title,
         description: s.description ?? "",
         features: s.features ?? [],
@@ -99,8 +99,6 @@ export default function Services() {
           <ComparisonTable />
         </div>
       </section>
-
-      <ChatbotWidget />
     </div>
   );
 }

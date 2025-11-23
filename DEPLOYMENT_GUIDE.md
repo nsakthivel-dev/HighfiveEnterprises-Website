@@ -77,7 +77,10 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# Optional: If using OpenAI chatbot
+# Optional: If using Google Gemini chatbot
+VITE_GEMINI_API_KEY=your_google_gemini_key
+
+# Optional: If using OpenAI chatbot (alternative to Google Gemini)
 OPENAI_API_KEY=your_openai_key
 ```
 
@@ -89,6 +92,13 @@ OPENAI_API_KEY=your_openai_key
    - Project URL → `SUPABASE_URL`
    - Anon Public Key → `VITE_SUPABASE_ANON_KEY`
    - Service Role Key → `SUPABASE_SERVICE_ROLE_KEY`
+
+### Getting Google Gemini API Key:
+1. Go to [Google AI Studio](https://makersuite.google.com/)
+2. Sign in with your Google account
+3. Click **"Get API key"** in the API keys section
+4. Create a new API key
+5. Copy the key → `VITE_GEMINI_API_KEY`
 
 ## Step 5: Deploy
 

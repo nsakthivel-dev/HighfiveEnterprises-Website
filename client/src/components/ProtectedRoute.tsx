@@ -7,14 +7,16 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, logout } = useAuth();
   const [location, navigate] = useLocation();
 
   useEffect(() => {
     // If not authenticated and not already on login page, redirect to login
     console.log('ProtectedRoute check:', { isAuthenticated, loading, location });
-    if (!loading && !isAuthenticated && location !== '/admin/login') {
-      console.log('Redirecting to login');
+    
+    // Additional check to ensure user is still authenticated
+    if (!loading && !isAuthenticated && location.startsWith('/admin-panel')) {
+      console.log('User not authenticated, redirecting to login');
       navigate('/admin/login');
     }
   }, [isAuthenticated, loading, location, navigate]);

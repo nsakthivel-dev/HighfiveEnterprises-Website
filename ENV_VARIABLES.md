@@ -69,6 +69,16 @@ This document explains all environment variables used by SolutionSquadHub.
 
 ### Optional Configuration
 
+#### GEMINI_API_KEY
+- **Type:** String
+- **Required:** No (only if using Google Gemini chatbot)
+- **Description:** Google Gemini API key for chatbot integration
+- **How to get:**
+  1. Go to makersuite.google.com
+  2. Create an API key
+  3. Copy the key
+- **Security:** ⚠️ NEVER expose in client-side code
+
 #### OPENAI_API_KEY
 - **Type:** String
 - **Required:** No (only if using chatbot)
@@ -111,6 +121,7 @@ VITE_SUPABASE_ANON_KEY=eyJ0eXAi...
 SUPABASE_URL=https://xxxxx.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ0eXAi...
 
+GEMINI_API_KEY=AIzaSy...
 OPENAI_API_KEY=sk-...
 DEBUG=true
 ```

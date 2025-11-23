@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, X, Send } from "lucide-react";
+import { sendMessage, type ChatMessage } from "@/lib/chatService";
 
 interface Message {
   role: "user" | "assistant";
@@ -14,31 +15,45 @@ export default function ChatbotWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your virtual assistant. How can I help you today?",
+      content: "Hi! I'm your virtual assistant from HighFive Enterprises. How can I help you today?",
     },
   ]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return;
 
-    const newMessages: Message[] = [
-      ...messages,
-      { role: "user", content: input },
-    ];
-
-    setTimeout(() => {
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: "Thanks for your message! A team member will respond shortly.",
-        },
-      ]);
-    }, 500);
-
+    // Add user message to chat
+    const userMessage: Message = { role: "user", content: input };
+    const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
+    setIsLoading(true);
+
+    try {
+      // Get AI response
+      const response = await sendMessage(newMessages as ChatMessage[]);
+      
+      // Add AI response to chat
+      const aiMessage: Message = { role: "assistant", content: response };
+      setMessages([...newMessages, aiMessage]);
+    } catch (error: any) {
+      // Handle error case with more specific messages
+      let errorMessage = "Sorry, I'm having trouble connecting to the AI service right now. Please try again later or contact us directly at teamhfive25@gmail.com.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      const errorMessageObj: Message = { 
+        role: "assistant", 
+        content: errorMessage
+      };
+      setMessages([...newMessages, errorMessageObj]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -84,9 +99,19 @@ export default function ChatbotWidget() {
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Type a message..."
                   data-testid="input-chat-message"
+                  disabled={isLoading}
                 />
-                <Button onClick={handleSend} size="icon" data-testid="button-send-chat">
-                  <Send className="w-4 h-4" />
+                <Button 
+                  onClick={handleSend} 
+                  size="icon" 
+                  data-testid="button-send-chat"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </CardContent>

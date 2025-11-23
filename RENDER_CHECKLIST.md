@@ -80,14 +80,16 @@ Use this checklist before deploying to Render.
   - [ ] render.yaml detected (or manual config complete)
 
 - [ ] Environment variables configured in Render
-  - [ ] [ ] PORT = 5000
-  - [ ] [ ] HOST = 0.0.0.0
-  - [ ] [ ] NODE_ENV = production
-  - [ ] [ ] VITE_SUPABASE_URL = [from Supabase]
-  - [ ] [ ] VITE_SUPABASE_ANON_KEY = [from Supabase]
-  - [ ] [ ] SUPABASE_URL = [from Supabase]
-  - [ ] [ ] SUPABASE_SERVICE_ROLE_KEY = [from Supabase]
-  - [ ] [ ] OPENAI_API_KEY = [if using chatbot]
+  - [ ] PORT = 5000
+  - [ ] HOST = 0.0.0.0
+  - [ ] NODE_ENV = production
+  - [ ] VITE_SUPABASE_URL = [from Supabase project settings]
+  - [ ] VITE_SUPABASE_ANON_KEY = [from Supabase project settings]
+  - [ ] SUPABASE_URL = [from Supabase project settings]
+  - [ ] SUPABASE_SERVICE_ROLE_KEY = [from Supabase project settings]
+  - [ ] VITE_GEMINI_API_KEY = [if using Google Gemini chatbot]
+  - [ ] OPENAI_API_KEY = [if using OpenAI chatbot]
+  - [ ] VITE_APP_URL = https://your-app-name.onrender.com
 
 - [ ] Build command verified
   ```bash
@@ -107,14 +109,14 @@ Use this checklist before deploying to Render.
 ## Post-Deployment Testing
 
 - [ ] Access the application at `https://your-service-name.onrender.com`
-- [ ] [ ] Homepage loads without errors
-- [ ] [ ] Navigation works properly
-- [ ] [ ] API endpoints respond correctly
-- [ ] [ ] File uploads work (if applicable)
-- [ ] [ ] Database queries work
-- [ ] [ ] Environment variables are being used correctly
-- [ ] [ ] Static assets (CSS, images) load properly
-- [ ] [ ] No console errors in browser DevTools
+- [ ] Homepage loads without errors
+- [ ] Navigation works properly
+- [ ] API endpoints respond correctly
+- [ ] File uploads work (if applicable)
+- [ ] Database queries work
+- [ ] Environment variables are being used correctly
+- [ ] Static assets (CSS, images) load properly
+- [ ] No console errors in browser DevTools
 
 ## Production Monitoring
 

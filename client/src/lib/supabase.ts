@@ -10,4 +10,10 @@ if (import.meta.env.DEV && (!supabaseUrl || !supabaseKey)) {
 }
 
 // Create client with fallback values to prevent app crash
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Configure auth to not persist session across browser sessions
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  },
+})

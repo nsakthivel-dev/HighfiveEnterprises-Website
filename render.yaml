@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: solutionsquadhub
+    name: highfiveenterprises
     env: node
     plan: free
     
@@ -45,4 +45,4 @@ services:
     healthCheckPath: /
     
     # Auto-deploy on push to main branch
-    autoDeploy: true
+    autoDeploy: true 

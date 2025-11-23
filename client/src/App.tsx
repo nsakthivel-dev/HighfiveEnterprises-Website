@@ -36,6 +36,7 @@ import AdminEvents from "@/pages/admin/Events";
 import { AuthProvider } from "@/context/AuthContext";
 import AdminLogin from "@/pages/AdminLogin";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import GlobalChatbot from "@/components/GlobalChatbot";
 
 function Router() {
   return (
@@ -117,6 +118,7 @@ function App() {
               <ScrollToTop />
               <Router />
               <Footer />
+              <GlobalChatbot />
             </div>
             <Toaster />
           </AuthProvider>

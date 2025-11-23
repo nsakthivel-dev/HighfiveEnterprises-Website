@@ -1,5 +1,4 @@
 import ContactForm from "@/components/ContactForm";
-import ChatbotWidget from "@/components/ChatbotWidget";
 import FeedbackForm from "@/components/FeedbackForm";
 import FeedbackDisplay from "@/components/FeedbackDisplay";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,94 +30,98 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen">
-      {/* Header Section */}
+      {/* Hero Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-primary/10 to-transparent">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6">Get in Touch</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind? We'd love to hear from you. Send us a message and we'll respond within 24 hours.
+            Have questions or ready to start your project? We'd love to hear from you!
           </p>
         </div>
       </section>
 
-      {/* Contact Form and Info Section */}
-      <section className="py-12 px-6">
+      {/* Contact Info + Form */}
+      <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Contact Form - Takes 2 columns */}
-            <div className="lg:col-span-2">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div>
               <ContactForm />
             </div>
 
-            {/* Contact Information Sidebar */}
-            <div className="space-y-6">
-              <Card className="overflow-visible">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-6">Contact Information</h3>
-                  <div className="space-y-4">
-                    {contactInfo.map((info) => (
-                      <div key={info.label} className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
-                          {info.icon}
+            {/* Contact Info */}
+            <div>
+              <div className="space-y-8">
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
+                    <div className="space-y-4">
+                      {contactInfo.map((info, index) => (
+                        <div key={index} className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                            {info.icon}
+                          </div>
+                          <div>
+                            <h3 className="font-medium">{info.label}</h3>
+                            {info.href ? (
+                              <a 
+                                href={info.href} 
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                              >
+                                {info.value}
+                              </a>
+                            ) : (
+                              <p className="text-muted-foreground">{info.value}</p>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">{info.label}</p>
-                          {info.href ? (
-                            <a
-                              href={info.href}
-                              className="font-medium hover:text-primary transition-colors"
-                              data-testid={`link-${info.label.toLowerCase()}`}
-                            >
-                              {info.value}
-                            </a>
-                          ) : (
-                            <p className="font-medium">{info.value}</p>
-                          )}
-                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Social Links */}
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-2xl font-bold mb-6">Connect With Us</h2>
+                    <div className="flex flex-wrap gap-4">
+                      {socialLinks.map((link, index) => (
+                        <a
+                          key={index}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+                          aria-label={link.label}
+                        >
+                          {link.icon}
+                        </a>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Business Hours */}
+                <Card>
+                  <CardContent className="p-6">
+                    <h2 className="text-2xl font-bold mb-6">Business Hours</h2>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Monday - Friday</span>
+                        <span className="font-medium">9:00 AM - 6:00 PM</span>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="overflow-visible">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-6">Follow Us</h3>
-                  <div className="flex gap-3">
-                    {socialLinks.map((social) => (
-                      <a
-                        key={social.label}
-                        href={social.href}
-                        className="w-12 h-12 rounded-lg bg-primary/10 hover:bg-primary/20 flex items-center justify-center text-primary transition-colors hover-elevate"
-                        aria-label={social.label}
-                        data-testid={`link-social-${social.label.toLowerCase()}`}
-                      >
-                        {social.icon}
-                      </a>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="overflow-visible bg-gradient-to-br from-primary/5 to-chart-2/5">
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-3">Business Hours</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Monday - Friday</span>
-                      <span className="font-medium">9:00 AM - 6:00 PM</span>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Saturday</span>
+                        <span className="font-medium">10:00 AM - 4:00 PM</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Sunday</span>
+                        <span className="font-medium">Closed</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Saturday</span>
-                      <span className="font-medium">10:00 AM - 4:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Sunday</span>
-                      <span className="font-medium">Closed</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
@@ -144,8 +147,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
-      <ChatbotWidget />
     </div>
   );
 }
