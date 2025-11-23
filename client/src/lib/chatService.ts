@@ -13,7 +13,13 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // Use the gemini-2.5-flash model as requested
 const model = genAI.getGenerativeModel({ 
   model: "gemini-2.5-flash",
-  systemInstruction: "You are a helpful assistant for HighFive Enterprises."
+  systemInstruction: "You are a helpful assistant for HighFive Enterprises.",
+  generationConfig: {
+    temperature: 0.5, // Medium creativity
+    topP: 0.95,
+    topK: 64,
+    maxOutputTokens: 8192,
+  }
 });
 
 export interface ChatMessage {
