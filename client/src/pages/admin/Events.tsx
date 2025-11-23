@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Calendar, Clock, MapPin, Edit, Trash2, Plus, ExternalLink, Upload, X } from "lucide-react";
+import { Calendar, Clock, MapPin, Edit, Trash2, Plus, ExternalLink, Upload, X, Users, Building } from "lucide-react";
 import { format } from "date-fns";
 import type { Event, EventFormData } from "@/types/Event";
 import AdminLayout from "@/components/AdminLayout";
@@ -20,6 +20,13 @@ export default function AdminEvents() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [uploading, setUploading] = useState(false);
+  
+  // Team members state
+  const [teamMembers, setTeamMembers] = useState<{id: string, name: string}[]>([]);
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [organizers, setOrganizers] = useState<string>("");
+  const [otherParticipants, setOtherParticipants] = useState<string>("");
+
   const [formData, setFormData] = useState<EventFormData>({
     title: "",
     description: "",
@@ -30,8 +37,27 @@ export default function AdminEvents() {
     status: "upcoming",
     featured: false,
     organizers: "",
-    tags: ""
+    tags: "",
+    experience: ""
   });
+
+  // Fetch team members
+  const { data: apiMembers = [] } = useQuery({
+    queryKey: ["team-members"],
+    queryFn: async () => {
+      const res = await fetch("/api/team");
+      if (!res.ok) throw new Error("Failed to load team members");
+      return res.json();
+    },
+  });
+
+  useEffect(() => {
+    const mapped = apiMembers.map((m: any) => ({
+      id: m.id,
+      name: m.name
+    }));
+    setTeamMembers(mapped);
+  }, [apiMembers]);
 
   const { data: events = [], isLoading } = useQuery<Event[]>({
     queryKey: ["admin-events"],
@@ -114,16 +140,44 @@ export default function AdminEvents() {
       status: "upcoming",
       featured: false,
       organizers: "",
-      tags: ""
+      tags: "",
+      experience: ""
     });
     setSelectedEvent(null);
+    setSelectedParticipants([]);
+    setOrganizers("");
+    setOtherParticipants("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const dataToSubmit = {
-      ...formData,
+    
+    // Combine organizers, participants, and other participants with labels
+    const participantList = [
+      ...selectedParticipants.map(id => {
+        const member = teamMembers.find(m => m.id === id);
+        return member ? member.name : "";
+      }).filter(Boolean),
+      ...otherParticipants.split(",").map(part => part.trim()).filter(Boolean)
+    ];
+    
+    const allOrganizers = [
+      ...organizers.split(",").map(org => org.trim()).filter(Boolean),
+      ...participantList.map(part => `[PARTICIPANT] ${part}`)
+    ].join(", ");
+
+    const dataToSubmit: EventFormData = {
+      title: formData.title,
+      description: formData.description,
+      event_date: formData.event_date,
+      location: formData.location,
+      image_url: formData.image_url,
+      category: formData.category,
       status: formData.status as 'upcoming' | 'ongoing' | 'completed',
+      featured: formData.featured,
+      organizers: allOrganizers,
+      tags: formData.tags,
+      experience: formData.experience
     };
 
     if (selectedEvent) {
@@ -135,6 +189,10 @@ export default function AdminEvents() {
 
   const handleEdit = (event: Event) => {
     setSelectedEvent(event);
+    
+    // Ensure experience field is handled properly
+    const experience = event.experience || "";
+    
     setFormData({
       title: event.title,
       description: event.description || "",
@@ -144,9 +202,16 @@ export default function AdminEvents() {
       category: event.category || "",
       status: event.status || "upcoming",
       featured: event.featured || false,
-      organizers: Array.isArray(event.organizers) ? event.organizers.join(", ") : "",
-      tags: Array.isArray(event.tags) ? event.tags.join(", ") : ""
+      organizers: Array.isArray(event.organizers) ? event.organizers.join(", ") : (typeof event.organizers === 'string' ? event.organizers : ""),
+      tags: Array.isArray(event.tags) ? event.tags.join(", ") : (typeof event.tags === 'string' ? event.tags : ""),
+      experience: experience
     });
+    
+    // For editing, we'll populate the organizers field with all organizers
+    // In a more complex implementation, we might separate participants from external organizers
+    setOrganizers(Array.isArray(event.organizers) ? event.organizers.join(", ") : (typeof event.organizers === 'string' ? event.organizers : ""));
+    setSelectedParticipants([]);
+    setOtherParticipants("");
     setIsFormOpen(true);
   };
 
@@ -159,6 +224,19 @@ export default function AdminEvents() {
     if (selectedEvent) {
       deleteMutation.mutate(selectedEvent.id!);
     }
+  };
+
+  // Clear functions for each section
+  const clearOrganizers = () => {
+    setOrganizers("");
+  };
+
+  const clearParticipants = () => {
+    setSelectedParticipants([]);
+  };
+
+  const clearOtherParticipants = () => {
+    setOtherParticipants("");
   };
 
   return (
@@ -192,68 +270,81 @@ export default function AdminEvents() {
           </Card>
         )}
 
-        {!isLoading && events.map((event) => (
-          <Card key={event.id}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <CardTitle className="text-xl">{event.title}</CardTitle>
-                  <CardDescription className="mt-1">
-                    {event.description?.slice(0, 100)}...
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={event.status === "upcoming" ? "default" : event.status === "ongoing" ? "secondary" : "outline"}>
-                    {event.status}
-                  </Badge>
-                  {event.featured && (
-                    <Badge variant="secondary" className="bg-yellow-500 text-yellow-900">
-                      Featured
+        {!isLoading && events.map((event) => {
+          // Calculate participant count for display
+          let participantCount = 0;
+          if (event.organizers) {
+            if (Array.isArray(event.organizers)) {
+              participantCount = event.organizers.filter(org => org.startsWith('[PARTICIPANT]')).length;
+            } else if (typeof event.organizers === 'string') {
+              const orgString = event.organizers as unknown as string;
+              participantCount = orgString.split(',').filter((org: string) => org.trim().startsWith('[PARTICIPANT]')).length;
+            }
+          }
+          
+          return (
+            <Card key={event.id}>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl">{event.title}</CardTitle>
+                    <CardDescription className="mt-1">
+                      {event.description?.slice(0, 100)}...
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={event.status === "upcoming" ? "default" : event.status === "ongoing" ? "secondary" : "outline"}>
+                      {event.status}
                     </Badge>
-                  )}
+                    {event.featured && (
+                      <Badge variant="secondary" className="bg-yellow-500 text-yellow-900">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4 mb-4">
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {event.event_date ? format(new Date(event.event_date), "MMM dd, yyyy") : "TBD"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{event.location || "Location TBD"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{participantCount} participants</span>
+                  </div>
+                </div>
+                
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    {event.event_date ? format(new Date(event.event_date), "MMM dd, yyyy") : "TBD"}
-                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(event)}
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(event)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    Delete
+                  </Button>
                 </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">{event.location || "Location TBD"}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">{event.category || "General"}</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(event)}
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleDelete(event)}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
       </div>
 
@@ -289,6 +380,19 @@ export default function AdminEvents() {
                 />
               </div>
 
+              {/* Add Experience Section */}
+              <div>
+                <Label htmlFor="experience">Experience</Label>
+                <Textarea
+                  id="experience"
+                  value={formData.experience}
+                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                  placeholder="Enter the experience gained from this event"
+                  rows={3}
+                  className="mt-1"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="event_date">Event Date</Label>
@@ -319,18 +423,88 @@ export default function AdminEvents() {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="organizers">Organizers (comma-separated for multiple)</Label>
-                <Textarea
-                  id="organizers"
-                  value={formData.organizers}
-                  onChange={(e) => setFormData({ ...formData, organizers: e.target.value })}
-                  placeholder="Organization 1, Organization 2, Organization 3"
-                  rows={2}
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Enter multiple organizations separated by commas
-                </p>
+              {/* Separate Organizers and Participants Sections */}
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium flex items-center gap-2">
+                    <Building className="w-4 h-4" />
+                    Organizers
+                  </h3>
+                  <Button type="button" variant="ghost" size="sm" onClick={clearOrganizers}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div>
+                  <Label htmlFor="organizers" className="text-sm text-muted-foreground">College-associated companies like IEEE, IE</Label>
+                  <Textarea
+                    id="organizers"
+                    value={organizers}
+                    onChange={(e) => setOrganizers(e.target.value)}
+                    placeholder="IEEE, IE, Company Name"
+                    rows={2}
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Team Members as Participants
+                  </h3>
+                  <Button type="button" variant="ghost" size="sm" onClick={clearParticipants}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="border rounded-md p-3 space-y-2 max-h-40 overflow-y-auto">
+                  {teamMembers.map((member) => (
+                    <div key={member.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`member-${member.id}`}
+                        checked={selectedParticipants.includes(member.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedParticipants([...selectedParticipants, member.id]);
+                          } else {
+                            setSelectedParticipants(selectedParticipants.filter(id => id !== member.id));
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      <Label htmlFor={`member-${member.id}`} className="font-medium">
+                        {member.name}
+                      </Label>
+                    </div>
+                  ))}
+                  {teamMembers.length === 0 && (
+                    <p className="text-sm text-muted-foreground">No team members available</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Other Participants
+                  </h3>
+                  <Button type="button" variant="ghost" size="sm" onClick={clearOtherParticipants}>
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div>
+                  <Label htmlFor="otherParticipants" className="text-sm text-muted-foreground">Other participants (names not required)</Label>
+                  <Textarea
+                    id="otherParticipants"
+                    value={otherParticipants}
+                    onChange={(e) => setOtherParticipants(e.target.value)}
+                    placeholder="Other students, faculty, guests"
+                    rows={2}
+                    className="mt-1"
+                  />
+                </div>
               </div>
 
               <div>

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
 import { Bell, ChevronLeft, ChevronRight, Handshake, Home, Menu, Package2, Settings, ShoppingCart, Users, Calendar, PackageOpen } from 'lucide-react';
 import logo from '@assets/logos/logo-light.png';
 import logoDark from '@assets/logos/logo-dark.png';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Input } from './ui/input';
 import { useTheme } from './ThemeProvider';
+import { useAuth } from '@/context/AuthContext';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -18,7 +19,13 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
   const [location] = useLocation();
   const { theme } = useTheme();
+  const { logout } = useAuth();
+  
   const currentLogo = theme === 'dark' ? logoDark : logo;
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const navLinks = [
     { href: '/admin-panel/dashboard', icon: Home, label: 'Dashboard' },
@@ -90,6 +97,10 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Navigation</h2>
+              </div>
               <nav className="grid gap-2 text-lg font-medium">
                 <Link
                   href="#"
@@ -143,7 +154,7 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

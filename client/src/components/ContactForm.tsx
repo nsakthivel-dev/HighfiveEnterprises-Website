@@ -2,28 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    project: "",
-    message: "",
-  });
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
+    // Show toast notification on form submission
     toast({
       title: "Message Sent!",
       description: "We'll get back to you within 24 hours.",
     });
-    setFormData({ name: "", email: "", project: "", message: "" });
   };
 
   return (
@@ -32,62 +22,62 @@ export default function ContactForm() {
         <CardTitle>Get in Touch</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form 
+          action="https://formsubmit.co/teamhfive25@gmail.com" 
+          method="POST"
+          onSubmit={handleSubmit} 
+          className="space-y-6"
+        >
+          {/* Hidden input to prevent spam */}
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_subject" value="New Contact Form Submission" />
+          
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Name *</Label>
             <Input
               id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              name="name"
               placeholder="Your name"
               required
-              data-testid="input-name"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Gmail *</Label>
             <Input
               id="email"
+              name="email"
               type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="your@email.com"
+              placeholder="your@gmail.com"
               required
-              data-testid="input-email"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="project">Project Type</Label>
-            <Select value={formData.project} onValueChange={(value) => setFormData({ ...formData, project: value })}>
-              <SelectTrigger data-testid="select-project-type">
-                <SelectValue placeholder="Select a project type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="web">Web Development</SelectItem>
-                <SelectItem value="mobile">Mobile App</SelectItem>
-                <SelectItem value="saas">SaaS Platform</SelectItem>
-                <SelectItem value="consulting">Consulting</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="reason">Reason for Contact *</Label>
+            <select name="reason" required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <option value="">Select a reason</option>
+              <option value="general">General Inquiry</option>
+              <option value="project">Project Discussion</option>
+              <option value="partnership">Partnership Opportunity</option>
+              <option value="support">Technical Support</option>
+              <option value="feedback">Feedback</option>
+              <option value="other">Other</option>
+            </select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
+            <Label htmlFor="message">Message *</Label>
             <Textarea
               id="message"
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Tell us about your project..."
+              name="message"
+              placeholder="Your message..."
               rows={5}
               required
-              data-testid="input-message"
             />
           </div>
 
-          <Button type="submit" className="w-full" data-testid="button-submit-contact">
+          <Button type="submit" className="w-full">
             Send Message
           </Button>
         </form>

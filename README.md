@@ -19,6 +19,7 @@ This repository contains the source code for **HighFive Enterprises**, a modern,
 - File upload with drag-and-drop support
 - Multiple image management for project galleries
 - Real-time content updates
+- **Secure Authentication** – Only authorized administrators can access the panel
 
 ### 📋 New Recruitment & Partnership Pages
 - **About Page** – Comprehensive company story, values, differentiators, and working approach
@@ -50,7 +51,7 @@ This repository contains the source code for **HighFive Enterprises**, a modern,
 - **Runtime:** Node.js with Express
 - **Database:** Supabase (PostgreSQL)
 - **ORM:** Drizzle ORM
-- **Authentication:** Passport.js with session management
+- **Authentication:** Custom authentication with Supabase
 - **File Storage:** Supabase Storage
 - **File Upload:** Multer
 
@@ -88,6 +89,8 @@ SolutionSquadHub/
 │   │   │   ├── TeamNetwork.tsx      # Network visualization
 │   │   │   ├── ChatbotWidget.tsx    # AI chatbot widget
 │   │   │   └── ThemeProvider.tsx    # Dark/Light theme provider
+│   │   ├── context/                 # React context providers
+│   │   │   └── AuthContext.tsx      # Authentication context
 │   │   ├── pages/
 │   │   │   ├── admin/               # Admin panel pages
 │   │   │   ├── Home.tsx             # Landing page
@@ -102,6 +105,7 @@ SolutionSquadHub/
 │   │   │   ├── Events.tsx           # Events calendar
 │   │   │   ├── Contact.tsx          # Contact form
 │   │   │   ├── Admin.tsx            # Main admin dashboard
+│   │   │   ├── AdminLogin.tsx       # Admin login page
 │   │   │   ├── Apply.tsx            # Application page
 │   │   │   ├── Privacy.tsx          # Privacy policy
 │   │   │   ├── Terms.tsx            # Terms of service
@@ -224,7 +228,33 @@ SolutionSquadHub/
 
 ## 🔐 Admin Access
 
-The admin panel provides secure access to manage all content. Features include:
+The admin panel provides secure access to manage all content. Access is restricted to authorized administrators only.
+
+### Authorized Administrators
+Only the following email addresses can access the admin panel:
+
+- ajjigova111@gmail.com
+- hiteshreem2007@gmail.com
+- aaminathamiz@gmail.com
+- fazeelaofficial1609@gmail.com
+- hariharan.b17706@gmail.com
+- nsakthiveldev@gmail.com
+
+Each administrator must use their specific password:
+- ajjigova111@gmail.com: @arjun12345
+- hiteshreem2007@gmail.com: @hiteshree12345
+- aaminathamiz@gmail.com: @aamin12345
+- fazeelaofficial1609@gmail.com: @fazeela12345
+- hariharan.b17706@gmail.com: @hariharan12345
+- nsakthiveldev@gmail.com: @whitedevil12345
+
+### Access Instructions
+1. Navigate to `/admin` or `/admin/login`
+2. Enter your authorized email and password
+3. Upon successful authentication, you'll be redirected to the admin dashboard
+4. Use the "Logout" option in the user menu to securely sign out
+
+Features include:
 - Team member management
 - Project CRUD with multi-image upload
 - Service and package management

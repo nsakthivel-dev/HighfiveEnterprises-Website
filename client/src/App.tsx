@@ -32,6 +32,10 @@ import AdminServices from "@/pages/admin/Services";
 import AdminPackages from "@/pages/admin/Packages";
 import AdminNetwork from "@/pages/admin/Network";
 import AdminEvents from "@/pages/admin/Events";
+// Auth components
+import { AuthProvider } from "@/context/AuthContext";
+import AdminLogin from "@/pages/AdminLogin";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 function Router() {
   return (
@@ -51,17 +55,52 @@ function Router() {
       <Route path="/become-partner" component={BecomePartner} />
       <Route path="/events" component={Events} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin-panel">
-        <Redirect to="/admin-panel/dashboard" />
+        <ProtectedRoute>
+          <Redirect to="/admin-panel/dashboard" />
+        </ProtectedRoute>
       </Route>
-      <Route path="/admin-panel/dashboard" component={AdminDashboard} />
-      <Route path="/admin-panel/team" component={AdminTeam} />
-      <Route path="/admin-panel/projects" component={AdminProjects} />
-      <Route path="/admin-panel/activity" component={AdminActivity} />
-      <Route path="/admin-panel/services" component={AdminServices} />
-      <Route path="/admin-panel/packages" component={AdminPackages} />
-      <Route path="/admin-panel/network" component={AdminNetwork} />
-      <Route path="/admin-panel/events" component={AdminEvents} />
+      <Route path="/admin-panel/dashboard">
+        <ProtectedRoute>
+          <AdminDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/team">
+        <ProtectedRoute>
+          <AdminTeam />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/projects">
+        <ProtectedRoute>
+          <AdminProjects />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/activity">
+        <ProtectedRoute>
+          <AdminActivity />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/services">
+        <ProtectedRoute>
+          <AdminServices />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/packages">
+        <ProtectedRoute>
+          <AdminPackages />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/network">
+        <ProtectedRoute>
+          <AdminNetwork />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin-panel/events">
+        <ProtectedRoute>
+          <AdminEvents />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -72,13 +111,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ThemeProvider>
-          <div className="min-h-screen">
-            <Navigation />
-            <ScrollToTop />
-            <Router />
-            <Footer />
-          </div>
-          <Toaster />
+          <AuthProvider>
+            <div className="min-h-screen">
+              <Navigation />
+              <ScrollToTop />
+              <Router />
+              <Footer />
+            </div>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>

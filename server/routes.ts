@@ -4,6 +4,7 @@ import { supabase } from "./supabase";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import nodemailer from "nodemailer";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
@@ -884,6 +885,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "title and event_date are required" });
     }
 
+    // Handle organizers field properly
+    let organizersArray: string[] = [];
+    if (payload.organizers) {
+      if (Array.isArray(payload.organizers)) {
+        organizersArray = payload.organizers;
+      } else if (typeof payload.organizers === 'string') {
+        organizersArray = payload.organizers.split(',').map((org: string) => org.trim()).filter((org: string) => org !== '');
+      }
+    }
+
     const insertData: any = {
       title: payload.title,
       description: payload.description ?? null,
@@ -893,8 +904,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       category: payload.category ?? null,
       status: payload.status ?? "upcoming",
       featured: payload.featured ?? false,
-      organizers: Array.isArray(payload.organizers) ? payload.organizers : (payload.organizers ? payload.organizers.split(",").map((org: string) => org.trim()) : []),
-      tags: Array.isArray(payload.tags) ? payload.tags : (payload.tags ? payload.tags.split(",").map((tag: string) => tag.trim()) : [])
+      organizers: organizersArray,
+      tags: Array.isArray(payload.tags) ? payload.tags : (payload.tags ? payload.tags.split(",").map((tag: string) => tag.trim()) : []),
+      experience: payload.experience ?? null // Add experience field
     };
 
     const { data, error } = await supabase
@@ -914,16 +926,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const updateData: any = {};
     const allowedFields = [
       'title', 'description', 'event_date', 'location', 'image_url', 
-      'category', 'status', 'featured', 'organizers', 'tags'
+      'category', 'status', 'featured', 'organizers', 'tags', 'experience' // Add experience field
     ];
 
     allowedFields.forEach(field => {
       if (payload[field] !== undefined) {
-        if (field === 'tags' || field === 'organizers') {
-          // Handle arrays
+        if (field === 'tags') {
+          // Handle tags array
           updateData[field] = Array.isArray(payload[field]) 
             ? payload[field] 
             : (payload[field] ? payload[field].split(",").map((item: string) => item.trim()) : []);
+        } else if (field === 'organizers') {
+          // Handle organizers array properly
+          if (Array.isArray(payload[field])) {
+            updateData[field] = payload[field];
+          } else if (typeof payload[field] === 'string') {
+            updateData[field] = payload[field].split(",").map((org: string) => org.trim()).filter((org: string) => org !== '');
+          } else {
+            updateData[field] = [];
+          }
         } else {
           updateData[field] = payload[field];
         }
@@ -1032,6 +1053,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { error } = await supabase.from("feedback").delete().eq("id", id);
     if (error) return res.status(400).json({ message: error.message });
     return res.status(204).end();
+  });
+
+  // New endpoint for project submissions (replaces email functionality)
+  app.post("/api/project-submissions", async (req: Request, res: Response) => {
+    const payload = req.body as any;
+    
+    // Validate required fields
+    if (!payload.name || !payload.email || !payload.projectTitle || !payload.projectDescription) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Name, email, project title, and project description are required" 
+      });
+    }
+
+    try {
+      // Store the project submission in the database
+      const insertData = {
+        name: payload.name,
+        email: payload.email,
+        project_title: payload.projectTitle,
+        project_category: payload.projectCategory || null,
+        project_description: payload.projectDescription,
+        key_features: payload.keyFeatures || null,
+        expected_outcome: payload.expectedOutcome || null,
+        submitted_at: new Date().toISOString(),
+        status: "pending" // Default status
+      };
+
+      const { data, error } = await supabase
+        .from("project_submissions")
+        .insert(insertData)
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Supabase error:", error);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Failed to submit project",
+          error: error.message 
+        });
+      }
+      
+      return res.status(201).json({ 
+        success: true, 
+        message: "Project submitted successfully!",
+        data 
+      });
+    } catch (err: any) {
+      console.error("Server error:", err);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Server error during submission",
+        error: err.message || "Unknown error" 
+      });
+    }
+  });
+
+  // Email sending endpoint for project form submissions
+  app.post("/api/send-project-email", async (req: Request, res: Response) => {
+    try {
+      const { to, from, subject, text } = req.body;
+      
+      console.log("Email request received:", { to, from, subject });
+      
+      // Check if required environment variables are set
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.error("Email configuration missing. EMAIL_USER:", process.env.EMAIL_USER, "EMAIL_PASS:", process.env.EMAIL_PASS ? "SET" : "NOT SET");
+        return res.status(500).json({ 
+          message: "Email configuration missing", 
+          error: "Please check server configuration" 
+        });
+      }
+      
+      console.log("Using email credentials - User:", process.env.EMAIL_USER, "Pass length:", process.env.EMAIL_PASS.replace(/\s+/g, '').length);
+      
+      // Create transporter with Gmail SMTP using modern authentication
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS.replace(/\s+/g, '') // Remove any spaces
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+      
+      console.log("Attempting to verify email transporter...");
+      
+      // Verify transporter configuration
+      await transporter.verify();
+      console.log("Email transporter verified successfully");
+      
+      // Send email
+      const info = await transporter.sendMail({
+        from: `"HighFive Enterprises" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+        to: to,
+        subject: subject,
+        text: text,
+        html: `<div><h2>New Project Submission</h2><p><strong>From:</strong> ${from}</p><pre>${text.replace(/\n/g, '<br>')}</pre></div>`
+      });
+      
+      console.log("Email sent successfully to:", to, "Message ID:", info.messageId);
+      return res.status(200).json({ message: "Email sent successfully", messageId: info.messageId });
+    } catch (error: any) {
+      console.error("Error sending email:", error);
+      // Provide more detailed error information
+      let errorDetails: any = {
+        message: "Failed to send email",
+        error: error.message,
+        code: error.code,
+        command: error.command,
+        response: error.response
+      };
+      
+      // Handle specific Gmail authentication errors
+      if (error.message && (error.message.includes("Invalid login") || error.message.includes("BadCredentials"))) {
+        errorDetails.message = "Email authentication failed. Please check email configuration.";
+        errorDetails.suggestion = "If using Gmail, ensure you're using an App Password, not your regular password. Also check that 2-factor authentication is properly configured.";
+      }
+      
+      return res.status(500).json(errorDetails);
+    }
+  });
+
+  // Test email configuration endpoint
+  app.get("/api/test-email-config", async (_req: Request, res: Response) => {
+    try {
+      // Check if required environment variables are set
+      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        return res.status(500).json({ 
+          message: "Email configuration missing", 
+          error: "Please check server configuration" 
+        });
+      }
+      
+      // Create transporter with Gmail SMTP using modern authentication
+      const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.EMAIL_PORT || '587'),
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS.replace(/\s+/g, '') // Remove any spaces
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+      });
+      
+      // Verify transporter configuration
+      await transporter.verify();
+      
+      return res.status(200).json({ message: "Email configuration is valid" });
+    } catch (error: any) {
+      console.error("Error testing email configuration:", error);
+      let errorDetails: any = {
+        message: "Email configuration test failed",
+        error: error.message,
+        code: error.code,
+        command: error.command,
+        response: error.response
+      };
+      
+      // Handle specific Gmail authentication errors
+      if (error.message && (error.message.includes("Invalid login") || error.message.includes("BadCredentials"))) {
+        errorDetails.suggestion = "If using Gmail, ensure you're using an App Password, not your regular password. Also check that 2-factor authentication is properly configured.";
+      }
+      
+      return res.status(500).json(errorDetails);
+    }
   });
 
   const httpServer = createServer(app);

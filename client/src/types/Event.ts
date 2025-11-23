@@ -8,8 +8,10 @@ export interface Event {
   category?: string | null;
   status: 'upcoming' | 'ongoing' | 'completed';
   featured?: boolean;
-  organizers?: string[]; // Changed from organizer to organizers array
+  organizers?: string[]; // Array of organizer names, including [PARTICIPANT] prefixed names
   tags?: string[];
+  registration_url?: string | null;
+  experience?: string | null; // New field for event experience
   created_at?: string;
   updated_at?: string;
 }
@@ -25,4 +27,5 @@ export interface EventFormData {
   featured: boolean;
   organizers: string; // Comma-separated string of organizers
   tags: string; // Comma-separated string of tags
+  experience: string; // New field for event experience
 }

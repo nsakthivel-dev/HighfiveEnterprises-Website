@@ -25,9 +25,11 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import ProjectForm from "@/components/ProjectForm";
 
 export default function About() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -226,13 +228,11 @@ export default function About() {
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <Button size="lg" className="text-base px-8 h-12 group">
-                <Link href="/contact" className="flex items-center gap-2">
-                  Start Your Project
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
+              <Button size="lg" className="text-base px-8 h-12 group" onClick={() => setIsProjectFormOpen(true)}>
+                Start Your Project
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button size="lg" variant="outline" className="text-base px-8 h-12">
+              <Button size="lg" variant="outline" className="text-base px-8 h-12" asChild>
                 <Link href="/services">Explore Services</Link>
               </Button>
             </div>
@@ -547,13 +547,11 @@ export default function About() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button size="lg" className="text-lg px-10 h-14 group">
-              <Link href="/contact" className="flex items-center gap-2">
-                Start Your Project
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+            <Button size="lg" className="text-lg px-10 h-14 group" onClick={() => setIsProjectFormOpen(true)}>
+              Start Your Project
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-10 h-14">
+            <Button size="lg" variant="outline" className="text-lg px-10 h-14" asChild>
               <Link href="/projects">View Our Work</Link>
             </Button>
           </div>
@@ -568,6 +566,7 @@ export default function About() {
           </div>
         </motion.div>
       </section>
+      <ProjectForm isOpen={isProjectFormOpen} onClose={() => setIsProjectFormOpen(false)} />
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'wouter';
 
 const Admin = () => {
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
 
   useEffect(() => {
-    navigate('/admin-panel');
+    navigate('/admin/login');
   }, [navigate]);
 
   return null;
