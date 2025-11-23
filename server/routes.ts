@@ -6,6 +6,13 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import nodemailer from "nodemailer";
 
+// Add a helper function to check if Supabase is properly configured
+const isSupabaseConfigured = () => {
+  const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return !!(SUPABASE_URL && SUPABASE_SERVICE_ROLE);
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
   const storage = multer.memoryStorage();
@@ -118,15 +125,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
   // TEAM MEMBERS
   app.get("/api/team", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("team_members")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("team_members")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Supabase error in /api/team:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/team:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
-
-
 
   app.post("/api/team", async (req: Request, res: Response) => {
     const payload = req.body as any;
@@ -380,24 +408,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // PROJECTS
   app.get("/api/projects", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
 
-    const projects = data.map((p: any) => {
-        let techStack = [];
-        if (p.tech_stack && typeof p.tech_stack === 'object') {
-            const { frontend = [], backend = [], database = [], other = [] } = p.tech_stack;
-            techStack = [...frontend, ...backend, ...database, ...other];
-        } else if (Array.isArray(p.tech_stack)) {
-            techStack = p.tech_stack;
-        }
-        return { ...p, tech_stack: techStack };
-    });
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Supabase error in /api/projects:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
 
-    return res.json(projects ?? []);
+      const projects = data.map((p: any) => {
+          let techStack = [];
+          if (p.tech_stack && typeof p.tech_stack === 'object') {
+              const { frontend = [], backend = [], database = [], other = [] } = p.tech_stack;
+              techStack = [...frontend, ...backend, ...database, ...other];
+          } else if (Array.isArray(p.tech_stack)) {
+              techStack = p.tech_stack;
+          }
+          return { ...p, tech_stack: techStack };
+      });
+
+      return res.json(projects ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/projects:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   app.post("/api/projects", async (req: Request, res: Response) => {
@@ -671,13 +722,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Activity: list, create, delete
   app.get("/api/activity", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("activity")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("activity")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      
+      if (error) {
+        console.error("Supabase error in /api/activity:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/activity:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   app.post("/api/activity", async (req: Request, res: Response) => {
@@ -720,13 +794,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // SERVICES CRUD
   app.get("/api/services", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Supabase error in /api/services:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/services:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   app.post("/api/services", async (req: Request, res: Response) => {
@@ -763,14 +860,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // PACKAGES CRUD
   app.get("/api/packages", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("packages")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("packages")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Supabase error in /api/packages:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/packages:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   app.get("/api/admin/packages", async (_req: Request, res: Response) => {
@@ -859,12 +979,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // EVENTS CRUD
   // Public route to get all events
   app.get("/api/events", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("event_date", { ascending: true });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("event_date", { ascending: true });
+      
+      if (error) {
+        console.error("Supabase error in /api/events:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/events:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   // Admin routes for events management
@@ -972,13 +1115,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // FEEDBACK CRUD
   // Public route to get all approved feedback
   app.get("/api/feedback", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("feedback")
-      .select("*")
-      .eq("is_approved", true)
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    // Check if Supabase is properly configured
+    if (!isSupabaseConfigured()) {
+      return res.status(503).json({ 
+        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        code: "DATABASE_NOT_CONFIGURED"
+      });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("feedback")
+        .select("*")
+        .eq("is_approved", true)
+        .order("created_at", { ascending: false });
+      
+      if (error) {
+        console.error("Supabase error in /api/feedback:", error);
+        return res.status(500).json({ 
+          message: error.message,
+          code: "DATABASE_ERROR"
+        });
+      }
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("Unexpected error in /api/feedback:", err);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        code: "INTERNAL_ERROR"
+      });
+    }
   });
 
   // Public route to submit feedback (no authentication required)
