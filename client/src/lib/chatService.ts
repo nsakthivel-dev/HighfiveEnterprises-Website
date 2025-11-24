@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getWebsiteContextPrompt } from "@/lib/websiteContext";
 
 // Initialize Google Generative AI with API key from environment variables
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -13,7 +14,10 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // Use the gemini-2.5-flash model as requested
 const model = genAI.getGenerativeModel({ 
   model: "gemini-2.5-flash",
-  systemInstruction: "You are a helpful assistant for HighFive Enterprises. You should only answer questions related to HighFive Enterprises website, its services, team, projects, events, or other company-related topics. For any questions that are not related to HighFive Enterprises or its business, politely decline to answer and suggest contacting the team directly at teamhfive25@gmail.com.",
+  systemInstruction: `You are a helpful assistant for HighFive Enterprises. You should only answer questions related to HighFive Enterprises website, its services, team, projects, events, or other company-related topics. For any questions that are not related to HighFive Enterprises or its business, politely decline to answer and suggest contacting the team directly at teamhfive25@gmail.com.
+
+Use the following website context to provide accurate information:
+${getWebsiteContextPrompt()}`,
   generationConfig: {
     temperature: 0.5, // Medium creativity
     topP: 0.95,

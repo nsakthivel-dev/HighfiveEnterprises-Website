@@ -30,7 +30,10 @@ const AdminLogin = () => {
       console.log('Login result:', result);
       if (result.success) {
         console.log('Login successful, navigating to dashboard');
-        navigate('/admin-panel/dashboard');
+        // Add a small delay to ensure state is updated
+        setTimeout(() => {
+          navigate('/admin-panel/dashboard');
+        }, 100);
       } else {
         console.log('Login failed with error:', result.error);
         setError(result.error || 'Invalid credentials');

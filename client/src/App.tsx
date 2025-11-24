@@ -108,6 +108,11 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+  
+  // Check if current route is an admin or auth route
+  const isAdminOrAuthRoute = location.startsWith('/admin') || location.startsWith('/admin-panel');
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -118,7 +123,7 @@ function App() {
               <ScrollToTop />
               <Router />
               <Footer />
-              <GlobalChatbot />
+              {!isAdminOrAuthRoute && <GlobalChatbot />}
             </div>
             <Toaster />
           </AuthProvider>

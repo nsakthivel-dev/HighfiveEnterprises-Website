@@ -33,47 +33,90 @@ const Activity = () => {
     });
 
     return (
-        <AdminLayout title="Activity">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Activity</h1>
-            <Button onClick={() => setAddingActivity(true)}>Add Activity</Button>
+        <AdminLayout title="Activity" description="Manage activity updates">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">All Activities</h2>
+            <Button size="sm" onClick={() => setAddingActivity(true)}>Add Activity</Button>
           </div>
-          <Separator />
-          <div className="border rounded-lg">
-            <ul className="divide-y">
-              {activity.map((activity) => (
-                <li key={activity.id} className="p-4 flex justify-between items-center">
-                  <div>
-                    <span className="font-bold">{activity.title}</span>
-                    <span className="text-sm text-muted-foreground ml-2">({activity.type})</span>
+          <div className="space-y-3">
+            {activity.length === 0 ? (
+              <div className="border rounded-lg bg-background p-8 text-center text-muted-foreground">
+                <p className="text-sm">No activities yet. Add your first activity!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {activity.map((activity, index) => (
+                  <div 
+                    key={activity.id} 
+                    className={`
+                      group relative p-4 rounded-lg border transition-all duration-300
+                      ${index % 2 === 0 
+                        ? 'bg-gradient-to-r from-background to-muted/30 hover:from-muted/40 hover:to-muted/50' 
+                        : 'bg-gradient-to-r from-muted/20 to-background hover:from-muted/30 hover:to-muted/40'
+                      }
+                      hover:shadow-md hover:scale-[1.01] hover:border-primary/30
+                    `}
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className={`
+                            w-2 h-2 rounded-full
+                            ${activity.type === 'project' ? 'bg-blue-500' : ''}
+                            ${activity.type === 'member' ? 'bg-green-500' : ''}
+                            ${activity.type === 'announcement' ? 'bg-orange-500' : ''}
+                          `} />
+                          <span className="font-semibold text-sm block truncate group-hover:text-primary transition-colors">
+                            {activity.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`
+                            inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            ${activity.type === 'project' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : ''}
+                            ${activity.type === 'member' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : ''}
+                            ${activity.type === 'announcement' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' : ''}
+                          `}>
+                            {activity.type}
+                          </span>
+                        </div>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="destructive" 
+                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => deleteActivity.mutate(activity.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
-                  <Button size="sm" variant="destructive" onClick={() => deleteActivity.mutate(activity.id)}>Delete</Button>
-                </li>
-              ))}
-            </ul>
+                ))}
+              </div>
+            )}
           </div>
 
           {addingActivity && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setAddingActivity(false)}>
-            <div className="bg-card p-6 rounded-lg shadow-lg w-full max-w-lg space-y-4" onClick={(e) => e.stopPropagation()}>
-              <h3 className="text-xl font-bold">Add Activity</h3>
-              <div className="grid grid-cols-1 gap-4">
-              <div>
-                  <Label htmlFor="activity-type">Type</Label>
-                  <select id="activity-type" className="w-full h-10 rounded-md border bg-background px-3" value={activityForm.type} onChange={(e) => setActivityForm({ ...activityForm, type: e.target.value })}>
-                    <option value="project">project</option>
-                    <option value="member">member</option>
-                    <option value="announcement">announcement</option>
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setAddingActivity(false)}>
+            <div className="bg-card p-5 rounded-lg shadow-lg w-full max-w-md space-y-3" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-semibold">Add New Activity</h3>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="activity-type" className="text-sm">Type</Label>
+                  <select id="activity-type" className="w-full h-9 rounded-md border bg-background px-3 text-sm" value={activityForm.type} onChange={(e) => setActivityForm({ ...activityForm, type: e.target.value })}>
+                    <option value="project">Project</option>
+                    <option value="member">Member</option>
+                    <option value="announcement">Announcement</option>
                   </select>
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="activity-title">Title</Label>
-                  <Input id="activity-title" placeholder="What happened?" value={activityForm.title} onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })} />
+                <div>
+                  <Label htmlFor="activity-title" className="text-sm">Title</Label>
+                  <Input id="activity-title" className="h-9 text-sm" placeholder="What happened?" value={activityForm.title} onChange={(e) => setActivityForm({ ...activityForm, title: e.target.value })} />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button disabled={!activityForm.title.trim() || addActivity.isPending} onClick={() => { addActivity.mutate({ type: activityForm.type, title: activityForm.title.trim() }, { onSuccess: () => setAddingActivity(false) }); }}>Add</Button>
-                <Button variant="outline" onClick={() => setAddingActivity(false)}>Cancel</Button>
+              <div className="flex gap-2 pt-2">
+                <Button size="sm" disabled={!activityForm.title.trim() || addActivity.isPending} onClick={() => { addActivity.mutate({ type: activityForm.type, title: activityForm.title.trim() }, { onSuccess: () => setAddingActivity(false) }); }}>Add</Button>
+                <Button size="sm" variant="outline" onClick={() => setAddingActivity(false)}>Cancel</Button>
               </div>
             </div>
           </div>

@@ -35,6 +35,19 @@ type Project = {
   status?: string | null;
   url?: string | null;
   created_at?: string;
+  team_members?: string[] | null;
+};
+
+type TeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  avatar_url?: string | null;
+  bio?: string | null;
+  email?: string | null;
+  linkedin?: string | null;
+  status?: string | null;
+  created_at?: string;
 };
 
 export default function ProjectView() {
@@ -50,6 +63,26 @@ export default function ProjectView() {
       return r.json();
     },
     enabled: !!id,
+  });
+  
+  // Fetch team members if project has team member IDs
+  const { data: teamMembers = [] } = useQuery<TeamMember[]>({
+    queryKey: ['team-members', project?.team_members],
+    queryFn: async () => {
+      if (!project?.team_members || project.team_members.length === 0) {
+        return [];
+      }
+      
+      const r = await fetch(`/api/team`);
+      if (!r.ok) throw new Error('Failed to load team members');
+      const allMembers: TeamMember[] = await r.json();
+      
+      // Filter to only include members that are part of this project
+      return allMembers.filter(member => 
+        project.team_members?.includes(member.id)
+      );
+    },
+    enabled: !!project?.team_members && project.team_members.length > 0,
   });
 
   if (isLoading) {
@@ -376,6 +409,36 @@ export default function ProjectView() {
                 </div>
               )}
             </section>
+
+            {/* Team Members Section */}
+            {teamMembers && teamMembers.length > 0 && (
+              <section className="bg-card p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold mb-4">Team Members</h3>
+                <div className="space-y-4">
+                  {teamMembers.map((member) => (
+                    <div key={member.id} className="flex items-center gap-3">
+                      {member.avatar_url ? (
+                        <img 
+                          src={member.avatar_url} 
+                          alt={member.name} 
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-sm font-medium">
+                            {member.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-medium">{member.name}</h4>
+                        <p className="text-sm text-muted-foreground">{member.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Links */}
             <section className="bg-card p-6 rounded-lg shadow-sm">

@@ -1,129 +1,214 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
 import AdminLayout from "@/components/AdminLayout";
 
+// Define the activity type
+interface Activity {
+  id: string;
+  type: string;
+  title: string;
+  created_at: string;
+}
+
 const AdminDashboard = () => {
+  const { user } = useAuth();
+
+  // Fetch recent activities
+  const { data: activities = [], isLoading, refetch } = useQuery<Activity[]>({
+    queryKey: ["activities"],
+    queryFn: async () => {
+      const response = await fetch("/api/activity");
+      if (!response.ok) {
+        throw new Error("Failed to fetch activities");
+      }
+      const data = await response.json();
+      // Return only the last 7 activities
+      return data.slice(0, 7);
+    },
+    staleTime: 0, // Ensure fresh data is always fetched
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  });
+
+  // Extract admin name from email
+  const getAdminName = () => {
+    if (!user?.email) return "Admin";
+    
+    // Map of admin emails to names and roles
+    const adminMap: Record<string, { name: string; role: string }> = {
+      "nsakthiveldev@gmail.com": { name: "Sakthivel", role: "Founder" },
+      "aaminathamiz@gmail.com": { name: "Aamina", role: "Client Manager" },
+      "hiteshreem2007@gmail.com": { name: "Hiteshree", role: "HR" },
+      "hariharan.b17706@gmail.com": { name: "Hariharan", role: "CTO" },
+      "fazeelaofficial1609@gmail.com": { name: "Fazeela", role: "CFO" },
+      "arjungova111@gmail.com": { name: "Arjun", role: "Brand Ambassador" }
+    };
+    
+    // Check if the email exists in our map
+    if (adminMap[user.email]) {
+      return `${adminMap[user.email].name} (${adminMap[user.email].role})`;
+    }
+    
+    // Fallback to extracting name from email (before @ symbol)
+    const emailName = user.email.split("@")[0];
+    
+    // Convert to proper case (capitalize first letter of each word)
+    return emailName
+      .split(".")
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <AdminLayout 
-      title="Admin Dashboard" 
-      description="Manage your website content from this central dashboard."
+      title="Dashboard" 
+      description="Manage your website content"
     >
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Team Management</CardTitle>
+      {/* Welcome section - more compact */}
+      <div className="mb-4 p-4 bg-muted/50 rounded-lg border">
+        <h2 className="text-lg font-semibold mb-1">Welcome, {getAdminName()}!</h2>
+        <p className="text-sm text-muted-foreground">
+          Quick access to all management sections
+        </p>
+      </div>
+
+      {/* Compact grid layout */}
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-4">
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Team</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Manage team members, their roles, and profiles.
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Manage members and roles
             </p>
-            <div className="mt-4">
-              <a href="/admin-panel/team" className="text-sm text-blue-600 hover:underline">
-                Go to Team →
-              </a>
-            </div>
+            <a href="/admin-panel/team" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Projects Management</CardTitle>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Projects</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Add, edit, or remove projects from your portfolio.
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Portfolio and work showcase
             </p>
-            <div className="mt-4">
-              <a href="/admin-panel/projects" className="text-sm text-blue-600 hover:underline">
-                Go to Projects →
-              </a>
-            </div>
+            <a href="/admin-panel/projects" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Activity Updates</CardTitle>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Activity</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Manage activity and news updates for your website.
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              News and updates
             </p>
-            <div className="mt-4">
-              <a href="/admin-panel/activity" className="text-sm text-blue-600 hover:underline">
-                Go to Activity →
-              </a>
-            </div>
+            <a href="/admin-panel/activity" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Services Management</CardTitle>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Services</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Update the services your company offers.
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Company offerings
             </p>
-            <div className="mt-4">
-              <a href="/admin-panel/services" className="text-sm text-blue-600 hover:underline">
-                Go to Services →
-              </a>
-            </div>
+            <a href="/admin-panel/services" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Events Management</CardTitle>
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Events</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Manage events, conferences, and meetups your company participates in.
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Conferences and meetups
             </p>
-            <div className="mt-4">
-              <a href="/admin-panel/events" className="text-sm text-blue-600 hover:underline">
-                Go to Events →
-              </a>
-            </div>
+            <a href="/admin-panel/events" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Packages</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Service packages
+            </p>
+            <a href="/admin-panel/packages" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">Network</CardTitle>
+          </CardHeader>
+          <CardContent className="pb-3">
+            <p className="text-xs text-muted-foreground mb-3">
+              Partners and connections
+            </p>
+            <a href="/admin-panel/network" className="text-sm text-primary hover:underline font-medium">
+              Manage →
+            </a>
           </CardContent>
         </Card>
       </div>
       
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Admin Panel Guide</CardTitle>
-          <CardDescription>How to use the admin panel effectively</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+      {/* Recent activities - more compact */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Team Management</h3>
-              <p className="text-sm text-muted-foreground">
-                Add team members with their name, role, bio, and profile picture. You can edit or remove team members as needed.
-              </p>
+              <CardTitle className="text-base">Recent Changes</CardTitle>
+              <CardDescription className="text-xs">Last 7 activities</CardDescription>
             </div>
-            
-            <div>
-              <h3 className="font-medium">Projects Management</h3>
-              <p className="text-sm text-muted-foreground">
-                Showcase your work by adding projects with details like title, description, technologies used, and images.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-medium">Activity Updates</h3>
-              <p className="text-sm text-muted-foreground">
-                Keep your audience informed about company news, achievements, and updates.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-medium">Services Management</h3>
-              <p className="text-sm text-muted-foreground">
-                Define the services your company offers with detailed descriptions and features.
-              </p>
-            </div>
+            <button 
+              onClick={() => refetch()}
+              className="text-xs text-primary hover:underline font-medium"
+            >
+              Refresh
+            </button>
           </div>
+        </CardHeader>
+        <CardContent className="pb-3">
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          ) : activities.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No recent activities</p>
+          ) : (
+            <div className="space-y-2">
+              {activities.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-2 p-2 rounded-md border bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.type} • {new Date(activity.created_at).toLocaleDateString()} {new Date(activity.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </AdminLayout>

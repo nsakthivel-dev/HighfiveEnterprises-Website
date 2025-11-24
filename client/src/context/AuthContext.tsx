@@ -60,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       console.log('Auth state changed:', _event, session);
+      setLoading(true);
       if (session?.user) {
         // Check if user is in our admin list
         if (ADMIN_EMAILS.includes(session.user.email || '')) {

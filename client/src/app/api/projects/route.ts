@@ -59,6 +59,8 @@ export async function POST(request: Request) {
           hero_image: body.hero_image || null,
           screenshots: body.screenshots || null,
           demo_video: body.demo_video || null,
+          // Team members field
+          team_members: body.team_members || null,
         }
       ])
       .select()
@@ -142,6 +144,8 @@ export async function PUT(request: Request) {
         hero_image: body.hero_image || null,
         screenshots: body.screenshots || null,
         demo_video: body.demo_video || null,
+        // Team members field
+        team_members: body.team_members || null,
       })
       .eq('id', id)
       .select()

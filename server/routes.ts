@@ -560,6 +560,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           insertData.project_photos = payload.project_photos;
         }
       }
+      
+      // team_members field
+      if (payload.team_members !== undefined && payload.team_members !== null) {
+        if (Array.isArray(payload.team_members)) {
+          insertData.team_members = payload.team_members;
+        } else {
+          insertData.team_members = payload.team_members;
+        }
+      }
 
       console.log("Inserting project with data:", JSON.stringify(insertData, null, 2));
       console.log("Mapped status from", payload.status, "to", dbStatus);
@@ -659,6 +668,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (payload.key_features !== undefined) updateData.key_features = payload.key_features;
       if (payload.case_study_urls !== undefined) updateData.case_study_urls = payload.case_study_urls;
       if (payload.project_photos !== undefined) updateData.project_photos = payload.project_photos;
+
+      // Handle team_members field
+      if (payload.team_members !== undefined) updateData.team_members = payload.team_members;
 
       // screenshots - handle both string and array (deprecated, use project_photos)
       if (payload.screenshots !== undefined) {

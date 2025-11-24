@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -105,10 +105,10 @@ const Team = () => {
       const [memberForm, setMemberForm] = useState<Partial<TeamMember>>({
         name: "",
         role: "",
-        avatar_url: "",
-        bio: "",
-        email: "",
-        linkedin: "",
+        avatar_url: null,
+        bio: null,
+        email: null,
+        linkedin: null,
         status: "Active",
       });
 
@@ -116,38 +116,51 @@ const Team = () => {
       const canSubmitMember = useMemo(() => !!memberForm.name?.trim() && !!memberForm.role?.trim(), [memberForm]);
 
     return (
-        <AdminLayout title="Team">
-        <div className="space-y-6">
+        <AdminLayout title="Team" description="Manage team members">
+        <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Manage Team</h2>
-          <Button onClick={() => setEditingMember("new")}>Add Member</Button>
+          <h2 className="text-lg font-semibold">All Team Members</h2>
+          <Button size="sm" onClick={() => setEditingMember("new")}>Add Member</Button>
         </div>
-        <Separator />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {team.map((member) => (
-            <Card key={member.id}>
-              <img src={member.avatar_url ?? "/placeholder.svg"} alt={member.name} className="rounded-full h-24 w-24 mx-auto" />
-              <h3 className="font-bold text-lg text-center mt-4">{member.name}</h3>
-              <p className="text-sm text-muted-foreground text-center">{member.role}</p>
-              <div className="flex gap-2 mt-4 justify-center">
-                <Button size="sm" variant="outline" onClick={() => {setEditingMember(member.id); setMemberForm(member)}}>Edit</Button>
-                <Button size="sm" variant="destructive" onClick={() => deleteMember.mutate(member.id)}>Delete</Button>
-              </div>
+            <Card key={member.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <img src={member.avatar_url ?? "/placeholder.svg"} alt={member.name} className="rounded-full h-20 w-20 mx-auto object-cover" />
+                <h3 className="font-semibold text-base text-center mt-3">{member.name}</h3>
+                <p className="text-xs text-muted-foreground text-center">{member.role}</p>
+                <div className="flex gap-2 mt-3">
+                  <Button size="sm" variant="outline" className="flex-1 h-8 text-xs" onClick={() => {
+                    setEditingMember(member.id);
+                    // Ensure all fields are properly initialized
+                    setMemberForm({
+                      name: member.name || "",
+                      role: member.role || "",
+                      avatar_url: member.avatar_url || null,
+                      bio: member.bio || null,
+                      email: member.email || null,
+                      linkedin: member.linkedin || null,
+                      status: member.status || "Active",
+                    });
+                  }}>Edit</Button>
+                  <Button size="sm" variant="destructive" className="flex-1 h-8 text-xs" onClick={() => deleteMember.mutate(member.id)}>Delete</Button>
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>
 
         {editingMember && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setEditingMember(null)}>
-          <div className="bg-card rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-2xl font-bold">{editingMember === "new" ? "Add New Team Member" : "Edit Team Member"}</h2>
-              <Button variant="ghost" size="icon" onClick={() => setEditingMember(null)} aria-label="Close">
+          <div className="bg-card rounded-lg shadow-xl w-full max-w-3xl max-h-[85vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold">{editingMember === "new" ? "Add New Member" : "Edit Member"}</h2>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditingMember(null)} aria-label="Close">
                 <X className="h-4 w-4" />
               </Button>
             </div>
             
-            <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+            <div className="overflow-y-auto max-h-[calc(85vh-140px)]">
               <div className="p-6 space-y-6">
                 {/* Basic Information Section */}
                 <div className="space-y-4">
@@ -195,7 +208,10 @@ const Team = () => {
                       <FileUpload
                         label="Upload new photo"
                         currentValue={memberForm.avatar_url || ""}
-                        onFileSelect={() => {}}
+                        onFileSelect={(file) => {
+                          // Handle file selection if needed
+                          console.log("File selected:", file.name);
+                        }}
                         onFileUpload={(url) => setMemberForm({ ...memberForm, avatar_url: url })}
                       />
                       <div className="space-y-2">
