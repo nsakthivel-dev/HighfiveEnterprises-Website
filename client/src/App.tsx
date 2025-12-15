@@ -32,11 +32,12 @@ import AdminServices from "@/pages/admin/Services";
 import AdminPackages from "@/pages/admin/Packages";
 import AdminNetwork from "@/pages/admin/Network";
 import AdminEvents from "@/pages/admin/Events";
+import AdminDocuments from "@/pages/admin/Documents";
 // Auth components
 import { AuthProvider } from "@/context/AuthContext";
 import AdminLogin from "@/pages/AdminLogin";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import GlobalChatbot from "@/components/GlobalChatbot";
+import RAGChatbot from "@/components/RAGChatbot";
 
 function Router() {
   return (
@@ -102,6 +103,11 @@ function Router() {
           <AdminEvents />
         </ProtectedRoute>
       </Route>
+      <Route path="/admin-panel/documents">
+        <ProtectedRoute>
+          <AdminDocuments />
+        </ProtectedRoute>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -123,7 +129,7 @@ function App() {
               <ScrollToTop />
               <Router />
               <Footer />
-              {!isAdminOrAuthRoute && <GlobalChatbot />}
+              <RAGChatbot />
             </div>
             <Toaster />
           </AuthProvider>

@@ -16,9 +16,9 @@ export default function Contact() {
     {
       icon: <MapPin className="w-5 h-5" />,
       label: "Location",
-      value: "Puducherry, Tamilnadu",
+      value: "Puducherry",
       href: null,
-    },
+    }
   ];
 
   const socialLinks = [
@@ -108,11 +108,11 @@ export default function Contact() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Monday - Friday</span>
-                        <span className="font-medium">9:00 AM - 6:00 PM</span>
+                        <span className="font-medium">9:00 - 18:00 IST</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Saturday</span>
-                        <span className="font-medium">10:00 AM - 4:00 PM</span>
+                        <span className="font-medium">Closed</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Sunday</span>

@@ -5,21 +5,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
 
 export default function ContactForm() {
   const { toast } = useToast();
-  const [location] = useLocation();
-  const [prefillData, setPrefillData] = useState<{ activity?: string; type?: string }>({});
+  const [prefillData, setPrefillData] = useState<{ activity?: string; type?: string; service?: string; package?: string }>({});
 
   useEffect(() => {
     // Parse URL parameters to prefill form
     const searchParams = new URLSearchParams(window.location.search);
     const activity = searchParams.get('activity');
     const type = searchParams.get('type');
+    const service = searchParams.get('service');
+    const packageName = searchParams.get('package');
     
-    if (activity || type) {
-      setPrefillData({ activity: activity || '', type: type || '' });
+    if (activity || type || service || packageName) {
+      setPrefillData({ 
+        activity: activity || '', 
+        type: type || '', 
+        service: service || '',
+        package: packageName || ''
+      });
     }
   }, []);
 
@@ -30,6 +35,31 @@ export default function ContactForm() {
       description: "We'll get back to you within 24 hours.",
     });
   };
+
+  // Determine the reason and message placeholders/prefills based on URL parameters
+  const reasonValue = prefillData.package 
+    ? `Interest in ${prefillData.package} package` 
+    : prefillData.service 
+      ? `Interest in ${prefillData.service} service` 
+      : prefillData.activity 
+        ? `More information on ${prefillData.activity}` 
+        : "";
+      
+  const messagePlaceholder = prefillData.package 
+    ? `I'm interested in your ${prefillData.package} package. Please provide more details.` 
+    : prefillData.service 
+      ? `I'm interested in your ${prefillData.service} service. Please provide more details.` 
+      : prefillData.activity 
+        ? `I need more information on: ${prefillData.activity}` 
+        : "Your message...";
+      
+  const messageDefaultValue = prefillData.package 
+    ? `I'm interested in your ${prefillData.package} package. Please provide more details.\n\n` 
+    : prefillData.service 
+      ? `I'm interested in your ${prefillData.service} service. Please provide more details.\n\n` 
+      : prefillData.activity 
+        ? `I need more information on: ${prefillData.activity}${prefillData.type ? ` (${prefillData.type})` : ''}\n\n` 
+        : "";
 
   return (
     <Card className="overflow-visible">
@@ -73,7 +103,7 @@ export default function ContactForm() {
             <input
               id="reason"
               name="reason"
-              defaultValue={prefillData.activity ? `More information on ${prefillData.activity}` : ""}
+              defaultValue={reasonValue}
               placeholder="Enter reason for contact"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
@@ -85,8 +115,8 @@ export default function ContactForm() {
             <Textarea
               id="message"
               name="message"
-              placeholder={prefillData.activity ? `I need more information on: ${prefillData.activity}` : "Your message..."}
-              defaultValue={prefillData.activity ? `I need more information on: ${prefillData.activity}${prefillData.type ? ` (${prefillData.type})` : ''}\n\n` : ""}
+              placeholder={messagePlaceholder}
+              defaultValue={messageDefaultValue}
               rows={5}
               required
             />

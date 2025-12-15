@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 
 interface PackageFeature {
   name: string;
@@ -112,13 +113,15 @@ export default function ComparisonTable() {
                 </li>
               ))}
             </ul>
-            <Button
-              variant={pkg.is_recommended ? "default" : "outline"}
-              className="w-full"
-              data-testid={`button-select-${pkg.name.toLowerCase()}`}
-            >
-              Get Started
-            </Button>
+            <Link href={`/contact?package=${encodeURIComponent(pkg.name)}`}>
+              <Button
+                variant={pkg.is_recommended ? "default" : "outline"}
+                className="w-full"
+                data-testid={`button-select-${pkg.name.toLowerCase()}`}
+              >
+                Get Started
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       ))}

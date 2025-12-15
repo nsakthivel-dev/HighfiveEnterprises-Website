@@ -102,14 +102,33 @@ const Packages = () => {
   });
 
   const deletePackage = useMutation({
-    mutationFn: (id: string) => api<void>(`/api/admin/packages/${id}`, { method: "DELETE" }),
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/admin/packages/${id}`, { 
+        method: "DELETE" 
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to delete package: ${response.statusText}`);
+      }
+      
+      return response;
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-packages"] });
       qc.invalidateQueries({ queryKey: ["packages"] });
-      toast({ title: "Success", description: "Package deleted successfully" });
+      toast({ 
+        title: "Success", 
+        description: "Package deleted successfully" 
+      });
     },
     onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      console.error("Delete package error:", error);
+      toast({ 
+        title: "Error", 
+        description: error.message || "Failed to delete package", 
+        variant: "destructive" 
+      });
     },
   });
 
@@ -368,13 +387,23 @@ const Packages = () => {
                   size="sm"
                   variant="destructive"
                   onClick={() => {
-                    if (confirm(`Are you sure you want to delete "${pkg.name}"?`)) {
+                    if (confirm(`Are you sure you want to delete "${pkg.name}"? This action cannot be undone.`)) {
                       deletePackage.mutate(pkg.id);
                     }
                   }}
+                  disabled={deletePackage.isPending}
                 >
-                  <Trash2 className="w-4 h-4 mr-1" />
-                  Delete
+                  {deletePackage.isPending ? (
+                    <>
+                      <div className="w-4 h-4 mr-1 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </>
+                  )}
                 </Button>
               </div>
             </CardContent>

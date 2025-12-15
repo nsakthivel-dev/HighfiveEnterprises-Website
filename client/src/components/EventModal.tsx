@@ -26,6 +26,7 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
   // Parse organizers and participants
   let organizersList: string[] = [];
   let participantsList: string[] = [];
+  let tagsArray: string[] = [];
 
   if (event.organizers) {
     let organizersArray: string[] = [];
@@ -45,6 +46,14 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
       .filter((org: string) => org.startsWith('[PARTICIPANT]'))
       .map((org: string) => org.replace('[PARTICIPANT]', '').trim())
       .filter((org: string) => org.trim() !== '');
+  }
+
+  if (event.tags) {
+    if (Array.isArray(event.tags)) {
+      tagsArray = event.tags.filter(Boolean);
+    } else if (typeof event.tags === 'string') {
+      tagsArray = event.tags.split(',').map((t: string) => t.trim()).filter(Boolean);
+    }
   }
 
   return (
@@ -231,11 +240,11 @@ export default function EventModal({ event, isOpen, onClose }: EventModalProps) 
             )}
 
             {/* Tags */}
-            {event.tags && event.tags.length > 0 && (
+            {tagsArray.length > 0 && (
               <div className="mb-5">
                 <h3 className="text-lg font-bold mb-2 text-primary">Tags</h3>
                 <div className="flex flex-wrap gap-1.5">
-                  {event.tags.map((tag, index) => (
+                  {tagsArray.map((tag, index) => (
                     <Badge key={index} variant="outline" className="px-2 py-1 text-xs">
                       {tag}
                     </Badge>

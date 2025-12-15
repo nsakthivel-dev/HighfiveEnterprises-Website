@@ -140,11 +140,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 px-6">
+      <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-3xl font-bold">Featured Projects</h2>
                 <Link href="/projects">
                   <Button variant="ghost" data-testid="link-view-all-projects">
@@ -156,10 +156,10 @@ export default function Home() {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold mb-6">Live Activity</h2>
               <ActivityFeed />
             </div>
           </div>
+        
         </div>
       </section>
 

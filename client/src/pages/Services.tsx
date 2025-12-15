@@ -15,7 +15,7 @@ type ApiService = {
 };
 
 export default function Services() {
-  const { data: apiServices = [], isError } = useQuery<ApiService[]>({
+  const { data: apiServices = [], isError, isLoading } = useQuery<ApiService[]>({
     queryKey: ["services"],
     queryFn: async () => {
       const r = await fetch("/api/services");
@@ -80,11 +80,30 @@ export default function Services() {
 
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <ServiceCard key={service.title} {...service} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-lg border border-border p-6 animate-pulse">
+                  <div className="w-12 h-12 rounded-lg bg-muted mb-4" />
+                  <div className="h-5 w-2/3 bg-muted rounded mb-2" />
+                  <div className="h-4 w-full bg-muted rounded mb-6" />
+                  <div className="space-y-2">
+                    <div className="h-3 w-full bg-muted rounded" />
+                    <div className="h-3 w-5/6 bg-muted rounded" />
+                    <div className="h-3 w-2/3 bg-muted rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service) => (
+                <div key={service.title} className="flex">
+                  <ServiceCard {...service} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

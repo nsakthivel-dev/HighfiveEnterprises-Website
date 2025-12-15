@@ -101,11 +101,11 @@ export default function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     <section className="relative overflow-hidden bg-gradient-to-b from-background via-background/95 to-background">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,#38bdf833,transparent_55%)]" aria-hidden />
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16 text-foreground">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-8 text-foreground">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <div>
             
-            <p className="mt-2 max-w-2xl text-base font-semibold sm:text-lg">
+            <p className="mt-1 max-w-2xl text-base font-semibold sm:text-lg">
               <span className="bg-gradient-to-r from-primary via-primary/70 to-primary/40 bg-clip-text text-transparent">
                 {SECTION_COPY.subtitle}
               </span>

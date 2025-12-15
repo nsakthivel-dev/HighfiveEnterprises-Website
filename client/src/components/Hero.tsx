@@ -1,6 +1,7 @@
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@assets/hero/hero-background.png";
+import { Link } from "wouter";
 
 export default function Hero() {
   return (
@@ -29,22 +30,26 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="text-base"
-            data-testid="button-view-projects"
-          >
-            View Our Work
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="text-base bg-background/20 backdrop-blur-sm border-white/30 text-primary-foreground hover:bg-background/30"
-            data-testid="button-contact-us"
-          >
-            Get in Touch
-          </Button>
+          <Link href="/projects">
+            <Button
+              size="lg"
+              className="text-base"
+              data-testid="button-view-projects"
+            >
+              View Our Work
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+          <Link href="/contact">
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-base bg-background/20 backdrop-blur-sm border-white/30 text-primary-foreground hover:bg-background/30"
+              data-testid="button-contact-us"
+            >
+              Get in Touch
+            </Button>
+          </Link>
         </div>
       </div>
 

@@ -5,6 +5,21 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import nodemailer from "nodemailer";
+import fs from "fs/promises";
+import { pipeline } from "stream/promises";
+import { PDFParse } from "pdf-parse";
+
+// Wrapper function to match the expected usage
+const getPdfParse = async () => {
+  return async (buffer: Buffer) => {
+    // Create options object with the buffer data
+    const options = { data: buffer };
+    const parser = new PDFParse(options);
+    const result = await parser.getText();
+    return { text: result.text };
+  };
+};
+import * as lancedb from "@lancedb/lancedb";
 
 // Add a helper function to check if Supabase is properly configured
 const isSupabaseConfigured = () => {
@@ -12,6 +27,37 @@ const isSupabaseConfigured = () => {
   const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
   return !!(SUPABASE_URL && SUPABASE_SERVICE_ROLE);
 };
+
+// Vector database setup for document embeddings
+let vectorDb: any = null;
+let documentTable: any = null;
+
+async function initializeVectorDb() {
+  try {
+    // For simplicity, we'll use an in-memory LanceDB instance
+    // In production, you would use a persistent storage
+    const db = await lancedb.connect("./data/lancedb");
+    
+    // Check if the table exists, if not create it
+    const tables = await db.tableNames();
+    if (!tables.includes("documents")) {
+      // Define the schema for our document embeddings
+      documentTable = await db.createTable("documents", [
+        { id: "", document_id: "", text_chunk: "", vector: Array(1536).fill(0) }
+      ]);
+    } else {
+      documentTable = await db.openTable("documents");
+    }
+    
+    vectorDb = db;
+    console.log("Vector database initialized successfully");
+  } catch (error) {
+    console.error("Error initializing vector database:", error);
+  }
+}
+
+// Initialize the vector database when the server starts
+initializeVectorDb();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
@@ -115,6 +161,204 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Multiple upload error:", error);
       return res.status(500).json({ error: "Server error during upload" });
+    }
+  });
+
+  // Background document processing function
+  async function processDocumentInBackground(documentId: string, buffer: Buffer, url: string) {
+    try {
+      console.log(`Processing document ${documentId}`);
+      
+      // Parse PDF to extract text
+      const pdfParseFn = await getPdfParse();
+      const data = await pdfParseFn(buffer);
+      const text = data.text;
+      
+      // Split text into chunks (simple implementation)
+      const chunks = chunkText(text, 1000);
+      
+      // Generate embeddings for each chunk and store in vector database
+      const embeddings = [];
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        
+        // In a real implementation, you would use an embedding model like OpenAI's Ada
+        // For this example, we'll create mock embeddings
+        const mockEmbedding = Array(1536).fill(0).map(() => Math.random());
+        
+        embeddings.push({
+          id: `${documentId}-${i}`,
+          document_id: documentId,
+          text_chunk: chunk,
+          vector: mockEmbedding
+        });
+      }
+      
+      // Store embeddings in vector database
+      if (documentTable) {
+        await documentTable.add(embeddings);
+        console.log(`Stored ${embeddings.length} embeddings for document ${documentId}`);
+      }
+      
+      // In a real implementation, you would also update document status in a database
+      
+      console.log(`Processed ${chunks.length} chunks from document ${documentId}`);
+    } catch (error) {
+      console.error(`Error processing document ${documentId}:`, error);
+    }
+  }
+  
+  // Helper function to split text into chunks
+  function chunkText(text: string, chunkSize: number): string[] {
+    const chunks: string[] = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.substring(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  // Document upload and processing routes
+  // Upload a PDF document for RAG processing
+  app.post("/api/documents/upload", upload.single("file"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Check if file is PDF
+      if (req.file.mimetype !== "application/pdf") {
+        return res.status(400).json({ error: "Only PDF files are allowed" });
+      }
+
+      // Generate unique ID for the document
+      const documentId = uuidv4();
+      const fileName = `${documentId}.pdf`;
+      const filePath = `documents/${fileName}`;
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from("documents")
+        .upload(filePath, req.file.buffer, {
+          contentType: req.file.mimetype,
+        });
+
+      if (error) {
+        console.error("Supabase storage error:", error);
+        return res.status(500).json({ error: "Failed to upload document to storage" });
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("documents")
+        .getPublicUrl(filePath);
+
+      // Store document metadata in database
+      const documentMetadata = {
+        id: documentId,
+        name: req.file.originalname,
+        url: urlData.publicUrl,
+        size: req.file.size,
+        uploaded_at: new Date().toISOString(),
+        status: "processing",
+      };
+
+      // In a real implementation, you would store this in a database
+      // For now, we'll just return the metadata
+      
+      // Process the document asynchronously
+      processDocumentInBackground(documentId, req.file.buffer, urlData.publicUrl);
+
+      return res.status(200).json({ 
+        message: "Document uploaded successfully and is being processed",
+        document: documentMetadata
+      });
+    } catch (error) {
+      console.error("Document upload error:", error);
+      return res.status(500).json({ error: "Server error during document upload" });
+    }
+  });
+
+  // Get all documents
+  app.get("/api/documents", async (_req: Request, res: Response) => {
+    try {
+      // In a real implementation, you would fetch this from a database
+      // For now, we'll return mock data
+      const mockDocuments = [
+        {
+          id: "1",
+          name: "company-policy.pdf",
+          url: "https://example.com/company-policy.pdf",
+          size: 2457600,
+          uploaded_at: "2023-06-15T10:30:00Z",
+          status: "processed"
+        },
+        {
+          id: "2",
+          name: "technical-specs.pdf",
+          url: "https://example.com/technical-specs.pdf",
+          size: 5242880,
+          uploaded_at: "2023-06-10T14:22:00Z",
+          status: "processed"
+        },
+        {
+          id: "3",
+          name: "project-proposal.pdf",
+          url: "https://example.com/project-proposal.pdf",
+          size: 1048576,
+          uploaded_at: "2023-06-05T09:15:00Z",
+          status: "processing"
+        }
+      ];
+      
+      return res.status(200).json(mockDocuments);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      return res.status(500).json({ error: "Server error fetching documents" });
+    }
+  });
+
+  // RAG Chat route
+  app.post("/api/chat", async (req: Request, res: Response) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      
+      // Step 1: Search vector database for relevant document chunks
+      let context = "";
+      let ragResponse = "";
+      
+      if (documentTable) {
+        // In a real implementation, you would:
+        // 1. Generate embedding for the query
+        // 2. Search the vector database for similar embeddings
+        // 3. Retrieve the most relevant text chunks
+        
+        // For this example, we'll simulate finding relevant context
+        context = "Relevant document information would be retrieved here based on semantic similarity search. ";
+      }
+      
+      // Step 2: If context found, use it to generate a response
+      if (context) {
+        // In a real implementation, you would use an AI model to generate a response
+        // based on the context and user query
+        ragResponse = `Based on the documents, here's what I found: ${context}`;
+        return res.status(200).json({ response: ragResponse, source: "rag" });
+      }
+      
+      // Step 3: If no relevant context found, use Router AI
+      // In a real implementation, you would call a router AI model
+      const routerAiResponse = "I couldn't find specific information in the documents, but I can help with general questions. ";
+      return res.status(200).json({ response: routerAiResponse, source: "router_ai" });
+      
+      // Step 4: If Router AI fails, fallback to Gemini
+      // This would be handled in the client-side or in a more complex implementation
+      
+    } catch (error) {
+      console.error("Chat error:", error);
+      return res.status(500).json({ error: "Server error during chat processing" });
     }
   });
 
@@ -982,10 +1226,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.delete("/api/admin/packages/:id", async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { error } = await supabase.from("packages").delete().eq("id", id);
-    if (error) return res.status(500).json({ message: error.message });
-    return res.status(204).end();
+    try {
+      const { id } = req.params;
+      
+      // First, check if the package exists
+      const { data: existingPackage, error: fetchError } = await supabase
+        .from("packages")
+        .select("id")
+        .eq("id", id)
+        .single();
+
+      if (fetchError || !existingPackage) {
+        return res.status(404).json({ 
+          message: "Package not found",
+          details: fetchError?.message || "Package with this ID does not exist"
+        });
+      }
+
+      // Attempt to delete the package
+      const { error } = await supabase
+        .from("packages")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        console.error('Delete package error:', error);
+        return res.status(500).json({ 
+          message: "Failed to delete package",
+          details: error.message,
+          code: error.code
+        });
+      }
+
+      return res.status(204).end();
+    } catch (error: any) {
+      console.error('Server error during package deletion:', error);
+      return res.status(500).json({ 
+        message: "Internal server error during package deletion",
+        details: error.message || "An unexpected error occurred"
+      });
+    }
   });
 
   // EVENTS CRUD

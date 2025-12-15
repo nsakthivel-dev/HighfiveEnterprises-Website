@@ -163,6 +163,11 @@ const Projects = () => {
       const [uploadingImage, setUploadingImage] = useState(false);
       const [uploadingVideo, setUploadingVideo] = useState(false);
       const [activeTab, setActiveTab] = useState("basic");
+      const [customCategory, setCustomCategory] = useState("");
+      const [newTeamMemberName, setNewTeamMemberName] = useState("");
+      const [additionalTeamMembers, setAdditionalTeamMembers] = useState<string[]>([]);
+      const [techStackText, setTechStackText] = useState("");
+      const [newFeatureText, setNewFeatureText] = useState("");
 
       // File upload functions
       const uploadFile = async (file: File, type: 'image' | 'video') => {
@@ -210,14 +215,26 @@ const Projects = () => {
       }
     };
 
-  const canSubmitProject = useMemo(() => !!projectForm.title?.trim() && !!projectForm.description?.trim(), [projectForm]);
+  const canSubmitProject = useMemo(() => {
+    const hasBasic = !!projectForm.title?.trim() && !!projectForm.description?.trim();
+    const categoryOk = (projectForm.category !== 'Other') || (!!customCategory.trim());
+    return hasBasic && categoryOk;
+  }, [projectForm, customCategory]);
 
   const handleSubmit = async () => {
     // Prepare the payload, mapping frontend fields to backend field names
     const payload: any = {
       title: projectForm.title?.trim() || "",
       description: projectForm.description || null,
-      status: projectForm.status || 'Active Maintenance',
+      status: (() => {
+        const s = projectForm.status || 'active-maintenance';
+        const map: Record<string, string> = {
+          'completed': 'Completed',
+          'in-progress': 'In Progress',
+          'active-maintenance': 'Active Maintenance'
+        };
+        return map[s] || 'Active Maintenance';
+      })(),
     };
 
     // Add optional fields only if they have values
@@ -225,7 +242,6 @@ const Projects = () => {
     if (projectForm.problem) payload.problem = projectForm.problem;
     if (projectForm.solution) payload.solution = projectForm.solution;
     if (projectForm.timeline) payload.timeline = projectForm.timeline;
-    if (projectForm.role) payload.role = projectForm.role;
     if (projectForm.architecture) payload.architecture = projectForm.architecture;
     if (projectForm.outcome) payload.outcomes = projectForm.outcome;
     if (projectForm.challenge) payload.challenges = projectForm.challenge;
@@ -233,7 +249,13 @@ const Projects = () => {
     if (projectForm.github_url) payload.github_url = projectForm.github_url;
     if (projectForm.hero_image_url) payload.hero_image = projectForm.hero_image_url;
     if (projectForm.project_video) payload.demo_video = projectForm.project_video;
-    if (projectForm.category) payload.category = projectForm.category;
+    if (projectForm.category) {
+      if (projectForm.category === 'Other' && customCategory.trim()) {
+        payload.category = customCategory.trim();
+      } else if (projectForm.category !== 'Other') {
+        payload.category = projectForm.category;
+      }
+    }
     
     // Handle image_url - use thumbnail if available
     if (projectForm.thumbnail_url) {
@@ -244,8 +266,11 @@ const Projects = () => {
     }
 
     // Handle array fields - only include if they have values
-    if (Array.isArray(projectForm.tech_stack) && projectForm.tech_stack.length > 0) {
-      payload.tech_stack = projectForm.tech_stack;
+    if (Array.isArray(projectForm.tech_stack)) {
+      const techs = projectForm.tech_stack.filter(Boolean);
+      if (techs.length > 0) {
+        payload.tech_stack = techs;
+      }
     }
     if (Array.isArray(projectForm.key_features) && projectForm.key_features.length > 0) {
       payload.key_features = projectForm.key_features;
@@ -288,12 +313,34 @@ const Projects = () => {
       case_study_urls: []
     });
     setActiveTab("basic");
+    setCustomCategory("");
+    setNewTeamMemberName("");
+    setAdditionalTeamMembers([]);
+    setTechStackText("");
+    setNewFeatureText("");
   };
 
   const handleEdit = (project: Project) => {
     setEditingProject(project.id);
-    setProjectForm(project);
+    const statusMapToUi: Record<string, Project['status']> = {
+      'Completed': 'completed',
+      'In Progress': 'in-progress',
+      'Active Maintenance': 'active-maintenance'
+    } as const;
+    const normalized: Partial<Project> = {
+      ...project,
+      status: project.status ? statusMapToUi[project.status] || 'in-progress' : 'in-progress'
+    };
+    setProjectForm(normalized);
     setActiveTab("basic");
+    const allowedCategories = ['Web Development','Mobile App','Desktop Application','API/Backend','Machine Learning','Data Science','DevOps','UI/UX Design','Other'];
+    if (project.category && !allowedCategories.includes(project.category)) {
+      setProjectForm({ ...project, category: 'Other' });
+      setCustomCategory(project.category);
+    } else {
+      setCustomCategory("");
+    }
+    setTechStackText((project.tech_stack || []).join(", "));
   };
 
   const handleDelete = (id: string, title: string) => {
@@ -495,6 +542,18 @@ const Projects = () => {
                           <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                       </Select>
+                      {projectForm.category === 'Other' && (
+                        <div className="mt-2">
+                          <Label htmlFor="custom-category">Specify Category</Label>
+                          <Input
+                            id="custom-category"
+                            value={customCategory}
+                            onChange={(e) => setCustomCategory(e.target.value)}
+                            placeholder="Enter category"
+                            className="mt-1.5"
+                          />
+                        </div>
+                      )}
                     </div>
                     
                     <div>
@@ -569,27 +628,62 @@ const Projects = () => {
                     </div>
                     
                     <div>
-                      <Label htmlFor="features">Key Features</Label>
-                      <Textarea 
-                        id="features"
-                        value={projectForm.key_features?.join('\n') || ""} 
-                        onChange={(e) => setProjectForm({ ...projectForm, key_features: e.target.value.split('\n').filter(f => f.trim()) })} 
-                        placeholder="List key features (one per line)&#10;• Real-time collaboration&#10;• AI-powered suggestions&#10;• Cross-platform support"
-                        rows={5}
-                        className="mt-1.5 font-mono text-sm"
-                      />
-                      <p className="text-xs text-muted-foreground mt-1.5">Enter each feature on a new line</p>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="role">Your Role</Label>
-                      <Input 
-                        id="role"
-                        value={projectForm.role || ""} 
-                        onChange={(e) => setProjectForm({ ...projectForm, role: e.target.value })} 
-                        placeholder="e.g., Lead Developer, Full Stack Engineer, Project Manager"
-                        className="mt-1.5"
-                      />
+                      <Label htmlFor="feature-input">Key Features</Label>
+                      <div className="mt-1.5 space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            id="feature-input"
+                            value={newFeatureText}
+                            onChange={(e) => setNewFeatureText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                const text = newFeatureText.trim();
+                                if (text) {
+                                  const current = projectForm.key_features || [];
+                                  setProjectForm({ ...projectForm, key_features: [...current, text] });
+                                  setNewFeatureText("");
+                                }
+                                e.preventDefault();
+                              }
+                            }}
+                            placeholder="Type a feature and press Enter"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              const text = newFeatureText.trim();
+                              if (!text) return;
+                              const current = projectForm.key_features || [];
+                              setProjectForm({ ...projectForm, key_features: [...current, text] });
+                              setNewFeatureText("");
+                            }}
+                            disabled={!newFeatureText.trim()}
+                          >
+                            Add
+                          </Button>
+                        </div>
+                        {(projectForm.key_features && projectForm.key_features.length > 0) && (
+                          <ul className="space-y-2">
+                            {projectForm.key_features.map((feat, idx) => (
+                              <li key={idx} className="flex items-center justify-between border rounded p-2">
+                                <span className="text-sm">{feat}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    const next = (projectForm.key_features || []).filter((_, i) => i !== idx);
+                                    setProjectForm({ ...projectForm, key_features: next });
+                                  }}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -642,17 +736,49 @@ const Projects = () => {
                           {projectForm.team_members.length} member(s) selected
                         </p>
                       )}
+                      <div className="mt-3">
+                        <Label htmlFor="new-member">Add New Team Member</Label>
+                        <div className="flex gap-2 mt-1.5">
+                          <Input
+                            id="new-member"
+                            value={newTeamMemberName}
+                            onChange={(e) => setNewTeamMemberName(e.target.value)}
+                            placeholder="Add new team member (name)"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              const name = newTeamMemberName.trim();
+                              if (!name) return;
+                              setAdditionalTeamMembers([...additionalTeamMembers, name]);
+                              setNewTeamMemberName("");
+                            }}
+                            disabled={!newTeamMemberName.trim()}
+                          >
+                            Add
+                          </Button>
+                        </div>
+                        {additionalTeamMembers.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {additionalTeamMembers.map((name, idx) => (
+                              <Badge key={idx} variant="outline">{name}</Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     <div>
                       <Label htmlFor="tech-stack">Technology Stack</Label>
                       <Input 
                         id="tech-stack"
-                        value={projectForm.tech_stack?.join(", ") || ""} 
-                        onChange={(e) => setProjectForm({ 
-                          ...projectForm, 
-                          tech_stack: e.target.value.split(",").map(s => s.trim()).filter(s => s) 
-                        })} 
+                        value={techStackText}
+                        onChange={(e) => setTechStackText(e.target.value)}
+                        onBlur={(e) => setProjectForm({
+                          ...projectForm,
+                          tech_stack: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                        })}
                         placeholder="React, Node.js, PostgreSQL, Docker, AWS"
                         className="mt-1.5"
                       />

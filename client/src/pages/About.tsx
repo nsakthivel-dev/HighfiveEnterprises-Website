@@ -26,11 +26,40 @@ import {
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import ProjectForm from "@/components/ProjectForm";
+import { useQuery } from "@tanstack/react-query";
 
 export default function About() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  // Fetch projects data for active project count
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const r = await fetch("/api/projects");
+      if (!r.ok) throw new Error("Failed to load projects");
+      return r.json();
+    },
+  });
+
+  // Fetch feedback data for satisfaction percentage
+  const { data: feedback = [] } = useQuery({
+    queryKey: ["feedback"],
+    queryFn: async () => {
+      const r = await fetch("/api/feedback");
+      if (!r.ok) throw new Error("Failed to load feedback");
+      return r.json();
+    },
+  });
+
+  // Calculate active projects count
+  const activeProjectsCount = projects.filter((p: any) => (p.status || "active") !== "completed").length;
+
+  // Calculate satisfaction percentage based on feedback ratings
+  const satisfactionPercentage = feedback.length > 0 
+    ? Math.round((feedback.reduce((sum: number, f: any) => sum + f.rating, 0) / (feedback.length * 5)) * 100)
+    : 100;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -141,7 +170,7 @@ export default function About() {
   const stats = [
     { 
       icon: TrendingUp,
-      value: "3+", 
+      value: `${activeProjectsCount}`, 
       label: "Active Projects",
       description: "Building tomorrow's solutions today"
     },
@@ -153,7 +182,7 @@ export default function About() {
     },
     { 
       icon: Award,
-      value: "100%", 
+      value: `${satisfactionPercentage}%`, 
       label: "Client Satisfaction",
       description: "Partnerships that last"
     },
@@ -253,7 +282,10 @@ export default function About() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + index * 0.1 }}
-                  className="glass-morphic p-6 rounded-2xl text-center group hover:scale-105 transition-transform"
+                  className={`glass-morphic p-6 rounded-2xl text-center group hover:scale-105 transition-transform ${
+                    index === 0 ? 'cursor-pointer' : '' // Add cursor pointer to active projects card
+                  }`}
+                  {...(index === 0 ? { onClick: () => window.location.href = '/projects' } : {})}
                 >
                   <Icon className="w-8 h-8 text-primary mx-auto mb-3" />
                   <div className="text-4xl font-bold mb-2 gradient-text">{stat.value}</div>
@@ -323,7 +355,7 @@ export default function About() {
                   We started with a simple belief: when teams grow, everything grows with them. Too many environments hold people back instead of lifting them up.
                 </p>
                 <p className="text-xl font-semibold text-foreground">
-                  So we set out to create something different—an environment where growth isn’t a perk, it’s the foundation.
+                  So we set out to create something different—an environment where growth isn't a perk, it's the foundation.
                 </p>
                 <p>
                   What began as a small idea has become a place where team members and the people around them can learn, thrive, and build a better future together.

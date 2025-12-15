@@ -1,20 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowRight, Globe2, Handshake, Building2, Users } from "lucide-react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
-const testimonials = [
-  {
-    quote:
-      "Working with HighFive Enterprises has been an incredible experience. Their team amplifies our ideas and delivers with precision.",
-    name: "Alex Morgan",
-    title: "CEO, Partner Company",
-  },
-];
+
 
 export default function OurNetwork() {
   type Collaboration = { id: string; name: string; description?: string | null; highlight?: string | null; logo_url?: string | null; link_url?: string | null };
@@ -107,28 +99,6 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
-      ) : !isLoading && hasPartners ? (
-        <section className="py-12 px-6">
-          <div className="max-w-5xl mx-auto">
-            <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Handshake className="w-4 h-4" /> Collaborated Companies</Badge>
-            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-              <CardContent className="p-12 text-center space-y-4">
-                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Handshake className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold">We are looking for associate companies</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  We're actively seeking collaboration opportunities with innovative companies to create meaningful partnerships.
-                </p>
-                <Link href="/contact">
-                  <Button variant="outline" className="mt-4">
-                    Contact Us to Collaborate
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
       ) : null}
 
       {partnersLoading ? (
@@ -178,28 +148,6 @@ export default function OurNetwork() {
             </div>
           </div>
         </section>
-      ) : !isLoading && hasCollaborations ? (
-        <section className="py-12 px-6">
-          <div className="max-w-5xl mx-auto">
-            <Badge variant="secondary" className="mb-6 inline-flex items-center gap-2"><Building2 className="w-4 h-4" /> Official Partners</Badge>
-            <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-              <CardContent className="p-12 text-center space-y-4">
-                <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Building2 className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold">We are looking for partners</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  We're seeking strategic partnerships with organizations that share our vision and values.
-                </p>
-                <Link href="/become-partner">
-                  <Button variant="outline" className="mt-4">
-                    Become a Partner
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
       ) : null}
 
       {showEmptyState && (
@@ -236,30 +184,7 @@ export default function OurNetwork() {
         </section>
       )}
 
-      {!showEmptyState && (
-        <section className="py-16 px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="outline" className="mb-4">
-              Testimonials
-            </Badge>
-            <h2 className="text-3xl font-bold mb-6">What Our Partners Say</h2>
-            <div className="grid gap-6">
-              {testimonials.map((item) => (
-                <Card key={item.name} className="border-primary/20 bg-card/50 backdrop-blur">
-                  <CardContent className="p-8 space-y-4">
-                    <p className="text-lg leading-relaxed text-muted-foreground italic">“{item.quote}”</p>
-                    <Separator className="bg-primary/20" />
-                    <div>
-                      <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.title}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+
 
       <section className="py-20 px-6 bg-gradient-to-t from-primary/10 to-transparent">
         <div className="max-w-4xl mx-auto text-center space-y-8">

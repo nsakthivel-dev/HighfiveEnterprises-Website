@@ -8,8 +8,8 @@ export interface Event {
   category?: string | null;
   status: 'upcoming' | 'ongoing' | 'completed';
   featured?: boolean;
-  organizers?: string[]; // Array of organizer names, including [PARTICIPANT] prefixed names
-  tags?: string[];
+  organizers?: string[] | string | null;
+  tags?: string[] | string | null;
   registration_url?: string | null;
   experience?: string | null; // New field for event experience
   created_at?: string;

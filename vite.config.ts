@@ -6,19 +6,8 @@ import fs from "fs";
 
 export default defineConfig({
   plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
+    (react() as any),
+    (runtimeErrorOverlay() as any),
     {
       name: "copy-redirects",
       writeBundle() {
@@ -41,8 +30,22 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
+            if (id.includes('@supabase') || id.includes('wouter') || id.includes('@tanstack')) return 'data-vendor';
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
   server: {
+    host: true,
+    port: 3000,
     fs: {
       strict: true,
       deny: ["**/.*"],

@@ -166,7 +166,7 @@ export default function Footer() {
                   </div>
                   <div className="flex-1">
                     <p className="text-xs text-muted-foreground mb-1">Location</p>
-                    <p className="text-sm text-foreground">Chennai, India</p>
+                    <p className="text-sm text-foreground">Puducherry</p>
                   </div>
                 </li>
               </ul>

@@ -7,6 +7,7 @@ interface StatItem {
   value: number;
   label: string;
   suffix?: string;
+  customText?: string; // New property for custom text display
 }
 
 type ApiProject = { id: string; status?: string | null };
@@ -48,7 +49,7 @@ export default function StatsCounter() {
   const stats: StatItem[] = [
     { icon: <Briefcase className="w-8 h-8" />, value: ongoingCount, label: "Ongoing Projects" },
     { icon: <Users className="w-8 h-8" />, value: teamCount, label: "Team Members" },
-    { icon: <Clock className="w-8 h-8" />, value: 24, label: "Working Hours", suffix: "/7" },
+    { icon: <Clock className="w-8 h-8" />, value: 0, label: "Working Hours", customText: "Mon–Fri, 9:00–18:00 IST" }, // Changed to custom text
     { icon: <Calendar className="w-8 h-8" />, value: yearsOfInnovation, label: yearsOfInnovation === 1 ? "Year of Innovation" : "Years of Innovation" },
   ];
 
@@ -58,12 +59,17 @@ export default function StatsCounter() {
     const interval = duration / steps;
 
     const counters = stats.map((stat, index) => {
+      // Skip animation for the working hours since it's text-based now
+      if (stat.customText) {
+        return null;
+      }
+      
       let currentCount = 0;
       return setInterval(() => {
         currentCount += stat.value / steps;
         if (currentCount >= stat.value) {
           currentCount = stat.value;
-          clearInterval(counters[index]);
+          if (counters[index]) clearInterval(counters[index]);
         }
         setCounts((prev) => {
           const newCounts = [...prev];
@@ -73,8 +79,8 @@ export default function StatsCounter() {
       }, interval);
     });
 
-    return () => counters.forEach(clearInterval);
-  }, [stats[0].value, stats[1].value, stats[2].value, stats[3].value]);
+    return () => counters.forEach(counter => counter && clearInterval(counter));
+  }, [stats[0].value, stats[1].value, stats[3].value]); // Removed stats[2].value since it's not animated anymore
 
   return (
     <div className="py-20 bg-muted/30">
@@ -89,11 +95,17 @@ export default function StatsCounter() {
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
                 {stat.icon}
               </div>
-              <div className="text-4xl md:text-5xl font-bold mb-2 font-heading">
-                {counts[index]}
-                {stat.suffix}
+              <div className="text-2xl md:text-3xl font-bold mb-2 font-heading">
+                {stat.customText ? (
+                  <span className="text-sm md:text-base">{stat.customText}</span>
+                ) : (
+                  <>
+                    {counts[index]}
+                    {stat.suffix}
+                  </>
+                )}
               </div>
-              <div className="text-muted-foreground">{stat.label}</div>
+              <div className="text-muted-foreground text-sm">{stat.label}</div>
             </div>
           ))}
         </div>

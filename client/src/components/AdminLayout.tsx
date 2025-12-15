@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
-import { Bell, ChevronLeft, ChevronRight, Handshake, Home, Menu, Package2, Settings, ShoppingCart, Users, Calendar, PackageOpen } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight, Handshake, Home, Menu, Package2, Settings, ShoppingCart, Users, Calendar, PackageOpen, FileText } from 'lucide-react';
 import logo from '@assets/logos/logo-light.png';
 import logoDark from '@assets/logos/logo-dark.png';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
@@ -34,6 +34,7 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
     { href: '/admin-panel/packages', icon: PackageOpen, label: 'Packages' },
     { href: '/admin-panel/team', icon: Users, label: 'Team' },
     { href: '/admin-panel/projects', icon: Users, label: 'Projects' },
+    { href: '/admin-panel/documents', icon: FileText, label: 'Documents' },
     { href: '/admin-panel/network', icon: Handshake, label: 'Network' },
     { href: '/admin-panel/events', icon: Calendar, label: 'Events' },
   ];
