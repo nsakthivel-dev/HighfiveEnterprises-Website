@@ -33,12 +33,12 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) return 'react-vendor';
-            if (id.includes('@supabase') || id.includes('wouter') || id.includes('@tanstack')) return 'data-vendor';
-            return 'vendor';
-          }
+        manualChunks: {
+          // Split vendor chunks more carefully to avoid circular dependencies
+          'react-vendor': ['react', 'react-dom'],
+          'router-vendor': ['wouter'],
+          'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query'],
+          'ui-vendor': ['lucide-react', 'framer-motion'],
         },
       },
     },
