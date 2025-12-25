@@ -36,10 +36,15 @@ export default function ComparisonTable() {
       id: "1",
       name: "Starter",
       price: "$2,500",
+      description: "Perfect for small businesses looking to establish their online presence",
       features: [
-        { name: "Responsive Design", included: true },
-        { name: "Up to 5 Pages", included: true },
-        { name: "Basic SEO", included: true },
+        { name: "3 Website Pages", included: true },
+        { name: "Portfolio Section", included: true },
+        { name: "Basic Analytics", included: true },
+        { name: "2 Logo Concepts", included: true },
+        { name: "Business Card Mockup", included: true },
+        { name: "Marketing (5 Days)", included: true },
+        { name: "2 Platforms", included: true },
         { name: "Content Management", included: false },
         { name: "Custom Integrations", included: false },
         { name: "Priority Support", included: false },
@@ -51,13 +56,18 @@ export default function ComparisonTable() {
       id: "2",
       name: "Professional",
       price: "$5,000",
+      description: "Ideal for growing businesses that need comprehensive digital solutions",
       is_recommended: true,
       features: [
-        { name: "Responsive Design", included: true },
-        { name: "Up to 15 Pages", included: true },
-        { name: "Advanced SEO", included: true },
-        { name: "Content Management", included: true },
-        { name: "Custom Integrations", included: true },
+        { name: "7 Website Pages", included: true },
+        { name: "Portfolio & Blog Section", included: true },
+        { name: "Advanced Analytics", included: true },
+        { name: "3 Logo Concepts", included: true },
+        { name: "Business Card & Letterhead", included: true },
+        { name: "Social Media Kit", included: true },
+        { name: "Marketing (10 Days)", included: true },
+        { name: "3 Platforms", included: true },
+        { name: "Content Management System", included: true },
         { name: "Priority Support", included: false },
       ],
       is_active: true,
@@ -66,11 +76,16 @@ export default function ComparisonTable() {
       id: "3",
       name: "Enterprise",
       price: "$10,000+",
+      description: "For large organizations requiring custom solutions and ongoing support",
       features: [
-        { name: "Responsive Design", included: true },
         { name: "Unlimited Pages", included: true },
-        { name: "Advanced SEO", included: true },
-        { name: "Content Management", included: true },
+        { name: "Full Website & Blog", included: true },
+        { name: "Advanced Analytics & Reporting", included: true },
+        { name: "5 Logo Concepts", included: true },
+        { name: "Complete Brand Identity Kit", included: true },
+        { name: "Social Media & Marketing Kit", included: true },
+        { name: "Marketing (15 Days)", included: true },
+        { name: "5 Platforms", included: true },
         { name: "Custom Integrations", included: true },
         { name: "Priority Support", included: true },
       ],
@@ -98,7 +113,7 @@ export default function ComparisonTable() {
               <p className="text-sm text-muted-foreground mt-2">{pkg.description}</p>
             )}
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <ul className="space-y-3">
               {pkg.features.map((feature) => (
                 <li key={feature.name} className="flex items-start gap-2">
@@ -113,15 +128,17 @@ export default function ComparisonTable() {
                 </li>
               ))}
             </ul>
-            <Link href={`/contact?package=${encodeURIComponent(pkg.name)}`}>
-              <Button
-                variant={pkg.is_recommended ? "default" : "outline"}
-                className="w-full"
-                data-testid={`button-select-${pkg.name.toLowerCase()}`}
-              >
-                Get Started
-              </Button>
-            </Link>
+            <div className="pt-4">
+              <Link href={`/contact?package=${encodeURIComponent(pkg.name)}`}>
+                <Button
+                  variant={pkg.is_recommended ? "default" : "outline"}
+                  className="w-full"
+                  data-testid={`button-select-${pkg.name.toLowerCase()}`}
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       ))}
