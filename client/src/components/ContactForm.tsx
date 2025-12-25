@@ -28,12 +28,42 @@ export default function ContactForm() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    // Show toast notification on form submission
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent default form submission
+    
+    // Get form data
+    const formData = new FormData(e.target as HTMLFormElement);
+    
+    try {
+      // Submit to formsubmit.co using fetch
+      const response = await fetch('https://formsubmit.co/ajax/teamhfive25@gmail.com', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Show success toast notification
+        toast({
+          title: "Message Sent!",
+          description: "We'll get back to you within 24 hours.",
+        });
+        
+        // Reset the form
+        (e.target as HTMLFormElement).reset();
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (error) {
+      // Show error toast notification
+      toast({
+        title: "Submission Failed",
+        description: "Please try again or contact us directly at teamhfive25@gmail.com",
+        variant: "destructive"
+      });
+    }
   };
 
   // Determine the reason and message placeholders/prefills based on URL parameters
@@ -68,14 +98,13 @@ export default function ContactForm() {
       </CardHeader>
       <CardContent>
         <form 
-          action="https://formsubmit.co/teamhfive25@gmail.com" 
-          method="POST"
           onSubmit={handleSubmit} 
           className="space-y-6"
         >
-          {/* Hidden input to prevent spam */}
+          {/* Hidden inputs for formsubmit.co */}
           <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_subject" value="New Contact Form Submission" />
+          <input type="hidden" name="_template" value="table" />
           
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
