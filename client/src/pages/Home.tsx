@@ -3,15 +3,12 @@ import StatsCounter from "@/components/StatsCounter";
 import { Button } from "@/components/ui/button";
 import { 
   ArrowRight, 
-  Lightbulb, 
   Target, 
   Compass, 
   Zap, 
   ShieldCheck, 
   Cpu, 
-  Globe,
   Layout,
-  MousePointer2,
   Code2
 } from "lucide-react";
 import { Link } from "wouter";

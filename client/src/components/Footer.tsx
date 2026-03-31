@@ -17,12 +17,6 @@ export default function Footer() {
     { name: "Reach Us", path: "/reach-us" },
   ];
 
-  const resources = [
-    { name: "Become Partner", path: "/become-partner" },
-    { name: "Terms & Conditions", path: "/terms" },
-    { name: "Privacy Policy", path: "/privacy" },
-  ];
-
   const socialLinks = [
     { icon: Linkedin, href: "https://www.linkedin.com/company/lupus-venture/", label: "LinkedIn" },
     { icon: Github, href: "https://github.com/lupus-venture", label: "GitHub" },
@@ -87,26 +81,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="lg:col-span-2">
-            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/50 mb-8">Company</h4>
-            <ul className="space-y-4">
-              {resources.map((link) => (
-                <li key={link.path}>
-                  <Link href={link.path} className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
-                    <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100">
-                      <ArrowRight className="w-3 h-3 mr-1" />
-                    </span>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Contact Column */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-5">
             <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/50 mb-8">Contact</h4>
-            <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-8">
               <div className="flex items-start gap-4 group">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                   <Mail className="w-5 h-5" />

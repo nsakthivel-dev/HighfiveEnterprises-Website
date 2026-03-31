@@ -75,7 +75,7 @@ app.use((req, res, next) => {
   // It is the only port that is not firewalled.
   const envPort = process.env.PORT;
   let desiredPort = envPort ? parseInt(envPort, 10) : 5000;
-  const host = process.env.HOST || 'localhost';
+  const host = process.env.HOST || '0.0.0.0'; // Changed from localhost to 0.0.0.0 for Render compatibility
 
   let attempts = 0;
   const maxAttempts = 10;
@@ -105,7 +105,7 @@ app.use((req, res, next) => {
         }
       } else if (err && err.code === 'ENOTSUP') {
         log(`ENOTSUP: Failed to bind to ${host}:${p}`);
-        throw err;
+        tryListen(p + 1); // Try next port on ENOTSUP too
       } else {
         throw err;
       }

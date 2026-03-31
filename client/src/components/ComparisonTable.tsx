@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Check, X, Sparkles, Zap, Shield, Crown, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
 
 interface PackageFeature {
   name: string;
@@ -159,17 +160,19 @@ export default function ComparisonTable() {
                 ))}
               </ul>
 
-              <Button
-                variant={pkg.is_recommended ? "default" : "outline"}
-                className={`w-full h-14 rounded-2xl font-bold text-lg transition-all group/btn ${
-                  pkg.is_recommended 
-                    ? "shadow-xl shadow-primary/25 hover:shadow-primary/40" 
-                    : "hover:bg-primary/10 hover:border-primary/30"
-                }`}
-              >
-                Get Started
-                <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-              </Button>
+              <Link href={`/reach-us?package=${encodeURIComponent(pkg.name)}`}>
+                <Button
+                  variant={pkg.is_recommended ? "default" : "outline"}
+                  className={`w-full h-14 rounded-2xl font-bold text-lg transition-all group/btn ${
+                    pkg.is_recommended 
+                      ? "shadow-xl shadow-primary/25 hover:shadow-primary/40" 
+                      : "hover:bg-primary/10 hover:border-primary/30"
+                  }`}
+                >
+                  Get Started
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </motion.div>

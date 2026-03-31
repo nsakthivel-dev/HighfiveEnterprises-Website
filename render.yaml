@@ -14,7 +14,7 @@ services:
     startCommand: pnpm start
     
     # Port configuration
-    port: 5000
+    port: 4000
     
     # Environment variables
     envVars:
@@ -23,7 +23,7 @@ services:
         value: production
       
       - key: PORT
-        value: 5000
+        value: 4000
       
       - key: HOST
         value: 0.0.0.0
@@ -45,4 +45,4 @@ services:
     healthCheckPath: /
     
     # Auto-deploy on push to main branch
-    autoDeploy: true 
+    autoDeploy: true

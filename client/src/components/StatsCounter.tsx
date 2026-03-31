@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Clock, Calendar, Rocket, Users, Target, Zap } from "lucide-react";
-import { motion, useInView, useSpring } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 
 interface StatItem {
   icon: React.ElementType;
