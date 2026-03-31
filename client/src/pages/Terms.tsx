@@ -46,7 +46,7 @@ export default function Terms() {
               <CardContent className="prose prose-neutral dark:prose-invert max-w-none p-6">
                 <h3 id="acceptance">1. Acceptance of Terms</h3>
                 <p>
-                  By accessing or using the services provided by HighFive Enterprises ("we," "our," or "us"), you agree to these Terms of Service ("Terms"). If you do not agree, you must not use our services. These Terms apply to all users, clients, and visitors of our website and related platforms.
+                  By accessing or using the services provided by Lupus Venture ("we," "our," or "us"), you agree to these Terms of Service ("Terms"). If you do not agree, you must not use our services. These Terms apply to all users, clients, and visitors of our website and related platforms.
                 </p>
 
                 <h3 id="services">2. Services We Provide</h3>
@@ -74,7 +74,7 @@ export default function Terms() {
 
                 <h3 id="ownership">5. Ownership & Intellectual Property</h3>
                 <p>
-                  All source files, code, and designs remain the property of HighFive Enterprises until full payment is received. Upon complete payment, ownership of final deliverables is transferred to the client, excluding any proprietary tools or reusable code frameworks developed by the company. The company retains the right to showcase completed projects for portfolio or marketing purposes unless the client requests confidentiality in writing.
+                  All source files, code, and designs remain the property of Lupus Venture until full payment is received. Upon complete payment, ownership of final deliverables is transferred to the client, excluding any proprietary tools or reusable code frameworks developed by the company. The company retains the right to showcase completed projects for portfolio or marketing purposes unless the client requests confidentiality in writing.
                 </p>
 
                 <h3 id="liability">6. Limitation of Liability</h3>

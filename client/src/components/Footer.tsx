@@ -1,8 +1,9 @@
 import { Link } from "wouter";
-import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
 import logo from "@assets/logos/logo-light.png";
 import logoDark from "@assets/logos/logo-dark.png";
 import { useTheme } from "./ThemeProvider";
+import { motion } from "framer-motion";
 
 export default function Footer() {
   const { theme } = useTheme();
@@ -10,191 +11,134 @@ export default function Footer() {
   
   const quickLinks = [
     { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Services", path: "/services" },
-    { name: "Projects", path: "/projects" },
-    { name: "Team", path: "/team" },
+    { name: "Who We Are", path: "/who-we-are" },
+    { name: "What We Do", path: "/what-we-do" },
+    { name: "Insights", path: "/insights" },
+    { name: "Reach Us", path: "/reach-us" },
   ];
 
   const resources = [
-    { name: "Events", path: "/events" },
-    { name: "Network", path: "/network" },
-    { name: "Join Team", path: "/join-team" },
     { name: "Become Partner", path: "/become-partner" },
-    { name: "Contact", path: "/contact" },
+    { name: "Terms & Conditions", path: "/terms" },
+    { name: "Privacy Policy", path: "/privacy" },
   ];
 
   const socialLinks = [
-    { icon: Linkedin, href: "https://www.linkedin.com/in/highfive-enterprises/", label: "LinkedIn" },
-    { icon: Github, href: "https://github.com/highfive-tech", label: "GitHub" },
-    { icon: Instagram, href: "https://instagram.com/highfive.ent", label: "Instagram" },
-    { icon: Facebook, href: "https://www.facebook.com/HighFiveEnterprises", label: "Facebook" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/lupus-venture/", label: "LinkedIn" },
+    { icon: Github, href: "https://github.com/lupus-venture", label: "GitHub" },
+    { icon: Instagram, href: "https://instagram.com/lupus.venture", label: "Instagram" },
+    { icon: Facebook, href: "https://www.facebook.com/LupusVenture", label: "Facebook" },
   ];
   
   return (
-    <footer className="relative bg-gradient-to-br from-background via-background to-accent/20 border-t border-border/50">
-      {/* Decorative top border */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
-      
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Main Footer Content */}
-        <div className="py-16 lg:py-20">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
-            {/* Brand Section - Takes more space */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 group">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg group-hover:blur-xl transition-all duration-300" />
-                    <img 
-                      src={currentLogo} 
-                      alt="HighFive Enterprises Logo" 
-                      className="relative h-12 w-12 object-contain transition-transform duration-300 group-hover:scale-110" 
-                    />
-                  </div>
-                  <div className="text-2xl lg:text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                    HighFive Enterprises
-                  </div>
+    <footer className="relative bg-background pt-24 pb-12 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
+      <div className="absolute top-1/2 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-[100px]" />
+
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20">
+          {/* Brand Column */}
+          <div className="lg:col-span-5">
+            <Link href="/">
+              <div className="flex items-center gap-3 mb-8 cursor-pointer group w-fit">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg group-hover:blur-xl transition-all" />
+                  <img src={currentLogo} alt="Logo" className="relative h-12 w-12 object-contain" />
                 </div>
-                <p className="text-base text-muted-foreground leading-relaxed max-w-md">
-                  Building modern, AI-assisted solutions for startups and enterprises. 
-                  Transforming ideas into reality with cutting-edge technology.
-                </p>
+                <span className="text-2xl font-bold font-heading tracking-tight">
+                  Lupus <span className="text-primary">Venture</span>
+                </span>
               </div>
+            </Link>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-md mb-10 font-light">
+              We empower businesses through innovative technology and creative digital solutions. Building the future, one project at a time.
+            </p>
+            <div className="flex items-center gap-4">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-12 h-12 rounded-2xl bg-secondary/50 flex items-center justify-center border border-border/50 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 group shadow-sm"
+                >
+                  <social.icon className="w-5 h-5 transition-transform group-hover:scale-110" />
+                </a>
+              ))}
+            </div>
+          </div>
 
-              {/* Social Links */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground/80">
-                  Connect With Us
-                </h3>
-                <div className="flex items-center gap-3">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={social.label}
-                      className="group relative rounded-lg p-2.5 bg-muted/50 hover:bg-primary/10 border border-border/50 hover:border-primary/50 transition-all duration-300"
-                    >
-                      <social.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
-                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-                        {social.label}
-                      </span>
-                    </a>
-                  ))}
+          {/* Links Columns */}
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/50 mb-8">Navigation</h4>
+            <ul className="space-y-4">
+              {quickLinks.map((link) => (
+                <li key={link.path}>
+                  <Link href={link.path} className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                    <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100">
+                      <ArrowRight className="w-3 h-3 mr-1" />
+                    </span>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/50 mb-8">Company</h4>
+            <ul className="space-y-4">
+              {resources.map((link) => (
+                <li key={link.path}>
+                  <Link href={link.path} className="text-muted-foreground hover:text-primary transition-colors flex items-center group">
+                    <span className="w-0 group-hover:w-4 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100">
+                      <ArrowRight className="w-3 h-3 mr-1" />
+                    </span>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Column */}
+          <div className="lg:col-span-3">
+            <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground/50 mb-8">Contact</h4>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4 group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Email Us</p>
+                  <a href="mailto:touch@lupusventure.com" className="text-foreground hover:text-primary transition-colors font-medium">
+                    touch@lupusventure.com
+                  </a>
                 </div>
               </div>
-            </div>
-
-            {/* Quick Links */}
-            <div className="lg:col-span-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground/80 mb-6">
-                Quick Links
-              </h3>
-              <ul className="space-y-3">
-                {quickLinks.map((link) => (
-                  <li key={link.path}>
-                    <Link 
-                      href={link.path} 
-                      className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
-                    >
-                      <ArrowRight className="h-3.5 w-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
-                      <span className="group-hover:translate-x-1 transition-transform duration-200">
-                        {link.name}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Resources */}
-            <div className="lg:col-span-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground/80 mb-6">
-                Resources
-              </h3>
-              <ul className="space-y-3">
-                {resources.map((link) => (
-                  <li key={link.path}>
-                    <Link 
-                      href={link.path} 
-                      className="group flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
-                    >
-                      <ArrowRight className="h-3.5 w-3.5 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
-                      <span className="group-hover:translate-x-1 transition-transform duration-200">
-                        {link.name}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact Info */}
-            <div className="lg:col-span-3">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground/80 mb-6">
-                Get In Touch
-              </h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3 group">
-                  <div className="mt-0.5 p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground mb-1">Email</p>
-                    <a 
-                      href="mailto:teamhfive25@gmail.com" 
-                      className="text-sm text-foreground hover:text-primary transition-colors duration-200 break-all"
-                    >
-                      teamhfive25@gmail.com
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 group">
-                  <div className="mt-0.5 p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <Clock className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground mb-1">Business Hours</p>
-                    <p className="text-sm text-foreground">Mon–Fri, 9:00–18:00 IST</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 group">
-                  <div className="mt-0.5 p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                    <MapPin className="h-4 w-4" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground mb-1">Location</p>
-                    <p className="text-sm text-foreground">Chennai, India</p>
-                  </div>
-                </li>
-              </ul>
+              <div className="flex items-start gap-4 group">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Visit Us</p>
+                  <p className="text-foreground font-medium">Chennai, India</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border/50 py-6">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} HighFive Enterprises. All rights reserved.
-            </p>
-            <div className="flex items-center gap-6">
-              <Link 
-                href="/privacy" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
-              >
-                Privacy Policy
-              </Link>
-              <span className="text-border">•</span>
-              <Link 
-                href="/terms" 
-                className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
-              >
-                Terms of Service
-              </Link>
-            </div>
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-muted-foreground text-sm font-light">
+            © {new Date().getFullYear()} Lupus Venture. All rights reserved.
+          </p>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/30 border border-border/50 text-xs text-muted-foreground">
+            <Sparkles className="w-3 h-3 text-primary animate-pulse" />
+            Designed for the future
           </div>
         </div>
       </div>

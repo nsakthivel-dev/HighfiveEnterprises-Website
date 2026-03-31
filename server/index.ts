@@ -75,7 +75,7 @@ app.use((req, res, next) => {
   // It is the only port that is not firewalled.
   const envPort = process.env.PORT;
   let desiredPort = envPort ? parseInt(envPort, 10) : 5000;
-  const host = process.env.HOST || '0.0.0.0';
+  const host = process.env.HOST || 'localhost';
 
   let attempts = 0;
   const maxAttempts = 10;

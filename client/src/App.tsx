@@ -8,53 +8,39 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
-import About from "@/pages/About";
-import Team from "@/pages/Team";
-import Services from "@/pages/Services";
-import Projects from "@/pages/Projects";
-import ProjectView from "@/pages/ProjectView";
-import Contact from "@/pages/Contact";
+import WhoWeAre from "@/pages/WhoWeAre";
+import WhatWeDo from "@/pages/WhatWeDo";
+import ReachUs from "@/pages/ReachUs";
+import Insights from "@/pages/Insights";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/not-found";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
-import Apply from "@/pages/Apply";
-import JoinTeam from "@/pages/JoinTeam";
 import BecomePartner from "@/pages/BecomePartner";
-import OurNetwork from "@/pages/OurNetwork";
-import Events from "@/pages/Events";
 // Admin pages
 import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminTeam from "@/pages/admin/Team";
-import AdminProjects from "@/pages/admin/Projects";
 import AdminActivity from "@/pages/admin/Activity";
 import AdminServices from "@/pages/admin/Services";
 import AdminPackages from "@/pages/admin/Packages";
-import AdminNetwork from "@/pages/admin/Network";
-import AdminEvents from "@/pages/admin/Events";
 // Auth components
 import { AuthProvider } from "@/context/AuthContext";
 import AdminLogin from "@/pages/AdminLogin";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GlobalChatbot from "@/components/GlobalChatbot";
+import Preloader from "@/components/Preloader";
+import CustomCursor from "@/components/CustomCursor";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
-      <Route path="/team" component={Team} />
-      <Route path="/services" component={Services} />
-      <Route path="/projects" component={Projects} />
-      <Route path="/project/:id" component={ProjectView} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/our-network" component={OurNetwork} />
+      <Route path="/who-we-are" component={WhoWeAre} />
+      <Route path="/what-we-do" component={WhatWeDo} />
+      <Route path="/insights" component={Insights} />
+      <Route path="/reach-us" component={ReachUs} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
-      <Route path="/apply" component={Apply} />
-      <Route path="/join-team" component={JoinTeam} />
       <Route path="/become-partner" component={BecomePartner} />
-      <Route path="/events" component={Events} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin-panel">
@@ -65,16 +51,6 @@ function Router() {
       <Route path="/admin-panel/dashboard">
         <ProtectedRoute>
           <AdminDashboard />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin-panel/team">
-        <ProtectedRoute>
-          <AdminTeam />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin-panel/projects">
-        <ProtectedRoute>
-          <AdminProjects />
         </ProtectedRoute>
       </Route>
       <Route path="/admin-panel/activity">
@@ -90,16 +66,6 @@ function Router() {
       <Route path="/admin-panel/packages">
         <ProtectedRoute>
           <AdminPackages />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin-panel/network">
-        <ProtectedRoute>
-          <AdminNetwork />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin-panel/events">
-        <ProtectedRoute>
-          <AdminEvents />
         </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
@@ -118,6 +84,8 @@ function App() {
       <TooltipProvider>
         <ThemeProvider>
           <AuthProvider>
+            <Preloader />
+            <CustomCursor />
             <div className="min-h-screen">
               <Navigation />
               <ScrollToTop />

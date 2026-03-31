@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: highfiveenterprises
+    name: lupusventure
     env: node
     plan: free
     

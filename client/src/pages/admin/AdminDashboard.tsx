@@ -77,34 +77,6 @@ const AdminDashboard = () => {
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 mb-4">
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Team</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-3">
-            <p className="text-xs text-muted-foreground mb-3">
-              Manage members and roles
-            </p>
-            <a href="/admin-panel/team" className="text-sm text-primary hover:underline font-medium">
-              Manage →
-            </a>
-          </CardContent>
-        </Card>
-        
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Projects</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-3">
-            <p className="text-xs text-muted-foreground mb-3">
-              Portfolio and work showcase
-            </p>
-            <a href="/admin-panel/projects" className="text-sm text-primary hover:underline font-medium">
-              Manage →
-            </a>
-          </CardContent>
-        </Card>
-        
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold">Activity</CardTitle>
           </CardHeader>
           <CardContent className="pb-3">
@@ -130,20 +102,6 @@ const AdminDashboard = () => {
             </a>
           </CardContent>
         </Card>
-        
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Events</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-3">
-            <p className="text-xs text-muted-foreground mb-3">
-              Conferences and meetups
-            </p>
-            <a href="/admin-panel/events" className="text-sm text-primary hover:underline font-medium">
-              Manage →
-            </a>
-          </CardContent>
-        </Card>
 
         <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
@@ -154,20 +112,6 @@ const AdminDashboard = () => {
               Service packages
             </p>
             <a href="/admin-panel/packages" className="text-sm text-primary hover:underline font-medium">
-              Manage →
-            </a>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Network</CardTitle>
-          </CardHeader>
-          <CardContent className="pb-3">
-            <p className="text-xs text-muted-foreground mb-3">
-              Partners and connections
-            </p>
-            <a href="/admin-panel/network" className="text-sm text-primary hover:underline font-medium">
               Manage →
             </a>
           </CardContent>

@@ -1,4 +1,4 @@
-// Website context module that provides structured information about HighFive Enterprises website
+// Website context module that provides structured information about Lupus Venture website
 // This helps the chatbot understand the website structure and content to provide better answers
 
 export interface WebsiteStructure {
@@ -6,8 +6,6 @@ export interface WebsiteStructure {
   description: string;
   pages: Page[];
   services: Service[];
-  team: TeamInfo;
-  projects: ProjectInfo;
 }
 
 export interface Page {
@@ -23,36 +21,24 @@ export interface Service {
   features: string[];
 }
 
-export interface TeamInfo {
-  description: string;
-  roles: string[];
-}
-
-export interface ProjectInfo {
-  description: string;
-  types: string[];
-}
-
 export const websiteContext: WebsiteStructure = {
-  name: "HighFive Enterprises",
+  name: "Lupus Venture",
   description: "A modern web development company that creates innovative digital solutions for businesses.",
   pages: [
     {
       name: "Home",
       path: "/",
-      description: "The main landing page showcasing the company's value proposition, featured projects, and call-to-action buttons.",
+      description: "The main landing page showcasing the company's value proposition and call-to-action buttons.",
       keyFeatures: [
         "Hero section with company tagline",
         "Statistics counter showing company achievements",
-        "Featured projects showcase",
-        "Live activity feed",
         "Call-to-action section for starting projects"
       ]
     },
     {
-      name: "About",
-      path: "/about",
-      description: "Company information page detailing the mission, vision, values, and history of HighFive Enterprises.",
+      name: "Who We Are",
+      path: "/who-we-are",
+      description: "Company information page detailing the mission, vision, values, and history of Lupus Venture.",
       keyFeatures: [
         "Company mission and vision statements",
         "Core values presentation",
@@ -61,21 +47,9 @@ export const websiteContext: WebsiteStructure = {
       ]
     },
     {
-      name: "Team",
-      path: "/team",
-      description: "Page showcasing the team members with their roles, skills, and experience levels.",
-      keyFeatures: [
-        "Team member profiles with photos",
-        "Role and skill filtering capabilities",
-        "Spotlight section highlighting team members",
-        "Culture and values information",
-        "Join team call-to-action"
-      ]
-    },
-    {
-      name: "Services",
-      path: "/services",
-      description: "Detailed information about the services offered by HighFive Enterprises.",
+      name: "What We Do",
+      path: "/what-we-do",
+      description: "Detailed information about the services offered by Lupus Venture.",
       keyFeatures: [
         "Service cards with descriptions",
         "Feature comparison table",
@@ -83,29 +57,19 @@ export const websiteContext: WebsiteStructure = {
       ]
     },
     {
-      name: "Projects",
-      path: "/projects",
-      description: "Portfolio showcasing completed and ongoing projects with detailed information.",
+      name: "Insights",
+      path: "/insights",
+      description: "A page highlighting our future vision, innovation goals, and commitment to sustainable growth.",
       keyFeatures: [
-        "Project gallery with filtering options",
-        "Detailed project view pages",
-        "Technology stack information",
-        "Project status indicators"
+        "Innovation at scale goals",
+        "Global impact vision",
+        "Thought leadership objectives",
+        "Sustainable growth commitment"
       ]
     },
     {
-      name: "Events",
-      path: "/events",
-      description: "Calendar and information about company events, workshops, and meetups.",
-      keyFeatures: [
-        "Event calendar view",
-        "Event details with registration",
-        "Past events archive"
-      ]
-    },
-    {
-      name: "Contact",
-      path: "/contact",
+      name: "Reach Us",
+      path: "/reach-us",
       description: "Contact form and company contact information for inquiries and collaborations.",
       keyFeatures: [
         "Contact form for inquiries",
@@ -114,26 +78,6 @@ export const websiteContext: WebsiteStructure = {
         "Feedback submission form"
       ]
     },
-    {
-      name: "Join Team",
-      path: "/join-team",
-      description: "Application page for prospective team members to join the company.",
-      keyFeatures: [
-        "Application form for job seekers",
-        "Position openings information",
-        "Company culture presentation"
-      ]
-    },
-    {
-      name: "Become Partner",
-      path: "/become-partner",
-      description: "Information and application process for becoming a business partner.",
-      keyFeatures: [
-        "Partnership benefits information",
-        "Partner application form",
-        "Success stories from existing partners"
-      ]
-    }
   ],
   services: [
     {
@@ -156,32 +100,12 @@ export const websiteContext: WebsiteStructure = {
         "Full copyright ownership"
       ]
     }
-  ],
-  team: {
-    description: "A talented team of professionals with diverse skills in development, design, and business.",
-    roles: [
-      "Developers",
-      "Designers",
-      "Project Managers",
-      "Business Analysts",
-      "Quality Assurance Engineers"
-    ]
-  },
-  projects: {
-    description: "A portfolio of diverse projects ranging from small business websites to complex enterprise applications.",
-    types: [
-      "E-commerce websites",
-      "Corporate websites",
-      "Mobile applications",
-      "Web applications",
-      "UI/UX design projects"
-    ]
-  }
+  ]
 };
 
 export function getWebsiteContextPrompt(): string {
   return `
-Website Context for HighFive Enterprises:
+Website Context for Lupus Venture:
 
 Company Name: ${websiteContext.name}
 Description: ${websiteContext.description}
@@ -196,14 +120,6 @@ ${websiteContext.services.map(service => `
 - ${service.title}: ${service.description}
   Features: ${service.features.join(', ')}`).join('')}
 
-Team Information:
-Description: ${websiteContext.team.description}
-Roles Available: ${websiteContext.team.roles.join(', ')}
-
-Projects Information:
-Description: ${websiteContext.projects.description}
-Project Types: ${websiteContext.projects.types.join(', ')}
-
-Use this context to accurately answer questions about the website, its services, team, and projects.
+Use this context to accurately answer questions about the website and its services.
 `;
 }

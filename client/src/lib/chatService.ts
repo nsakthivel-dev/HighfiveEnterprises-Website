@@ -14,7 +14,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // Use the gemini-2.5-flash model as requested
 const model = genAI.getGenerativeModel({ 
   model: "gemini-2.5-flash",
-  systemInstruction: `You are a helpful assistant for HighFive Enterprises. You should only answer questions related to HighFive Enterprises website, its services, team, projects, events, or other company-related topics. For any questions that are not related to HighFive Enterprises or its business, politely decline to answer and suggest contacting the team directly at teamhfive25@gmail.com.
+  systemInstruction: `You are a helpful assistant for Lupus Venture. You should only answer questions related to Lupus Venture website, its services, or other company-related topics. For any questions that are not related to Lupus Venture or its business, politely decline to answer and suggest contacting the team directly at touch@lupusventure.com.
 
 Use the following website context to provide accurate information:
 ${getWebsiteContextPrompt()}`,
@@ -54,7 +54,7 @@ export async function sendMessage(messages: ChatMessage[]): Promise<string> {
     if (error.message) {
       return error.message;
     } else {
-      return "Sorry, I'm having trouble connecting to the AI service right now. Please try again later or contact us directly at teamhfive25@gmail.com.";
+      return "Sorry, I'm having trouble connecting to the AI service right now. Please try again later or contact us directly at touch@lupusventure.com.";
     }
   }
 }

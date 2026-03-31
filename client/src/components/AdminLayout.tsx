@@ -32,10 +32,6 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
     { href: '/admin-panel/activity', icon: ShoppingCart, label: 'Activity' },
     { href: '/admin-panel/services', icon: Package2, label: 'Services' },
     { href: '/admin-panel/packages', icon: PackageOpen, label: 'Packages' },
-    { href: '/admin-panel/team', icon: Users, label: 'Team' },
-    { href: '/admin-panel/projects', icon: Users, label: 'Projects' },
-    { href: '/admin-panel/network', icon: Handshake, label: 'Network' },
-    { href: '/admin-panel/events', icon: Calendar, label: 'Events' },
   ];
 
   return (
@@ -44,8 +40,8 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
         <div className="flex h-full max-h-screen flex-col">
           <div className="flex h-14 items-center border-b px-3 lg:h-14 lg:px-4">
             <Link href="/" className="flex items-center gap-2 font-semibold text-sm">
-              <img src={currentLogo} alt="HighFive Enterprises Logo" className="h-7 w-7 object-contain" />
-              <span className="truncate">HighFive</span>
+              <img src={currentLogo} alt="Lupus Venture Logo" className="h-7 w-7 object-contain" />
+              <span className="truncate">Lupus Venture</span>
             </Link>
           </div>
           <div className="flex-1 py-2">
@@ -80,8 +76,8 @@ const AdminLayout = ({ children, title, description }: AdminLayoutProps) => {
             <SheetContent side="left" className="flex flex-col w-[280px]">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex items-center gap-2 mb-4">
-                <img src={currentLogo} alt="HighFive Enterprises Logo" className="h-8 w-8 object-contain" />
-                <h2 className="text-lg font-semibold">HighFive</h2>
+                <img src={currentLogo} alt="Lupus Venture Logo" className="h-8 w-8 object-contain" />
+                <h2 className="text-lg font-semibold">Lupus Venture</h2>
               </div>
               <nav className="grid gap-1 text-sm font-medium">
                 {navLinks.map(({ href, icon: Icon, label }) => (

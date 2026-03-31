@@ -55,7 +55,7 @@ export default function BecomePartner() {
                   Partnership Request Submitted Successfully!
                 </h2>
                 <p className="text-green-700 dark:text-green-300">
-                  Thank you for your interest in partnering with HighFive Enterprises. We've received your partnership proposal and will review it shortly.
+                  Thank you for your interest in partnering with Lupus Venture. We've received your partnership proposal and will review it shortly.
                 </p>
                 <div className="pt-4 flex gap-3 justify-center">
                   <Button asChild>
@@ -83,7 +83,7 @@ export default function BecomePartner() {
             </CardHeader>
             <CardContent>
               <form 
-                action="https://formsubmit.co/teamhfive25@gmail.com" 
+                action="https://formsubmit.co/touch@lupusventure.com" 
                 method="POST"
                 className="space-y-5"
               >
@@ -91,7 +91,7 @@ export default function BecomePartner() {
                 <input type="hidden" name="_captcha" value="false" />
                 <input type="hidden" name="_template" value="table" />
                 <input type="hidden" name="_next" value={`${window.location.origin}/become-partner?submitted=true`} />
-                <input type="hidden" name="_subject" value="New Partnership Request - HighFive Enterprises" />
+                <input type="hidden" name="_subject" value="New Partnership Request - Lupus Venture" />
 
                 {/* Full Name (required) */}
                 <div className="space-y-2">
@@ -231,7 +231,7 @@ export default function BecomePartner() {
                     id="message" 
                     name="message"
                     rows={5} 
-                    placeholder="Tell us about your organization, why you're interested in partnering with HighFive Enterprises, and what collaboration opportunities you envision..." 
+                    placeholder="Tell us about your organization, why you're interested in partnering with Lupus Venture, and what collaboration opportunities you envision..." 
                     required
                     className="w-full resize-none"
                   />

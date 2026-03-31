@@ -1,100 +1,79 @@
-import { useEffect, useMemo, useState } from "react";
-import { Users, Briefcase, Clock, Calendar } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState, useRef } from "react";
+import { Clock, Calendar, Rocket, Users, Target, Zap } from "lucide-react";
+import { motion, useInView, useSpring } from "framer-motion";
 
 interface StatItem {
-  icon: React.ReactNode;
+  icon: React.ElementType;
   value: number;
   label: string;
   suffix?: string;
 }
 
-type ApiProject = { id: string; status?: string | null };
-type ApiMember = { id: string };
-
-export default function StatsCounter() {
-  const [counts, setCounts] = useState([0, 0, 0, 0]);
-
-  const { data: projects = [] } = useQuery<ApiProject[]>({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      const r = await fetch("/api/projects");
-      if (!r.ok) throw new Error("Failed to load projects");
-      return r.json();
-    },
-  });
-
-  const { data: team = [] } = useQuery<ApiMember[]>({
-    queryKey: ["team"],
-    queryFn: async () => {
-      const r = await fetch("/api/team");
-      if (!r.ok) throw new Error("Failed to load team");
-      return r.json();
-    },
-  });
-
-  const ongoingCount = useMemo(() => projects.filter(p => (p.status || "active") !== "completed").length, [projects]);
-  const teamCount = team.length;
-
-  const start = useMemo(() => new Date("2025-10-01T00:00:00Z"), []);
-  const yearsOfInnovation = useMemo(() => {
-    const now = new Date();
-    let years = now.getFullYear() - start.getFullYear();
-    const hasAnniversaryPassed = (now.getMonth() > 9) || (now.getMonth() === 9 && now.getDate() >= 1); // month 9 = October
-    if (!hasAnniversaryPassed) years -= 1;
-    return Math.max(1, years + 1); // Show 1 in the first year, then +1 each anniversary
-  }, [start]);
-
-  const stats: StatItem[] = [
-    { icon: <Briefcase className="w-8 h-8" />, value: ongoingCount, label: "Ongoing Projects" },
-    { icon: <Users className="w-8 h-8" />, value: teamCount, label: "Team Members" },
-    { icon: <Clock className="w-8 h-8" />, value: 24, label: "Working Hours", suffix: "/7" },
-    { icon: <Calendar className="w-8 h-8" />, value: yearsOfInnovation, label: yearsOfInnovation === 1 ? "Year of Innovation" : "Years of Innovation" },
-  ];
+function Counter({ value, suffix }: { value: number; suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
-    const duration = 2000;
-    const steps = 60;
-    const interval = duration / steps;
+    if (isInView) {
+      let start = 0;
+      const end = value;
+      const duration = 2000;
+      const increment = end / (duration / 16);
 
-    const counters = stats.map((stat, index) => {
-      let currentCount = 0;
-      return setInterval(() => {
-        currentCount += stat.value / steps;
-        if (currentCount >= stat.value) {
-          currentCount = stat.value;
-          clearInterval(counters[index]);
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= end) {
+          setDisplayValue(end);
+          clearInterval(timer);
+        } else {
+          setDisplayValue(Math.floor(start));
         }
-        setCounts((prev) => {
-          const newCounts = [...prev];
-          newCounts[index] = Math.floor(currentCount);
-          return newCounts;
-        });
-      }, interval);
-    });
+      }, 16);
 
-    return () => counters.forEach(clearInterval);
-  }, [stats[0].value, stats[1].value, stats[2].value, stats[3].value]);
+      return () => clearInterval(timer);
+    }
+  }, [value, isInView]);
 
   return (
-    <div className="py-20 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <span ref={ref}>
+      {displayValue}
+      {suffix}
+    </span>
+  );
+}
+
+export default function StatsCounter() {
+  const stats: StatItem[] = [
+    { icon: Rocket, value: 50, label: "Projects Delivered", suffix: "+" },
+    { icon: Users, value: 30, label: "Happy Clients", suffix: "+" },
+    { icon: Target, value: 100, label: "Success Rate", suffix: "%" },
+    { icon: Zap, value: 24, label: "Expert Support", suffix: "/7" },
+  ];
+
+  return (
+    <div className="py-24 bg-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-primary/[0.02] -skew-y-3 origin-right" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {stats.map((stat, index) => (
-            <div
+            <motion.div
               key={index}
-              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="text-center group"
               data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, "-")}`}
             >
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
-                {stat.icon}
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary/5 text-primary mb-6 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/20">
+                <stat.icon className="w-10 h-10 transition-transform duration-500 group-hover:scale-110" />
               </div>
-              <div className="text-4xl md:text-5xl font-bold mb-2 font-heading">
-                {counts[index]}
-                {stat.suffix}
+              <div className="text-4xl md:text-5xl font-bold mb-3 font-heading tracking-tight text-foreground">
+                <Counter value={stat.value} suffix={stat.suffix} />
               </div>
-              <div className="text-muted-foreground">{stat.label}</div>
-            </div>
+              <div className="text-sm uppercase tracking-widest text-muted-foreground font-bold">{stat.label}</div>
+            </motion.div>
           ))}
         </div>
       </div>

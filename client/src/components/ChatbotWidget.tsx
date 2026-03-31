@@ -20,14 +20,11 @@ interface ChatbotData {
 }
 
 const chatbotData: ChatbotData = {
-  welcome: "Welcome to HighFive Enterprises! I'm here to help you learn more about our company. Please select a topic below:",
+  welcome: "Welcome to Lupus Venture! I'm here to help you learn more about our company. Please select a topic below:",
   mainQuestions: [
-    "What services does HighFive Enterprises offer?",
-    "Can you tell me about your team?",
-    "Show me your featured projects",
-    "How can I contact HighFive Enterprises?",
+    "What services does Lupus Venture offer?",
+    "How can I contact Lupus Venture?",
     "What is your company's mission?",
-    "Do you offer internship opportunities?"
   ],
   subQuestions: {
     0: {
@@ -101,11 +98,11 @@ const chatbotData: ChatbotData = {
         "Support Channels"
       ],
       answers: {
-        0: "You can reach us at teamhfive25@gmail.com for general inquiries, project discussions, and partnership opportunities.",
+        0: "You can reach us at touch@lupusventure.com for general inquiries and partnership opportunities.",
         1: "Our primary contact number is +91 123 456 7890, available during business hours for immediate assistance.",
         2: "We're based in Puducherry, Tamilnadu, India, with team members working remotely across multiple time zones.",
         3: "Our standard business hours are Monday to Friday, 9:00 AM to 6:00 PM IST, and Saturday 10:00 AM to 4:00 PM IST.",
-        4: "Connect with us on LinkedIn, GitHub, Instagram, and Facebook @highfive.enterprises for updates and insights.",
+        4: "Connect with us on LinkedIn, GitHub, Instagram, and Facebook @lupus.venture for updates and insights.",
         5: "Use the contact form on our website to send us detailed project requirements and we'll get back to you within 24 hours.",
         6: "For existing clients, we provide dedicated support channels including email, Slack, and priority phone support based on your package."
       }
