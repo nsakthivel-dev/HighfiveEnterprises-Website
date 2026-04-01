@@ -1,8 +1,8 @@
 import { ArrowRight, Sparkles, ChevronDown, Rocket, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -11,24 +11,6 @@ export default function Hero() {
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
   const scale = useTransform(scrollY, [0, 300], [1, 1.1]);
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springX = useSpring(mouseX, { damping: 20, stiffness: 100 });
-  const springY = useSpring(mouseY, { damping: 20, stiffness: 100 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const { innerWidth, innerHeight } = window;
-      mouseX.set((clientX / innerWidth - 0.5) * 40);
-      mouseY.set((clientY / innerHeight - 0.5) * 40);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   return (
     <section 
@@ -43,13 +25,10 @@ export default function Hero() {
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
         />
         
-        {/* Dynamic Interactive Grid */}
-        <motion.div 
-          style={{ x: springX, y: springY }}
-          className="absolute inset-[-10%] opacity-20"
-        >
+        {/* Static Background Grid */}
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(99,102,241,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(99,102,241,0.1)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-        </motion.div>
+        </div>
 
         {/* Floating Light Blobs */}
         <motion.div 
@@ -62,28 +41,28 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-32">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Column: Content */}
           <div className="lg:col-span-7 text-left">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-md"
+              className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/5 border border-primary/10 mb-8 backdrop-blur-sm"
             >
-              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-              <span className="text-sm font-bold text-primary uppercase tracking-[0.2em]">
+              <Sparkles className="w-3.5 h-3.5 text-primary/60" />
+              <span className="text-[11px] font-bold text-primary/80 uppercase tracking-[0.3em]">
                 Elevate Your Digital Presence
               </span>
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="text-7xl md:text-9xl font-bold mb-8 tracking-tighter leading-[0.9] text-foreground"
+              className="text-7xl md:text-[11rem] font-bold mb-6 tracking-tighter leading-[0.85] text-foreground"
             >
               Lupus <br />
               <span className="bg-gradient-to-r from-primary via-indigo-500 to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Venture</span>
@@ -93,7 +72,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-              className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl leading-relaxed font-light"
+              className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl leading-relaxed font-light"
             >
               We engineer scalable, high-performance digital ecosystems for visionaries. Bridge the gap between complexity and intuitive experiences.
             </motion.p>
@@ -107,7 +86,7 @@ export default function Hero() {
               <Link href="/what-we-do">
                 <Button
                   size="lg"
-                  className="h-16 px-10 text-xl font-bold rounded-2xl shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-500 group"
+                  className="h-16 md:h-20 px-10 md:px-14 text-xl md:text-2xl font-bold rounded-2xl shadow-2xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-500 group"
                 >
                   Start Building
                   <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
@@ -117,7 +96,7 @@ export default function Hero() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-16 px-10 text-xl font-bold rounded-2xl border-2 hover:bg-secondary/50 backdrop-blur-md transition-all duration-500"
+                  className="h-16 md:h-20 px-10 md:px-14 text-xl md:text-2xl font-bold rounded-2xl border-2 hover:bg-secondary/50 backdrop-blur-md transition-all duration-500"
                 >
                   Get in Touch
                 </Button>

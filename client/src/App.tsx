@@ -15,7 +15,6 @@ import Insights from "@/pages/Insights";
 import NotFound from "@/pages/not-found";
 import { AuthProvider } from "@/context/AuthContext";
 import Preloader from "@/components/Preloader";
-import CustomCursor from "@/components/CustomCursor";
 
 function Router() {
   return (
@@ -37,7 +36,6 @@ function App() {
         <ThemeProvider>
           <AuthProvider>
             <Preloader />
-            <CustomCursor />
             <div className="min-h-screen">
               <Navigation />
               <ScrollToTop />

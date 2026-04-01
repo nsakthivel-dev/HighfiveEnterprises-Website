@@ -1,3 +1,4 @@
+import React, { useRef, useState, useEffect } from "react";
 import Hero from "@/components/Hero";
 import StatsCounter from "@/components/StatsCounter";
 import { Button } from "@/components/ui/button";
@@ -9,42 +10,119 @@ import {
   ShieldCheck, 
   Cpu, 
   Layout,
-  Code2
+  Code2,
+  ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
 
 const bentoFeatures = [
   {
-    icon: <Zap className="w-8 h-8" />,
+    icon: <Zap className="w-6 h-6" />,
     title: "High Performance",
-    description: "Optimized for speed and efficiency, ensuring your users never have to wait.",
-    className: "md:col-span-2 md:row-span-1 bg-primary/10 border-primary/20",
-    delay: 0.1
+    description: "Experience blazing fast load times and smooth interactions with our optimized engine. We focus on performance-first architecture to ensure your users never have to wait.",
+    className: "md:col-span-2 bg-primary/5 border-primary/10 hover:border-primary/30",
+    delay: 0.1,
+    color: "primary"
   },
   {
-    icon: <ShieldCheck className="w-8 h-8" />,
+    icon: <ShieldCheck className="w-6 h-6" />,
     title: "Enterprise Security",
-    description: "Built-in protection for your data and users.",
-    className: "md:col-span-1 md:row-span-2 bg-indigo-500/10 border-indigo-500/20",
-    delay: 0.2
+    description: "Built-in protection for your data and users. We implement industry-standard security protocols and encryption by default.",
+    className: "md:col-span-1 bg-indigo-500/5 border-indigo-500/10 hover:border-indigo-500/30",
+    delay: 0.2,
+    color: "indigo-500"
   },
   {
-    icon: <Cpu className="w-8 h-8" />,
+    icon: <Cpu className="w-6 h-6" />,
     title: "Scalable Core",
-    description: "Architecture that grows with you.",
-    className: "md:col-span-1 md:row-span-1 bg-cyan-500/10 border-cyan-500/20",
-    delay: 0.3
+    description: "Robust architecture that grows alongside your business needs without compromising stability.",
+    className: "md:col-span-1 bg-cyan-500/5 border-cyan-500/10 hover:border-cyan-500/30",
+    delay: 0.3,
+    color: "cyan-500"
   },
   {
-    icon: <Layout className="w-8 h-8" />,
-    title: "Bespoke UI",
-    description: "Crafted specifically for your brand.",
-    className: "md:col-span-2 md:row-span-1 bg-amber-500/10 border-amber-500/20",
-    delay: 0.4
+    icon: <Layout className="w-6 h-6" />,
+    title: "Bespoke UI Design",
+    description: "Pixel-perfect interfaces tailored to your brand's unique identity. We create intuitive user experiences that drive engagement and conversion.",
+    className: "md:col-span-2 bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30",
+    delay: 0.4,
+    color: "amber-500"
   }
 ];
+
+function FeatureCard({ feature }: { feature: typeof bentoFeatures[0] }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: feature.delay }}
+      className={`group relative rounded-3xl border p-8 transition-all duration-700 hover:shadow-2xl overflow-hidden ${feature.className}`}
+    >
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.07] transition-opacity duration-700">
+        <div className="absolute inset-0 bg-[linear-gradient(30deg,#fff_1px,transparent_1px),linear-gradient(150deg,#fff_1px,transparent_1px)] bg-[size:20px_20px] animate-shimmer" />
+      </div>
+
+      <div className="relative z-10 flex flex-col h-full">
+        <motion.div 
+          animate={{ 
+            y: [0, -5, 0],
+          }}
+          transition={{ 
+            duration: 4, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+          className={`w-14 h-14 rounded-2xl bg-background border border-border flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-primary/50 transition-all duration-500 text-${feature.color} shadow-lg shadow-black/5`}
+        >
+          {feature.icon}
+        </motion.div>
+        
+        <h4 className="text-2xl font-bold mb-4 tracking-tight group-hover:text-primary transition-colors duration-300">
+          {feature.title}
+        </h4>
+        <p className="text-muted-foreground leading-relaxed font-light group-hover:text-foreground transition-colors duration-500">
+          {feature.description}
+        </p>
+      </div>
+
+      {/* Dynamic Border Beam Effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-border-beam" />
+        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-border-beam delay-1000" />
+      </div>
+
+      {/* Subtle Background Glow */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-[radial-gradient(circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(var(--glow-rgb),0.1),transparent_80%)]" 
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          e.currentTarget.style.setProperty('--mouse-x', `${x}%`);
+          e.currentTarget.style.setProperty('--mouse-y', `${y}%`);
+        }}
+      />
+      
+      <style>{`
+        @keyframes border-beam {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-border-beam {
+          animation: border-beam 3s infinite linear;
+        }
+        .group:hover {
+          --glow-rgb: ${feature.color === 'primary' ? '99, 102, 241' : 
+                        feature.color === 'indigo-500' ? '79, 70, 229' : 
+                        feature.color === 'cyan-500' ? '6, 182, 212' : 
+                        '245, 158, 11'};
+        }
+      `}</style>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const mottoRef = useRef(null);
@@ -81,40 +159,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Bento Feature Grid */}
-      <section className="py-32 px-6">
+      {/* Core Capabilities Section */}
+      <section className="py-32 px-6 bg-background relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-20 space-y-4">
-            <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-primary">Core Capabilities</h3>
-            <h2 className="text-4xl md:text-6xl font-bold font-heading tracking-tight">Built for the modern web.</h2>
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-3 mb-4"
+            >
+              <div className="h-px w-8 bg-primary/50" />
+              <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-primary">Core Capabilities</h3>
+            </motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-6xl font-bold font-heading tracking-tight"
+            >
+              Built for the <br />
+              <span className="text-primary italic">modern web.</span>
+            </motion.h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[240px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {bentoFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: feature.delay }}
-                className={`group relative rounded-[2.5rem] border p-10 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 ${feature.className}`}
-              >
-                <div className="relative z-10 h-full flex flex-col justify-between">
-                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                    {feature.icon}
-                  </div>
-                  <div>
-                    <h4 className="text-2xl font-bold mb-3">{feature.title}</h4>
-                    <p className="text-muted-foreground font-light leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-                {/* Decorative background accent */}
-                <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-10 transition-opacity">
-                  {feature.icon}
-                </div>
-              </motion.div>
+              <FeatureCard key={index} feature={feature} />
             ))}
           </div>
         </div>

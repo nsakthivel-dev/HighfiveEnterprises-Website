@@ -109,7 +109,7 @@ export default function Navigation() {
             </Button>
 
             <Link href="/reach-us">
-              <Button className="hidden md:flex rounded-full px-6 font-semibold group bg-primary hover:bg-primary/90">
+              <Button className="hidden md:flex rounded-full h-11 px-8 text-base font-bold group bg-primary hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40">
                 Start Project
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
