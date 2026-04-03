@@ -95,9 +95,9 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps = {}) {
           We value your opinion! Let us know how we're doing.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
+      <CardContent className="p-4 md:p-6 pt-0">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-1.5">
             <Label htmlFor="name">Name (Optional)</Label>
             <Input
               id="name"
@@ -107,7 +107,7 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps = {}) {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Email (Optional)</Label>
             <Input
               id="email"
@@ -118,9 +118,9 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps = {}) {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label>Rating *</Label>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
@@ -131,7 +131,7 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps = {}) {
                   className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary rounded"
                 >
                   <Star
-                    className={`w-8 h-8 transition-colors ${
+                    className={`w-7 h-7 transition-colors ${
                       star <= (hoveredRating || formData.rating)
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-gray-300"
@@ -141,23 +141,23 @@ export default function FeedbackForm({ projectId }: FeedbackFormProps = {}) {
               ))}
             </div>
             {formData.rating > 0 && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 You rated: {formData.rating} star{formData.rating !== 1 ? "s" : ""}
               </p>
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="message">Your Feedback *</Label>
             <Textarea
               id="message"
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder="Share your thoughts, suggestions, or experience with us..."
-              rows={4}
+              rows={3}
               required
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground">
               {formData.message.length} characters (minimum 10 required)
             </p>
           </div>

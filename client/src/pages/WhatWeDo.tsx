@@ -89,27 +89,228 @@ export default function WhatWeDo() {
         </div>
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-md">
-              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-              <span className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Our Capabilities</span>
+          <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="col-span-12 lg:col-span-7 xl:col-span-7"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-md">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <span className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Our Capabilities</span>
+              </div>
+              <h1 className="text-6xl md:text-[7rem] lg:text-[6rem] xl:text-[8rem] font-bold mb-10 tracking-tighter font-heading leading-[0.9]">
+                Engineering <br /> <span className="text-primary italic">Excellence.</span>
+              </h1>
+              <p className="text-xl lg:text-2xl text-muted-foreground font-light leading-relaxed mb-12 max-w-xl">
+                We don't just build software; we engineer digital ecosystems that empower growth, security, and innovation for the world's most ambitious brands.
+              </p>
+              <div className="flex gap-4">
+                 <div className="h-px w-24 bg-primary mt-4 opacity-50" />
+                 <span className="text-xs uppercase tracking-widest font-bold text-muted-foreground">Expertise across the stack</span>
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+              className="relative hidden lg:flex justify-end h-[500px] w-full col-span-12 lg:col-span-5 xl:col-span-5"
+            >
+               <div className="relative w-full max-w-[420px] h-full flex flex-col justify-center">
+                 {/* Background glows - subtle and premium */}
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+                 
+                 {/* Center Main Card - Code Editor Mockup */}
+                 <motion.div
+                   animate={{ y: [-8, 8, -8] }}
+                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                   className="absolute top-[10%] right-0 w-full lg:w-[380px] bg-card/60 backdrop-blur-3xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-40"
+                   style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+                 >
+                   <div className="h-12 bg-muted/40 border-b border-white/10 flex items-center px-4 gap-2">
+                     <div className="flex gap-2">
+                       <div className="w-3 h-3 rounded-full bg-red-400 shadow-[0_0_10px_rgba(248,113,113,0.5)]" />
+                       <div className="w-3 h-3 rounded-full bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+                       <div className="w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
+                     </div>
+                     <div className="flex-1 text-center pr-8 text-xs text-muted-foreground/80 font-mono">lupus-core.ts</div>
+                   </div>
+                   <div className="p-6 font-mono text-sm space-y-4 text-muted-foreground">
+                     <div className="flex"><span className="text-pink-500/90 w-16">import</span> <span className="text-blue-400/90">{"{ Excellence }"}</span> <span className="text-pink-500/90 mx-2">from</span> <span className="text-green-400/90">'@lupus/core'</span>;</div>
+                     <div className="flex"><span className="text-pink-500/90 w-16">const</span> <span className="text-blue-400/90">engineerFuture</span> <span className="text-foreground/80 mx-2">=</span> <span className="text-purple-400/90">async</span> () <span className="text-purple-400/90 mx-2">{"=>"}</span> {"{"}</div>
+                     <div className="pl-6 text-muted-foreground/60 border-l border-white/10 ml-2">// Architecting scalable solutions</div>
+                     <div className="pl-6 flex border-l border-white/10 ml-2"><span className="text-purple-400/90 w-16">await</span> <span className="text-blue-400/90">Excellence</span>.<span className="text-yellow-400/90">deploy</span>({"{ scale: 'global' }"});</div>
+                     <div>{"}"};</div>
+                     <div className="pt-4 flex opacity-60"><span className="text-pink-500/90 mr-2">export default</span> <span className="text-blue-400/90">engineerFuture</span>;</div>
+                   </div>
+                 </motion.div>
+
+                 {/* Top Right - AI Solutions */}
+                 <motion.div
+                   animate={{ y: [0, -10, 0] }}
+                   whileHover={{ scale: 1.05 }}
+                   transition={{ y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 } }}
+                   className="absolute top-[-10px] right-[-20px] w-56 bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] z-20 hover:z-50 cursor-pointer overflow-hidden"
+                 >
+                   <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                     <div className="w-2 h-2 rounded-full bg-red-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-green-500/80" />
+                     <span className="ml-2 text-[9px] font-mono text-muted-foreground/60">ai-engine.py</span>
+                   </div>
+                   <div className="p-3 font-mono text-[10px] space-y-1 text-muted-foreground">
+                     <div className="flex"><span className="text-green-400 mr-2">~</span> <span className="text-foreground/80">python init_model.py</span></div>
+                     <motion.div 
+                       animate={{ opacity: [1, 0.5, 1] }} 
+                       transition={{ duration: 2, repeat: Infinity }}
+                       className="text-blue-400"
+                     >
+                       [OK] LLM: 175B parameters
+                     </motion.div>
+                     <div className="text-purple-400">[OK] Neural nets optimized</div>
+                     <div className="flex"><span className="text-pink-500">_status:</span> <span className="text-green-400 ml-2">"Ready"</span></div>
+                   </div>
+                 </motion.div>
+
+                 {/* Bottom Left - Web Development / UI UX */}
+                 <motion.div
+                   animate={{ y: [-5, 5, -5] }}
+                   whileHover={{ scale: 1.05 }}
+                   transition={{ y: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 } }}
+                   className="absolute bottom-[20%] left-[-40px] w-[210px] bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] z-20 hover:z-50 cursor-pointer overflow-hidden"
+                 >
+                   <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                     <div className="w-2 h-2 rounded-full bg-red-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-green-500/80" />
+                     <span className="ml-2 text-[9px] font-mono text-muted-foreground/60">app.config.ts</span>
+                   </div>
+                   <div className="p-3 font-mono text-[10px] text-muted-foreground space-y-0.5">
+                     <div><span className="text-pink-500">export default</span> <span className="text-yellow-400">{"{"}</span></div>
+                     <div className="pl-3"><span className="text-foreground/80">framework:</span> <span className="text-green-400">"Next.js 14"</span>,</div>
+                     <div className="pl-3"><span className="text-foreground/80">ui_ux:</span> <span className="text-green-400">"Custom Design"</span>,</div>
+                     <div className="pl-3"><span className="text-foreground/80">architecture:</span> <span className="text-green-400">"Edge"</span></div>
+                     <div><span className="text-yellow-400">{"}"}</span></div>
+                   </div>
+                 </motion.div>
+
+                 {/* Bottom Right - Security Audits */}
+                 <motion.div
+                   animate={{ y: [0, 8, 0] }}
+                   whileHover={{ scale: 1.05 }}
+                   transition={{ y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 } }}
+                   className="absolute bottom-[-15px] right-[-10px] w-[220px] bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-20 hover:z-50 cursor-pointer overflow-hidden"
+                 >
+                   <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                     <div className="w-2 h-2 rounded-full bg-red-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+                     <div className="w-2 h-2 rounded-full bg-green-500/80" />
+                     <span className="ml-2 text-[9px] font-mono text-muted-foreground/60">audit.sh</span>
+                   </div>
+                   <div className="p-3 font-mono text-[10px] space-y-1 text-muted-foreground">
+                     <div className="flex"><span className="text-green-400 mr-2">~</span> <span className="text-foreground/80">./run_security_audit</span></div>
+                     <div className="text-emerald-400">✔ Zero vulnerabilities</div>
+                     <div className="text-emerald-400">✔ Penetration tests passed</div>
+                     <div className="text-emerald-400">✔ Enterprise grade protection</div>
+                   </div>
+                 </motion.div>
+               </div>
+            </motion.div>
+
+            {/* --- MOBILE VISUAL LAYOUT (Stacked & Scroll Animated) --- */}
+            <div className="flex lg:hidden flex-col gap-4 w-full mt-10 relative z-10 lg:col-span-5 px-2 pb-12">
+              
+              {/* Center Main Card - Code Editor Mockup */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                className="w-full bg-card/60 backdrop-blur-3xl border border-white/20 rounded-2xl shadow-xl overflow-hidden"
+              >
+                <div className="h-8 bg-muted/40 border-b border-white/10 flex items-center px-4 gap-1.5">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                  </div>
+                  <div className="flex-1 text-center pr-6 text-[10px] text-muted-foreground/80 font-mono">lupus-core.ts</div>
+                </div>
+                <div className="p-4 font-mono text-[11px] space-y-3 text-muted-foreground overflow-x-auto">
+                  <div className="flex whitespace-nowrap"><span className="text-pink-500/90 w-10">import</span> <span className="text-blue-400/90">{"{ Excellence }"}</span> <span className="text-pink-500/90 mx-2">from</span> <span className="text-green-400/90">'@lupus/core'</span>;</div>
+                  <div className="flex whitespace-nowrap"><span className="text-pink-500/90 w-10">const</span> <span className="text-blue-400/90">engineer</span> <span className="text-foreground/80 mx-2">=</span> <span className="text-purple-400/90">async</span> () <span className="text-purple-400/90 mx-2">{"=>"}</span> {"{"}</div>
+                  <div className="pl-3 text-muted-foreground/60 border-l border-white/10 ml-2 whitespace-nowrap">// Architect scalable solutions</div>
+                  <div className="pl-3 flex border-l border-white/10 ml-2 whitespace-nowrap"><span className="text-purple-400/90 w-10">await</span> <span className="text-blue-400/90">Excellence</span>.<span className="text-yellow-400/90">deploy</span>();</div>
+                  <div>{"}"};</div>
+                </div>
+              </motion.div>
+
+              {/* AI Solutions */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                className="w-[90%] self-end bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden"
+              >
+                <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500/80" />
+                  <span className="ml-2 text-[9px] font-mono text-muted-foreground/60">ai-model.py</span>
+                </div>
+                <div className="p-3 font-mono text-[9px] space-y-1 text-muted-foreground overflow-x-auto">
+                  <div className="flex whitespace-nowrap"><span className="text-green-400 mr-2">~</span> <span className="text-foreground/80">python init_model.py</span></div>
+                  <div className="text-blue-400 whitespace-nowrap">[OK] LLM: 175B parameters</div>
+                  <div className="text-purple-400 whitespace-nowrap">[OK] Networks optimized</div>
+                  <div className="flex whitespace-nowrap"><span className="text-pink-500">_status:</span> <span className="text-green-400 ml-2">"Ready"</span></div>
+                </div>
+              </motion.div>
+
+              <div className="flex gap-4 w-full">
+                {/* Web Development / UI UX */}
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  className="flex-1 bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden"
+                >
+                  <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/80" />
+                    <span className="ml-2 text-[8px] font-mono text-muted-foreground/60">config.ts</span>
+                  </div>
+                  <div className="p-3 font-mono text-[9px] text-muted-foreground space-y-0.5 overflow-x-auto">
+                    <div className="whitespace-nowrap"><span className="text-pink-500">export default</span> <span className="text-yellow-400">{"{"}</span></div>
+                    <div className="pl-3 whitespace-nowrap"><span className="text-foreground/80">framework:</span> <span className="text-green-400">"Next.js"</span></div>
+                    <div className="pl-3 whitespace-nowrap"><span className="text-foreground/80">ui_ux:</span> <span className="text-green-400">"Custom"</span></div>
+                    <div className="whitespace-nowrap"><span className="text-yellow-400">{"}"}</span></div>
+                  </div>
+                </motion.div>
+
+                {/* Security Audits */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  className="flex-1 bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl shadow-lg overflow-hidden"
+                >
+                  <div className="h-6 bg-muted/40 border-b border-white/5 flex items-center px-3 gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-red-500/80" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500/80" />
+                    <span className="ml-2 text-[8px] font-mono text-muted-foreground/60">audit.sh</span>
+                  </div>
+                  <div className="p-3 font-mono text-[9px] space-y-1 text-muted-foreground overflow-x-auto">
+                    <div className="flex whitespace-nowrap"><span className="text-green-400 mr-2">~</span> <span className="text-foreground/80">./run_scan</span></div>
+                    <div className="text-emerald-400 whitespace-nowrap">✔ Zero vulns</div>
+                    <div className="text-emerald-400 whitespace-nowrap">✔ Tests passed</div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-            <h1 className="text-7xl md:text-9xl font-bold mb-10 tracking-tighter font-heading leading-[0.9]">
-              Engineering <br /> <span className="text-primary italic">Excellence.</span>
-            </h1>
-            <p className="text-2xl text-muted-foreground max-w-2xl font-light leading-relaxed mb-12">
-              We don't just build software; we engineer digital ecosystems that empower growth, security, and innovation for the world's most ambitious brands.
-            </p>
-            <div className="flex gap-4">
-               <div className="h-px w-24 bg-primary mt-4 opacity-50" />
-               <span className="text-xs uppercase tracking-widest font-bold text-muted-foreground">Expertise across the stack</span>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -153,16 +354,16 @@ export default function WhatWeDo() {
       </section>
 
       {/* Pricing Section: Redesigned for Visibility and Impact */}
-      <section className="py-40 px-6 bg-secondary/20 relative overflow-hidden">
+      <section className="py-16 px-6 bg-secondary/20 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.05),transparent_70%)]" />
         
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-24 space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-[0.3em]">
+          <div className="text-center mb-10 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[9px] font-bold uppercase tracking-[0.3em]">
               Flexible Packages
             </div>
-            <h2 className="text-5xl md:text-7xl font-bold font-heading tracking-tight">Choose Your Velocity</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+            <h2 className="text-4xl md:text-5xl font-bold font-heading tracking-tight">Choose Your Velocity</h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto font-light">
               Transparent, scalable pricing designed to grow alongside your business. No hidden fees, just pure value.
             </p>
           </div>

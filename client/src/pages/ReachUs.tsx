@@ -137,21 +137,21 @@ export default function ReachUs() {
       </section>
 
       {/* Feedback Section */}
-      <section className="py-32 px-6 bg-secondary/30 relative overflow-hidden">
+      <section className="py-16 px-6 bg-secondary/30 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 font-heading">What Our Clients Say</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-5xl font-bold mb-3 font-heading">What Our Clients Say</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
               We take pride in our work and the relationships we build with our clients.
             </p>
           </div>
           
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="space-y-8"
+              className="space-y-6"
             >
               <FeedbackDisplay />
             </motion.div>
@@ -159,9 +159,9 @@ export default function ReachUs() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="p-10 rounded-[2.5rem] bg-card border border-border shadow-xl"
+              className="p-6 md:p-8 rounded-[2rem] bg-card border border-border shadow-xl"
             >
-              <h3 className="text-2xl font-bold mb-8 font-heading">Share Your Experience</h3>
+              <h3 className="text-2xl font-bold mb-4 font-heading">Share Your Experience</h3>
               <FeedbackForm />
             </motion.div>
           </div>
