@@ -16,7 +16,7 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 - Full-featured admin panel for content management.
 - CRUD operations for services, packages, activity tracking, and feedback moderation.
 - File upload with drag-and-drop support.
-- **Secure Authentication** – Only authorized administrators can access the panel via Supabase Auth.
+- **Secure Authentication** – Only authorized administrators can access the panel via Firebase Auth.
 
 ### 📋 Key Pages
 - **Home** – Hero section and call-to-action.
@@ -38,7 +38,7 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 
 - **Frontend:** React 18, Next.js 16 (App Router), Tailwind CSS, Framer Motion, Radix UI, Shadcn/ui, Lucide React, React Query.
 - **Backend:** Node.js with Express.
-- **Database & Auth:** Supabase (PostgreSQL), Custom authentication with Supabase Auth.
+- **Database & Auth:** Google Firebase (Firestore), Custom authentication with Firebase Auth.
 - **ORM:** Drizzle ORM.
 - **Build Tools:** Vite, TypeScript, pnpm.
 - **AI Integration:** Google Gemini API (or OpenAI SDK).
@@ -50,7 +50,7 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 ### Prerequisites
 - Node.js 18+ installed.
 - pnpm package manager.
-- Supabase account (for database and storage).
+- Firebase account (for database and storage).
 
 ### Installation
 1. **Clone the repository**
@@ -97,9 +97,9 @@ The admin panel is restricted to authorized administrators.
 | arjungova111@gmail.com | @arjun12345 | Brand Ambassador |
 
 ### Setup Instructions
-1. Run `node scripts/create-admin-users.js` to create these users in Supabase.
-2. Enable **Email** provider in your Supabase project under "Authentication" -> "Providers".
-3. Navigate to `/admin` or `/admin/login` to access the panel.
+1. Run `npx tsx scripts/seed-firebase.ts` to initialize basic content in Firestore.
+2. Enable **Email/Password** provider in your Firebase project under "Authentication" -> "Sign-in method".
+3. Navigate to `/admin-workspace` to access the panel.
 
 ---
 
@@ -108,7 +108,7 @@ The admin panel is restricted to authorized administrators.
 ### Prerequisites
 - GitHub repository pushed.
 - Render account connected to GitHub.
-- Supabase project configured.
+- Firebase project configured.
 
 ### Deployment Steps
 1. From Render dashboard, click **"New +"** → **"Web Service"**.
@@ -124,12 +124,13 @@ The admin panel is restricted to authorized administrators.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_SUPABASE_URL` | Yes | Supabase project URL |
-| `VITE_SUPABASE_ANON_KEY` | Yes | Supabase anonymous API key |
-| `SUPABASE_URL` | Yes | Server-side Supabase URL |
-| `SUPABASE_SERVICE_ROLE_KEY`| Yes | ⚠️ Keep Secret! Supabase service role key |
+| `VITE_FIREBASE_API_KEY` | Yes | Firebase API Key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Yes | Firebase Auth Domain |
+| `VITE_FIREBASE_PROJECT_ID` | Yes | Firebase Project ID |
+| `FIREBASE_PROJECT_ID` | Yes | Firebase Project ID (Server) |
+| `VITE_FIREBASE_STORAGE_BUCKET`| Yes | Firebase Storage Bucket |
 | `VITE_GEMINI_API_KEY` | No | Google Gemini API key for chatbot |
-| `PORT` | No | Server port (default: 5000) |
+| `PORT` | No | Server port (default: 4000) |
 | `NODE_ENV` | Yes | `development` or `production` |
 
 ---
@@ -152,7 +153,7 @@ LupusVenture/
 │   └── src/
 │       ├── components/   # UI components (Shadcn/ui)
 │       ├── context/      # AuthContext
-│       ├── lib/          # Utils, Supabase client, Chat service
+│       ├── lib/          # Utils, Firebase client, Chat service
 │       └── pages/        # Page components & Admin routes
 ├── server/               # Backend (Express.js)
 ├── shared/               # Shared Drizzle/Zod schemas

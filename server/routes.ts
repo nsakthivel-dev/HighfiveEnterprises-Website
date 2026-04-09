@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { supabase } from "./supabase";
+import { adminDb, adminStorage } from "./firebase";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
@@ -21,11 +21,9 @@ const getPdfParse = async () => {
 };
 import * as lancedb from "@lancedb/lancedb";
 
-// Add a helper function to check if Supabase is properly configured
-const isSupabaseConfigured = () => {
-  const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const SUPABASE_SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  return !!(SUPABASE_URL && SUPABASE_SERVICE_ROLE);
+// Add a helper function to check if Firebase is properly configured
+const isFirebaseConfigured = () => {
+  return !!process.env.FIREBASE_PROJECT_ID;
 };
 
 // Vector database setup for document embeddings
@@ -81,22 +79,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fileName = `${uuidv4()}${fileExt}`;
       const filePath = `uploads/${fileName}`;
 
-      const { data, error } = await supabase.storage
-        .from("media")
-        .upload(filePath, file.buffer, {
-          contentType: file.mimetype,
-        });
+      const bucket = adminStorage.bucket();
+      const blob = bucket.file(filePath);
+      
+      await blob.save(file.buffer, {
+        contentType: file.mimetype,
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4(),
+        }
+      });
 
-      if (error) {
-        console.error("Supabase storage error:", error);
-        return res.status(500).json({ error: "Failed to upload file to storage" });
-      }
+      await blob.makePublic();
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
-      const { data: urlData } = supabase.storage
-        .from("media")
-        .getPublicUrl(filePath);
-
-      return res.status(200).json({ url: urlData.publicUrl });
+      return res.status(200).json({ url: publicUrl });
     } catch (error) {
       console.error("Upload error:", error);
       return res.status(500).json({ error: "Server error during upload" });
@@ -114,6 +110,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const uploadedUrls: string[] = [];
       const errors: string[] = [];
+      const bucket = adminStorage.bucket();
 
       // Upload each file
       for (const file of files) {
@@ -122,23 +119,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const fileName = `${uuidv4()}${fileExt}`;
           const filePath = `uploads/${fileName}`;
 
-          const { data, error } = await supabase.storage
-            .from("media")
-            .upload(filePath, file.buffer, {
-              contentType: file.mimetype,
-            });
+          const blob = bucket.file(filePath);
+          await blob.save(file.buffer, {
+            contentType: file.mimetype,
+          });
 
-          if (error) {
-            console.error(`Supabase storage error for ${file.originalname}:`, error);
-            errors.push(`Failed to upload ${file.originalname}`);
-            continue;
-          }
-
-          const { data: urlData } = supabase.storage
-            .from("media")
-            .getPublicUrl(filePath);
-
-          uploadedUrls.push(urlData.publicUrl);
+          await blob.makePublic();
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
+          uploadedUrls.push(publicUrl);
         } catch (err) {
           console.error(`Error uploading ${file.originalname}:`, err);
           errors.push(`Error uploading ${file.originalname}`);
@@ -235,28 +223,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fileName = `${documentId}.pdf`;
       const filePath = `documents/${fileName}`;
 
-      // Upload to Supabase storage
-      const { data, error } = await supabase.storage
-        .from("documents")
-        .upload(filePath, req.file.buffer, {
-          contentType: req.file.mimetype,
-        });
+      // Upload to Firebase storage
+      const bucket = adminStorage.bucket();
+      const blob = bucket.file(filePath);
+      
+      await blob.save(req.file.buffer, {
+        contentType: req.file.mimetype,
+      });
 
-      if (error) {
-        console.error("Supabase storage error:", error);
-        return res.status(500).json({ error: "Failed to upload document to storage" });
-      }
-
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from("documents")
-        .getPublicUrl(filePath);
+      await blob.makePublic();
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
       // Store document metadata in database
       const documentMetadata = {
         id: documentId,
         name: req.file.originalname,
-        url: urlData.publicUrl,
+        url: publicUrl,
         size: req.file.size,
         uploaded_at: new Date().toISOString(),
         status: "processing",
@@ -367,34 +349,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Activity: list, create, delete
   app.get("/api/activity", async (_req: Request, res: Response) => {
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    // Check if Firebase is properly configured
+    if (!isFirebaseConfigured()) {
       return res.status(503).json({ 
-        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        message: "Database not configured. Please set FIREBASE_PROJECT_ID environment variable.",
         code: "DATABASE_NOT_CONFIGURED"
       });
     }
 
     try {
-      const { data, error } = await supabase
-        .from("activity")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(50);
+      const snapshot = await adminDb.collection("activity")
+        .orderBy("created_at", "desc")
+        .limit(50)
+        .get();
       
-      if (error) {
-        console.error("Supabase error in /api/activity:", error);
-        return res.status(500).json({ 
-          message: error.message,
-          code: "DATABASE_ERROR"
-        });
-      }
-      return res.json(data ?? []);
-    } catch (err) {
+      const activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(activities);
+    } catch (err: any) {
       console.error("Unexpected error in /api/activity:", err);
       return res.status(500).json({ 
         message: "Internal server error",
-        code: "INTERNAL_ERROR"
+        code: "INTERNAL_ERROR",
+        details: err.message
       });
     }
   });
@@ -402,44 +378,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/activity", async (req: Request, res: Response) => {
     const { type, title } = req.body || {};
     if (!type || !title) return res.status(400).json({ message: "type and title are required" });
-    const { data, error } = await supabase.from("activity").insert([{ type, title }]).select().single();
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data);
+    
+    try {
+      const docRef = await adminDb.collection("activity").add({
+        type,
+        title,
+        created_at: new Date().toISOString()
+      });
+      const doc = await docRef.get();
+      return res.json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   app.delete("/api/activity/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { error } = await supabase.from("activity").delete().eq("id", id);
-    if (error) return res.status(500).json({ message: error.message });
-    return res.status(204).end();
+    try {
+      await adminDb.collection("activity").doc(id).delete();
+      return res.status(204).end();
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   // SERVICES CRUD
   app.get("/api/services", async (_req: Request, res: Response) => {
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    // Check if Firebase is properly configured
+    if (!isFirebaseConfigured()) {
       return res.status(503).json({ 
-        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        message: "Database not configured. Please set FIREBASE_PROJECT_ID environment variable.",
         code: "DATABASE_NOT_CONFIGURED"
       });
     }
 
     try {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
+      const snapshot = await adminDb.collection("services")
+        .orderBy("sort_order", "asc")
+        .orderBy("created_at", "desc")
+        .get();
       
-      if (error) {
-        console.error("Supabase error in /api/services:", error);
-        return res.status(500).json({ 
-          message: error.message,
-          code: "DATABASE_ERROR"
-        });
-      }
-      return res.json(data ?? []);
-    } catch (err) {
+      const services = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(services);
+    } catch (err: any) {
       console.error("Unexpected error in /api/services:", err);
       return res.status(500).json({ 
         message: "Internal server error",
@@ -451,78 +432,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/services", async (req: Request, res: Response) => {
     const { title, description, features, icon, sort_order, is_active } = req.body || {};
     if (!title) return res.status(400).json({ message: "title is required" });
-    const { data, error } = await supabase
-      .from("services")
-      .insert([{ title, description, features: features ?? [], icon: icon ?? null, sort_order: sort_order ?? 0, is_active: is_active ?? true }])
-      .select()
-      .single();
-    if (error) return res.status(500).json({ message: error.message });
-    return res.status(201).json(data);
+    
+    try {
+      const docRef = await adminDb.collection("services").add({
+        title,
+        description,
+        features: features ?? [],
+        icon: icon ?? null,
+        sort_order: sort_order ?? 0,
+        is_active: is_active ?? true,
+        created_at: new Date().toISOString()
+      });
+      const doc = await docRef.get();
+      return res.status(201).json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   app.put("/api/services/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
     const { title, description, features, icon, sort_order, is_active } = req.body || {};
-    const { data, error } = await supabase
-      .from("services")
-      .update({ title, description, features, icon, sort_order, is_active })
-      .eq("id", id)
-      .select()
-      .single();
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data);
+    
+    try {
+      await adminDb.collection("services").doc(id).update({
+        title, description, features, icon, sort_order, is_active,
+        updated_at: new Date().toISOString()
+      });
+      const doc = await adminDb.collection("services").doc(id).get();
+      return res.json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   app.delete("/api/services/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { error } = await supabase.from("services").delete().eq("id", id);
-    if (error) return res.status(500).json({ message: error.message });
-    return res.status(204).end();
+    try {
+      await adminDb.collection("services").doc(id).delete();
+      return res.status(204).end();
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   // PACKAGES CRUD
   app.get("/api/packages", async (_req: Request, res: Response) => {
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    // Check if Firebase is properly configured
+    if (!isFirebaseConfigured()) {
       return res.status(503).json({ 
-        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        message: "Database not configured. Please set FIREBASE_PROJECT_ID environment variable.",
         code: "DATABASE_NOT_CONFIGURED"
       });
     }
 
     try {
-      const { data, error } = await supabase
-        .from("packages")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: false });
+      const snapshot = await adminDb.collection("packages")
+        .where("is_active", "==", true)
+        .orderBy("sort_order", "asc")
+        .orderBy("created_at", "desc")
+        .get();
       
-      if (error) {
-        console.error("Supabase error in /api/packages:", error);
-        return res.status(500).json({ 
-          message: error.message,
-          code: "DATABASE_ERROR"
-        });
-      }
-      return res.json(data ?? []);
-    } catch (err) {
+      const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(packages);
+    } catch (err: any) {
       console.error("Unexpected error in /api/packages:", err);
       return res.status(500).json({ 
         message: "Internal server error",
-        code: "INTERNAL_ERROR"
+        code: "INTERNAL_ERROR",
+        details: err.message
       });
     }
   });
 
   app.get("/api/admin/packages", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("packages")
-      .select("*")
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    try {
+      const snapshot = await adminDb.collection("packages")
+        .orderBy("sort_order", "asc")
+        .orderBy("created_at", "desc")
+        .get();
+      const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(packages);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   app.post("/api/admin/packages", async (req: Request, res: Response) => {
@@ -540,19 +533,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         is_recommended: is_recommended === true,
         sort_order: typeof sort_order === 'number' ? sort_order : 0,
         is_active: is_active !== false,
+        created_at: new Date().toISOString()
       };
       
-      const { data, error } = await supabase
-        .from("packages")
-        .insert([insertData])
-        .select()
-        .single();
-        
-      if (error) {
-        console.error('Supabase error:', error);
-        return res.status(500).json({ message: error.message });
-      }
-      return res.status(201).json(data);
+      const docRef = await adminDb.collection("packages").add(insertData);
+      const doc = await docRef.get();
+      return res.status(201).json({ id: doc.id, ...doc.data() });
     } catch (error: any) {
       console.error('Server error:', error);
       return res.status(500).json({ message: error.message || 'Internal server error' });
@@ -572,19 +558,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (is_recommended !== undefined) updateData.is_recommended = is_recommended === true;
       if (sort_order !== undefined) updateData.sort_order = typeof sort_order === 'number' ? sort_order : 0;
       if (is_active !== undefined) updateData.is_active = is_active === true;
+      updateData.updated_at = new Date().toISOString();
       
-      const { data, error } = await supabase
-        .from("packages")
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single();
-        
-      if (error) {
-        console.error('Supabase error:', error);
-        return res.status(500).json({ message: error.message });
-      }
-      return res.json(data);
+      await adminDb.collection("packages").doc(id).update(updateData);
+      const doc = await adminDb.collection("packages").doc(id).get();
+      return res.json({ id: doc.id, ...doc.data() });
     } catch (error: any) {
       console.error('Server error:', error);
       return res.status(500).json({ message: error.message || 'Internal server error' });
@@ -594,42 +572,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/packages/:id", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      
-      // First, check if the package exists
-      const { data: existingPackage, error: fetchError } = await supabase
-        .from("packages")
-        .select("id")
-        .eq("id", id)
-        .single();
-
-      if (fetchError || !existingPackage) {
-        return res.status(404).json({ 
-          message: "Package not found",
-          details: fetchError?.message || "Package with this ID does not exist"
-        });
-      }
-
-      // Attempt to delete the package
-      const { error } = await supabase
-        .from("packages")
-        .delete()
-        .eq("id", id);
-
-      if (error) {
-        console.error('Delete package error:', error);
-        return res.status(500).json({ 
-          message: "Failed to delete package",
-          details: error.message,
-          code: error.code
-        });
-      }
-
+      await adminDb.collection("packages").doc(id).delete();
       return res.status(204).end();
     } catch (error: any) {
       console.error('Server error during package deletion:', error);
       return res.status(500).json({ 
         message: "Internal server error during package deletion",
-        details: error.message || "An unexpected error occurred"
+        details: error.message
       });
     }
   });
@@ -637,30 +586,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // FEEDBACK CRUD
   // Public route to get all approved feedback
   app.get("/api/feedback", async (_req: Request, res: Response) => {
-    // Check if Supabase is properly configured
-    if (!isSupabaseConfigured()) {
+    // Check if Firebase is properly configured
+    if (!isFirebaseConfigured()) {
       return res.status(503).json({ 
-        message: "Database not configured. Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        message: "Database not configured. Please set FIREBASE_PROJECT_ID environment variable.",
         code: "DATABASE_NOT_CONFIGURED"
       });
     }
 
     try {
-      const { data, error } = await supabase
-        .from("feedback")
-        .select("*")
-        .eq("is_approved", true)
-        .order("created_at", { ascending: false });
+      const snapshot = await adminDb.collection("feedback")
+        .where("is_approved", "==", true)
+        .orderBy("created_at", "desc")
+        .get();
       
-      if (error) {
-        console.error("Supabase error in /api/feedback:", error);
-        return res.status(500).json({ 
-          message: error.message,
-          code: "DATABASE_ERROR"
-        });
-      }
-      return res.json(data ?? []);
-    } catch (err) {
+      const feedbackList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(feedbackList);
+    } catch (err: any) {
       console.error("Unexpected error in /api/feedback:", err);
       return res.status(500).json({ 
         message: "Internal server error",
@@ -671,76 +613,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Public route to submit feedback (no authentication required)
   app.post("/api/feedback", async (req: Request, res: Response) => {
-    const payload = req.body as any;
-    
-    // Validate required fields
-    if (!payload.rating || !payload.message) {
-      return res.status(400).json({ message: "rating and message are required" });
+    try {
+      const payload = req.body as any;
+      
+      // Validate required fields
+      if (!payload.rating || !payload.message) {
+        return res.status(400).json({ message: "rating and message are required" });
+      }
+
+      // Validate rating range
+      if (payload.rating < 1 || payload.rating > 5) {
+        return res.status(400).json({ message: "rating must be between 1 and 5" });
+      }
+
+      const insertData: any = {
+        name: payload.name && payload.name.trim() !== "" ? payload.name : "Anonymous",
+        email: payload.email && payload.email.trim() !== "" ? payload.email : null,
+        rating: payload.rating,
+        message: payload.message,
+        project_id: payload.project_id || null,
+        is_approved: true, // Auto-approve by default, can be changed for moderation
+        created_at: new Date().toISOString()
+      };
+
+      const docRef = await adminDb.collection("feedback").add(insertData);
+      const doc = await docRef.get();
+      return res.status(201).json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
     }
-
-    // Validate rating range
-    if (payload.rating < 1 || payload.rating > 5) {
-      return res.status(400).json({ message: "rating must be between 1 and 5" });
-    }
-
-    const insertData: any = {
-      name: payload.name && payload.name.trim() !== "" ? payload.name : "Anonymous",
-      email: payload.email && payload.email.trim() !== "" ? payload.email : null,
-      rating: payload.rating,
-      message: payload.message,
-      project_id: payload.project_id || null,
-      is_approved: true, // Auto-approve by default, can be changed for moderation
-    };
-
-    const { data, error } = await supabase
-      .from("feedback")
-      .insert(insertData)
-      .select()
-      .single();
-
-    if (error) return res.status(400).json({ message: error.message });
-    return res.status(201).json(data);
   });
 
   // Admin routes for feedback management
   app.get("/api/admin/feedback", async (_req: Request, res: Response) => {
-    const { data, error } = await supabase
-      .from("feedback")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) return res.status(500).json({ message: error.message });
-    return res.json(data ?? []);
+    try {
+      const snapshot = await adminDb.collection("feedback")
+        .orderBy("created_at", "desc")
+        .get();
+      const feedbackList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return res.json(feedbackList);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
   });
 
   app.put("/api/admin/feedback/:id", async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const payload = req.body as any;
+    try {
+      const { id } = req.params;
+      const payload = req.body as any;
 
-    const updateData: any = {};
-    const allowedFields = ['is_approved', 'name', 'email', 'rating', 'message', 'project_id'];
+      const updateData: any = {};
+      const allowedFields = ['is_approved', 'name', 'email', 'rating', 'message', 'project_id'];
 
-    allowedFields.forEach(field => {
-      if (payload[field] !== undefined) {
-        updateData[field] = payload[field];
-      }
-    });
+      allowedFields.forEach(field => {
+        if (payload[field] !== undefined) {
+          updateData[field] = payload[field];
+        }
+      });
+      updateData.updated_at = new Date().toISOString();
 
-    const { data, error } = await supabase
-      .from("feedback")
-      .update(updateData)
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) return res.status(400).json({ message: error.message });
-    return res.json(data);
+      await adminDb.collection("feedback").doc(id).update(updateData);
+      const doc = await adminDb.collection("feedback").doc(id).get();
+      return res.json({ id: doc.id, ...doc.data() });
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
+    }
   });
 
   app.delete("/api/admin/feedback/:id", async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { error } = await supabase.from("feedback").delete().eq("id", id);
-    if (error) return res.status(400).json({ message: error.message });
-    return res.status(204).end();
+    try {
+      const { id } = req.params;
+      await adminDb.collection("feedback").doc(id).delete();
+      return res.status(204).end();
+    } catch (error: any) {
+      return res.status(400).json({ message: error.message });
+    }
   });
 
   // Email sending endpoint (for generic contact)

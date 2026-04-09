@@ -1,9 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { auth } from '@/lib/firebase';
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut as firebaseSignOut,
+  User as FirebaseUser
+} from 'firebase/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: any;
+  user: FirebaseUser | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -11,7 +17,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Predefined admin emails (passwords will be handled by Supabase)
+// Predefined admin emails
 const ADMIN_EMAILS = [
   'ajjigova111@gmail.com',
   'hiteshreem2007@gmail.com',
@@ -22,120 +28,74 @@ const ADMIN_EMAILS = [
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('Initial session check:', session);
-        if (session?.user) {
-          // Check if user is in our admin list
-          if (ADMIN_EMAILS.includes(session.user.email || '')) {
-            console.log('User is authorized admin:', session.user.email);
-            setIsAuthenticated(true);
-            setUser(session.user);
-          } else {
-            console.log('User is not authorized:', session.user.email);
-            // Sign out if not an admin
-            await supabase.auth.signOut();
-            setIsAuthenticated(false);
-            setUser(null);
-          }
-        } else {
-          console.log('No active session');
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state changed:', _event, session);
-      setLoading(true);
-      if (session?.user) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Firebase Auth state changed:', firebaseUser?.email);
+      
+      if (firebaseUser) {
         // Check if user is in our admin list
-        if (ADMIN_EMAILS.includes(session.user.email || '')) {
-          console.log('User is authorized admin:', session.user.email);
+        if (firebaseUser.email && ADMIN_EMAILS.includes(firebaseUser.email)) {
+          console.log('User is authorized admin:', firebaseUser.email);
+          setUser(firebaseUser);
           setIsAuthenticated(true);
-          setUser(session.user);
         } else {
-          console.log('User is not authorized:', session.user.email);
+          console.log('User is not authorized:', firebaseUser.email);
           // Sign out if not an admin
-          supabase.auth.signOut();
-          setIsAuthenticated(false);
+          await firebaseSignOut(auth);
           setUser(null);
+          setIsAuthenticated(false);
         }
       } else {
-        setIsAuthenticated(false);
         setUser(null);
+        setIsAuthenticated(false);
       }
       setLoading(false);
     });
 
-    // Add beforeunload event listener to logout on page refresh/close
-    const handleBeforeUnload = () => {
-      // This will be called when the page is about to be unloaded
-      supabase.auth.signOut();
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      subscription.unsubscribe();
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    return () => unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('Attempting login for:', email);
+      console.log('Attempting Firebase login for:', email);
+      
       // Check if email is in our predefined list
       if (!ADMIN_EMAILS.includes(email)) {
         console.log('Email not in admin list:', email);
         return { success: false, error: 'Access denied. This email is not authorized.' };
       }
 
-      // Attempt to sign in with Supabase
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      console.log('Supabase login result:', { data, error });
-
-      if (error) {
-        console.log('Login error:', error.message);
-        return { success: false, error: error.message };
-      }
-
-      if (data.user) {
-        console.log('Login successful for:', data.user.email);
-        setIsAuthenticated(true);
-        setUser(data.user);
+      // Attempt to sign in with Firebase
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      if (userCredential.user) {
+        console.log('Login successful for:', userCredential.user.email);
+        // Auth state listener handles the state updates
         return { success: true };
       }
 
-      console.log('Login failed - no user data');
       return { success: false, error: 'Login failed' };
     } catch (error: any) {
-      console.log('Login exception:', error);
-      return { success: false, error: error.message || 'Login failed' };
+      console.error('Firebase Login error:', error);
+      let message = 'Login failed';
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        message = 'Invalid email or password';
+      } else if (error.code === 'auth/too-many-requests') {
+        message = 'Too many failed login attempts. Please try again later.';
+      }
+      return { success: false, error: message };
     }
   };
 
   const logout = async () => {
     try {
-      console.log('Logging out');
-      await supabase.auth.signOut();
+      console.log('Logging out from Firebase');
+      await firebaseSignOut(auth);
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {

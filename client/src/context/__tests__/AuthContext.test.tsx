@@ -2,16 +2,18 @@ import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider, useAuth } from '../AuthContext';
 
-// Mock Supabase
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
-      onAuthStateChange: jest.fn().mockReturnValue({
-        data: { subscription: { unsubscribe: jest.fn() } }
-      }),
-      signOut: jest.fn().mockResolvedValue({ error: null })
-    }
+// Mock Firebase
+vi.mock('@/lib/firebase', () => ({
+  auth: {
+    onAuthStateChanged: vi.fn().mockImplementation((callback: (user: any) => void) => {
+      // Delay to allow loading state to be visible
+      setTimeout(() => callback(null), 0);
+      return () => {};
+    }),
+    signInWithEmailAndPassword: vi.fn().mockResolvedValue({
+      user: { email: 'nsakthiveldev@gmail.com' }
+    }),
+    signOut: vi.fn().mockResolvedValue(undefined)
   }
 }));
 
@@ -40,7 +42,7 @@ const TestComponent = () => {
 
 describe('AuthContext', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should provide initial auth state', () => {

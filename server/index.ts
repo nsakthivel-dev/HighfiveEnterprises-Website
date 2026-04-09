@@ -70,11 +70,11 @@ app.use((req, res, next) => {
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
+  // Other ports are firewalled. Default to 4000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const envPort = process.env.PORT;
-  let desiredPort = envPort ? parseInt(envPort, 10) : 5000;
+  let desiredPort = envPort ? parseInt(envPort, 10) : 4000;
   const host = process.env.HOST || '0.0.0.0'; // Changed from localhost to 0.0.0.0 for Render compatibility
 
   let attempts = 0;
@@ -87,7 +87,8 @@ app.use((req, res, next) => {
       server.listen({ port: 0, host }, () => {
         const addr = server.address();
         const actualPort = typeof addr === 'object' && addr ? addr.port : p;
-        log(`serving on http://${host}:${actualPort}`);
+        const displayHost = host === '0.0.0.0' ? 'localhost' : host;
+        log(`serving on http://${displayHost}:${actualPort}`);
       });
       return;
     }
@@ -112,7 +113,8 @@ app.use((req, res, next) => {
     });
 
     server.listen({ port: p, host }, () => {
-      log(`serving on http://${host}:${p}`);
+      const displayHost = host === '0.0.0.0' ? 'localhost' : host;
+      log(`serving on http://${displayHost}:${p}`);
     });
   };
 

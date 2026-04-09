@@ -13,6 +13,7 @@ import WhatWeDo from "@/pages/WhatWeDo";
 import ReachUs from "@/pages/ReachUs";
 import Insights from "@/pages/Insights";
 import NotFound from "@/pages/not-found";
+import AdminWorkspace from "@/pages/AdminWorkspace";
 import { AuthProvider } from "@/context/AuthContext";
 import Preloader from "@/components/Preloader";
 
@@ -24,12 +25,16 @@ function Router() {
       <Route path="/what-we-do" component={WhatWeDo} />
       <Route path="/insights" component={Insights} />
       <Route path="/reach-us" component={ReachUs} />
+      <Route path="/admin-workspace" component={AdminWorkspace} />
       <Route component={NotFound} />
     </Switch>
   );
 }
 
 function App() {
+  const [location] = useLocation();
+  const isAdminPage = location === "/admin-workspace";
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -37,10 +42,10 @@ function App() {
           <AuthProvider>
             <Preloader />
             <div className="min-h-screen">
-              <Navigation />
+              {!isAdminPage && <Navigation />}
               <ScrollToTop />
               <Router />
-              <Footer />
+              {!isAdminPage && <Footer />}
             </div>
             <Toaster />
           </AuthProvider>

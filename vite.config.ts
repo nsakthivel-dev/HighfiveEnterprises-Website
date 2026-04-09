@@ -37,7 +37,7 @@ export default defineConfig({
           // Split vendor chunks more carefully to avoid circular dependencies
           'react-vendor': ['react', 'react-dom'],
           'router-vendor': ['wouter'],
-          'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query'],
+          'data-vendor': ['@tanstack/react-query'],
           'ui-vendor': ['lucide-react', 'framer-motion'],
         },
       },
@@ -50,5 +50,12 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+  },
+  // @ts-ignore - Vitest types might not be in the project yet
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./client/src/setupTests.ts"],
+    include: ["**/*.test.ts", "**/*.test.tsx"],
   },
 });
