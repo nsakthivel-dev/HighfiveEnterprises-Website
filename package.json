@@ -71,8 +71,6 @@
     "lucide-react": "^0.453.0",
     "multer": "^2.0.2",
     "nanoid": "^5.1.6",
-    "next": "^16.0.1",
-    "next-themes": "^0.4.6",
     "nodemailer": "^7.0.10",
     "openai": "^6.7.0",
     "particles.js": "^2.0.0",
@@ -126,8 +124,5 @@
     "@types/ws": "^8.5.13",
     "jsdom": "^29.0.2",
     "vitest": "^2.1.2"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.8"
   }
 }
