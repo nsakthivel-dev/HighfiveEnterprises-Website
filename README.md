@@ -97,20 +97,24 @@ The admin panel is restricted to authorized administrators.
 
 ---
 
-## 🌍 Deployment (Vercel)
+## 🌍 Deployment (Render)
 
 ### Prerequisites
 - GitHub repository pushed.
-- Vercel account connected to GitHub.
+- Render account connected to GitHub.
 - Firebase project configured.
 
 ### Deployment Steps
-1. Import the repository in Vercel dashboard.
-2. Set the **Framework Preset** to "Other".
-3. Configure environment variables in the Vercel dashboard (see below).
-4. Deploy — Vercel will automatically run `pnpm install && pnpm run build`.
+1. Create a new **Web Service** on Render.
+2. Connect your GitHub repository.
+3. Set the following configurations:
+   - **Runtime:** `Node`
+   - **Build Command:** `pnpm install && pnpm run build`
+   - **Start Command:** `pnpm run start`
+4. Configure environment variables in the Render dashboard (see below).
+5. Deploy.
 
-### Environment Variables (set in Vercel Dashboard)
+### Environment Variables (set in Render Dashboard)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -122,6 +126,8 @@ The admin panel is restricted to authorized administrators.
 | `FIREBASE_PRIVATE_KEY` | Yes | Firebase service account private key |
 | `VITE_FIREBASE_STORAGE_BUCKET`| Yes | Firebase Storage Bucket |
 | `VITE_GEMINI_API_KEY` | No | Google Gemini API key for chatbot |
+| `PORT` | No | Port for the server (defaults to 4000) |
+| `NODE_ENV` | No | Set to `production` |
 
 ---
 
@@ -138,7 +144,6 @@ The admin panel is restricted to authorized administrators.
 
 ```
 LupusVenture/
-├── api/                  # Vercel serverless entry point
 ├── client/               # Frontend (React)
 │   ├── public/           # Static assets
 │   └── src/
@@ -147,9 +152,8 @@ LupusVenture/
 │       ├── lib/          # Utils, Firebase client, Chat service
 │       └── pages/        # Page components & Admin routes
 ├── server/               # Backend (Express.js)
-├── shared/               # Shared Drizzle/Zod schemas
 ├── scripts/              # Setup and maintenance scripts
-└── vercel.json           # Vercel deployment config
+└── package.json          # Project dependencies and scripts
 ```
 
 ---

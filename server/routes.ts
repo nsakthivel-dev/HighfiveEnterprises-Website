@@ -55,10 +55,8 @@ async function initializeVectorDb() {
   }
 }
 
-// Only auto-initialize in non-serverless environments
-if (!process.env.VERCEL) {
-  initializeVectorDb();
-}
+// Initialize Vector database
+initializeVectorDb();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
@@ -251,7 +249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, we'll just return the metadata
       
       // Process the document asynchronously
-      processDocumentInBackground(documentId, req.file.buffer, urlData.publicUrl);
+      processDocumentInBackground(documentId, req.file.buffer, publicUrl);
 
       return res.status(200).json({ 
         message: "Document uploaded successfully and is being processed",
