@@ -39,7 +39,6 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 - **Frontend:** React 18, Next.js 16 (App Router), Tailwind CSS, Framer Motion, Radix UI, Shadcn/ui, Lucide React, React Query.
 - **Backend:** Node.js with Express.
 - **Database & Auth:** Google Firebase (Firestore), Custom authentication with Firebase Auth.
-- **ORM:** Drizzle ORM.
 - **Build Tools:** Vite, TypeScript, pnpm.
 - **AI Integration:** Google Gemini API (or OpenAI SDK).
 
@@ -64,11 +63,7 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
    ```
 3. **Set up environment variables**
    Create a `.env` file in the root directory (see [Environment Variables](#-environment-variables) section).
-4. **Run database migrations**
-   ```bash
-   pnpm db:push
-   ```
-5. **Start the development server**
+4. **Start the development server**
    ```bash
    pnpm dev
    ```
@@ -77,8 +72,7 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 - `pnpm dev` – Start development server.
 - `pnpm build` – Build for production.
 - `pnpm start` – Start production server.
-- `pnpm db:push` – Apply database migrations.
-- `pnpm db:studio` – Open Drizzle Studio for database management.
+- `pnpm setup:admin-users` – Initialize admin users in Firebase.
 
 ---
 
@@ -103,24 +97,20 @@ The admin panel is restricted to authorized administrators.
 
 ---
 
-## 🌍 Deployment (Render)
+## 🌍 Deployment (Vercel)
 
 ### Prerequisites
 - GitHub repository pushed.
-- Render account connected to GitHub.
+- Vercel account connected to GitHub.
 - Firebase project configured.
 
 ### Deployment Steps
-1. From Render dashboard, click **"New +"** → **"Web Service"**.
-2. Select your repository.
-3. Render will detect `render.yaml` automatically.
-4. **Build Command:** `npm install -g pnpm && pnpm install --frozen-lockfile && pnpm run build`
-5. **Start Command:** `pnpm start`
-6. Configure environment variables in the Render dashboard.
+1. Import the repository in Vercel dashboard.
+2. Set the **Framework Preset** to "Other".
+3. Configure environment variables in the Vercel dashboard (see below).
+4. Deploy — Vercel will automatically run `pnpm install && pnpm run build`.
 
----
-
-## 🔑 Environment Variables
+### Environment Variables (set in Vercel Dashboard)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -128,10 +118,10 @@ The admin panel is restricted to authorized administrators.
 | `VITE_FIREBASE_AUTH_DOMAIN` | Yes | Firebase Auth Domain |
 | `VITE_FIREBASE_PROJECT_ID` | Yes | Firebase Project ID |
 | `FIREBASE_PROJECT_ID` | Yes | Firebase Project ID (Server) |
+| `FIREBASE_CLIENT_EMAIL` | Yes | Firebase service account email |
+| `FIREBASE_PRIVATE_KEY` | Yes | Firebase service account private key |
 | `VITE_FIREBASE_STORAGE_BUCKET`| Yes | Firebase Storage Bucket |
 | `VITE_GEMINI_API_KEY` | No | Google Gemini API key for chatbot |
-| `PORT` | No | Server port (default: 4000) |
-| `NODE_ENV` | Yes | `development` or `production` |
 
 ---
 
@@ -148,7 +138,8 @@ The admin panel is restricted to authorized administrators.
 
 ```
 LupusVenture/
-├── client/               # Frontend (React + Next.js App Router style)
+├── api/                  # Vercel serverless entry point
+├── client/               # Frontend (React)
 │   ├── public/           # Static assets
 │   └── src/
 │       ├── components/   # UI components (Shadcn/ui)
@@ -158,7 +149,7 @@ LupusVenture/
 ├── server/               # Backend (Express.js)
 ├── shared/               # Shared Drizzle/Zod schemas
 ├── scripts/              # Setup and maintenance scripts
-└── render.yaml           # Render deployment config
+└── vercel.json           # Vercel deployment config
 ```
 
 ---

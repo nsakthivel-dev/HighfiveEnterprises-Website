@@ -49,7 +49,10 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+// Register routes and set up the server
+let serverReady: Promise<void>;
+
+async function initServer() {
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -60,63 +63,62 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 4000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const envPort = process.env.PORT;
-  let desiredPort = envPort ? parseInt(envPort, 10) : 4000;
-  const host = process.env.HOST || '0.0.0.0'; // Changed from localhost to 0.0.0.0 for Render compatibility
-
-  let attempts = 0;
-  const maxAttempts = 10;
-
-  const tryListen = (p: number) => {
-    server.removeAllListeners('error');
-    if (p === 0) {
-      // Ephemeral port: no retry logic needed; OS assigns a free port
-      server.listen({ port: 0, host }, () => {
-        const addr = server.address();
-        const actualPort = typeof addr === 'object' && addr ? addr.port : p;
-        const displayHost = host === '0.0.0.0' ? 'localhost' : host;
-        log(`serving on http://${displayHost}:${actualPort}`);
-      });
-      return;
+  // Only setup vite/static serving and listen when NOT running on Vercel
+  if (!process.env.VERCEL) {
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
     }
 
-    server.on('error', (err: any) => {
-      if (err && err.code === 'EADDRINUSE') {
-        attempts += 1;
-        if (attempts <= maxAttempts) {
-          const nextPort = p + 1;
-          log(`EADDRINUSE on ${host}:${p}, retrying on ${nextPort}…`);
-          tryListen(nextPort);
+    const envPort = process.env.PORT;
+    let desiredPort = envPort ? parseInt(envPort, 10) : 4000;
+    const host = '0.0.0.0';
+
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    const tryListen = (p: number) => {
+      server.removeAllListeners('error');
+      if (p === 0) {
+        server.listen({ port: 0, host }, () => {
+          const addr = server.address();
+          const actualPort = typeof addr === 'object' && addr ? addr.port : p;
+          log(`serving on http://localhost:${actualPort}`);
+        });
+        return;
+      }
+
+      server.on('error', (err: any) => {
+        if (err && err.code === 'EADDRINUSE') {
+          attempts += 1;
+          if (attempts <= maxAttempts) {
+            const nextPort = p + 1;
+            log(`EADDRINUSE on ${host}:${p}, retrying on ${nextPort}…`);
+            tryListen(nextPort);
+          } else {
+            log(`EADDRINUSE: Exhausted retries up to ${p}.`);
+            throw err;
+          }
+        } else if (err && err.code === 'ENOTSUP') {
+          log(`ENOTSUP: Failed to bind to ${host}:${p}`);
+          tryListen(p + 1);
         } else {
-          log(`EADDRINUSE: Exhausted retries up to ${p}.`);
           throw err;
         }
-      } else if (err && err.code === 'ENOTSUP') {
-        log(`ENOTSUP: Failed to bind to ${host}:${p}`);
-        tryListen(p + 1); // Try next port on ENOTSUP too
-      } else {
-        throw err;
-      }
-    });
+      });
 
-    server.listen({ port: p, host }, () => {
-      const displayHost = host === '0.0.0.0' ? 'localhost' : host;
-      log(`serving on http://${displayHost}:${p}`);
-    });
-  };
+      server.listen({ port: p, host }, () => {
+        log(`serving on http://localhost:${p}`);
+      });
+    };
 
-  tryListen(desiredPort);
-})();
+    tryListen(desiredPort);
+  }
+}
+
+serverReady = initServer();
+
+// Export the app for Vercel serverless functions
+export { app, serverReady };
+export default app;

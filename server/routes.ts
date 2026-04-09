@@ -19,27 +19,28 @@ const getPdfParse = async () => {
     return { text: data.text };
   };
 };
-import * as lancedb from "@lancedb/lancedb";
+// LanceDB is loaded dynamically to avoid crashing in serverless environments (e.g. Vercel)
 
 // Add a helper function to check if Firebase is properly configured
 const isFirebaseConfigured = () => {
   return !!process.env.FIREBASE_PROJECT_ID;
 };
 
-// Vector database setup for document embeddings
+// Vector database setup for document embeddings (lazy-loaded)
 let vectorDb: any = null;
 let documentTable: any = null;
+let vectorDbInitialized = false;
 
 async function initializeVectorDb() {
+  if (vectorDbInitialized) return;
+  vectorDbInitialized = true;
+
   try {
-    // For simplicity, we'll use an in-memory LanceDB instance
-    // In production, you would use a persistent storage
+    const lancedb = await import("@lancedb/lancedb");
     const db = await lancedb.connect("./data/lancedb");
     
-    // Check if the table exists, if not create it
     const tables = await db.tableNames();
     if (!tables.includes("documents")) {
-      // Define the schema for our document embeddings
       documentTable = await db.createTable("documents", [
         { id: "", document_id: "", text_chunk: "", vector: Array(1536).fill(0) }
       ]);
@@ -50,12 +51,14 @@ async function initializeVectorDb() {
     vectorDb = db;
     console.log("Vector database initialized successfully");
   } catch (error) {
-    console.error("Error initializing vector database:", error);
+    console.warn("Vector database not available (expected in serverless):", (error as Error).message);
   }
 }
 
-// Initialize the vector database when the server starts
-initializeVectorDb();
+// Only auto-initialize in non-serverless environments
+if (!process.env.VERCEL) {
+  initializeVectorDb();
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
