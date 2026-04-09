@@ -64,7 +64,9 @@ async function initServer() {
   });
 
   // Setup vite/static serving and listen
-  if (app.get("env") === "development") {
+  const isDev = process.env.NODE_ENV === "development" || app.get("env") === "development";
+  
+  if (isDev) {
     await setupVite(app, server);
   } else {
     serveStatic(app);

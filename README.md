@@ -109,8 +109,8 @@ The admin panel is restricted to authorized administrators.
 2. Connect your GitHub repository.
 3. Set the following configurations:
    - **Runtime:** `Node`
-   - **Build Command:** `pnpm install && pnpm run build`
-   - **Start Command:** `pnpm run start`
+   - **Build Command:** `pnpm install && pnpm run build` 
+   - **Start Command:** `pnpm run start` 
 4. Configure environment variables in the Render dashboard (see below).
 5. Deploy.
 
