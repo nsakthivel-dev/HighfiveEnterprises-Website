@@ -4,9 +4,10 @@
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": "24.x",
+    "pnpm": ">=9.0.0"
   },
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
     "dev:client": "vite --host --port 3000",
@@ -121,7 +122,6 @@
     "@types/react-dom": "^18.3.1",
     "@types/react-helmet": "^6.1.11",
     "@types/three": "^0.181.0",
-    "@types/uuid": "^11.0.0",
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^29.0.2",
@@ -129,6 +129,5 @@
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
-  },
-  "packageManager": "pnpm@9.0.0"
+  }
 }
