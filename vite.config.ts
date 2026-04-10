@@ -7,7 +7,8 @@ import fs from "fs";
 export default defineConfig({
   plugins: [
     (react() as any),
-    (runtimeErrorOverlay() as any),
+    // Only use runtime error overlay in development
+    process.env.NODE_ENV !== 'production' && (runtimeErrorOverlay() as any),
     {
       name: "copy-redirects",
       writeBundle() {
