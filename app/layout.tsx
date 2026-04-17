@@ -34,7 +34,6 @@ export const metadata: Metadata = {
   },
   description: "Lupus Venture is a premier tech agency specializing in building high-performance web applications, mobile apps, and custom tech solutions for visionaries and growing businesses.",
   keywords: "tech agency, web development, mobile app development, startup solutions, scalable software, Lupus Venture, UI/UX design",
-  authors: [{ name: "Lupus Venture Team" }],
   creator: "Lupus Venture",
   publisher: "Lupus Venture",
   formatDetection: {
