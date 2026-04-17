@@ -73,18 +73,33 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "..", "dist", "public");
+  const distPath = path.resolve(import.meta.dirname, "..", "out");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory: ${distPath}, make sure to run 'pnpm build' first`,
     );
   }
 
+  // Serve static files from the Next.js export directory
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req: Request, res: Response) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  // Handle Next.js clean URLs (e.g., /who-we-are serves who-we-are.html)
+  app.use("*", (req: Request, res: Response) => {
+    const url = req.originalUrl.split('?')[0]; // Remove query params
+    
+    // Direct file check (for sitemap.xml, robots.txt, etc.)
+    const directPath = path.join(distPath, url);
+    if (fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {
+      return res.sendFile(directPath);
+    }
+
+    // Next.js clean URL check
+    const htmlPath = path.join(distPath, url === "/" ? "index.html" : `${url}.html`);
+    if (fs.existsSync(htmlPath)) {
+      res.sendFile(htmlPath);
+    } else {
+      res.sendFile(path.resolve(distPath, "404.html"));
+    }
   });
 }
