@@ -78,13 +78,13 @@ export default function ContactForm() {
   return (
     <form 
       onSubmit={handleSubmit} 
-      className="space-y-8"
+      className="space-y-6"
     >
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_subject" value="New Project Inquiry - Lupus Venture" />
       
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-3">
+      <div className="grid md:grid-cols-2 gap-5">
+        <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-1">
             Full Name
           </Label>
@@ -93,11 +93,11 @@ export default function ContactForm() {
             name="name"
             placeholder="John Doe"
             required
-            className="h-14 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
+            className="h-12 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
           />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-1">
             Email Address
           </Label>
@@ -107,12 +107,12 @@ export default function ContactForm() {
             type="email"
             placeholder="john@example.com"
             required
-            className="h-14 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
+            className="h-12 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
           />
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <Label htmlFor="reason" className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-1">
           Subject / Reason
         </Label>
@@ -122,11 +122,11 @@ export default function ContactForm() {
           defaultValue={reasonValue}
           placeholder="What are you looking to build?"
           required
-          className="h-14 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
+          className="h-12 px-6 rounded-2xl bg-secondary/30 border-border/50 focus:bg-background transition-all"
         />
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <Label htmlFor="message" className="text-sm font-bold uppercase tracking-widest text-muted-foreground ml-1">
           Project Details
         </Label>
@@ -135,9 +135,9 @@ export default function ContactForm() {
           name="message"
           placeholder="Tell us about your project goals, timeline, and any specific requirements..."
           defaultValue={messageDefaultValue}
-          rows={6}
+          rows={4}
           required
-          className="px-6 py-4 rounded-[2rem] bg-secondary/30 border-border/50 focus:bg-background transition-all resize-none"
+          className="px-6 py-4 rounded-[1.5rem] bg-secondary/30 border-border/50 focus:bg-background transition-all resize-none"
         />
       </div>
 
@@ -145,7 +145,7 @@ export default function ContactForm() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <Button type="submit" className="w-full h-16 rounded-2xl text-lg font-bold group shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all">
+        <Button type="submit" className="w-full h-14 rounded-2xl text-lg font-bold group shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all">
           Send Message
           <Send className="w-5 h-5 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </Button>
