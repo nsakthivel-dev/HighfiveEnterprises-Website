@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ChatWidget from "@/components/ChatWidget";
 import Home from "@/pages/Home";
 import WhoWeAre from "@/pages/WhoWeAre";
 import WhatWeDo from "@/pages/WhatWeDo";
@@ -47,6 +48,7 @@ function App() {
               <Router />
               {!isAdminPage && <Footer />}
             </div>
+            {!isAdminPage && <ChatWidget />}
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

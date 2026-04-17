@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wuxing – 3D Looping Card Animation</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0d0d14;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    .page {
+      min-height: 100vh;
+      background: #0d0d14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 60px 20px 80px;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+      max-width: 620px;
+    }
+
+    .header .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 34px;
+      font-weight: 500;
+      color: #e8e4d9;
+      margin-bottom: 18px;
+      line-height: 1.2;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.75;
+    }
+
+    /* ── 3D Carousel ── */
+    .carousel-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      perspective: 1200px;
+      perspective-origin: 50% 50%;
+      margin-bottom: 60px;
+      height: 400px;
+      position: relative;
+    }
+
+    .carousel {
+      position: relative;
+      width: 260px;
+      height: 340px;
+      transform-style: preserve-3d;
+      animation: spin 18s linear infinite;
+    }
+
+    .carousel:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes spin {
+      from { transform: rotateY(0deg); }
+      to   { transform: rotateY(-360deg); }
+    }
+
+    /* ── Individual Cards ── */
+    .card {
+      position: absolute;
+      width: 240px;
+      height: 320px;
+      left: 10px;
+      top: 10px;
+      border-radius: 16px;
+      overflow: hidden;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .card img {
+      width: 100%;
+      height: 65%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-body {
+      padding: 18px 20px;
+      height: 35%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      line-height: 1.5;
+      opacity: 0.7;
+    }
+
+    /* Phase colours */
+    .card-water  { background: #0f1f35; }
+    .card-water  .card-body  { background: #0f1f35; }
+    .card-water  .card-label { color: #5ba3d9; }
+    .card-water  .card-desc  { color: #9bc4e8; }
+
+    .card-soil   { background: #2a1f0f; }
+    .card-soil   .card-body  { background: #2a1f0f; }
+    .card-soil   .card-label { color: #c4a25a; }
+    .card-soil   .card-desc  { color: #d9c090; }
+
+    .card-gold   { background: #1f1a0a; }
+    .card-gold   .card-body  { background: #1f1a0a; }
+    .card-gold   .card-label { color: #d4a520; }
+    .card-gold   .card-desc  { color: #e8cc7a; }
+
+    .card-fire   { background: #2a0f0a; }
+    .card-fire   .card-body  { background: #2a0f0a; }
+    .card-fire   .card-label { color: #d9503a; }
+    .card-fire   .card-desc  { color: #f0907a; }
+
+    .card-wood   { background: #0f2010; }
+    .card-wood   .card-body  { background: #0f2010; }
+    .card-wood   .card-label { color: #5aaa60; }
+    .card-wood   .card-desc  { color: #90cc94; }
+
+    /* ── Bottom Mini Cards ── */
+    .bottom-cards {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 920px;
+    }
+
+    .mini-card {
+      width: 165px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .mini-card:hover {
+      transform: translateY(-7px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .mini-card img {
+      width: 100%;
+      height: 105px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mini-card-body {
+      padding: 12px 14px;
+    }
+
+    .mini-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .mini-desc {
+      font-size: 11px;
+      line-height: 1.45;
+      opacity: 0.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .header h1 { font-size: 24px; }
+      .carousel-wrapper { height: 320px; perspective: 900px; }
+      .carousel { width: 200px; height: 270px; }
+      .card { width: 190px; height: 260px; }
+      .card img { height: 60%; }
+      .card-body { height: 40%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <p class="eyebrow">Webflow 3D Looping Card Animation</p>
+    <h1>Wuxing (Chinese philosophy)</h1>
+    <p>
+      Wuxing (Chinese: 五行; pinyin: wǔxíng), usually translated as Five Phases, is a fivefold
+      conceptual scheme that many traditional Chinese fields used to explain a wide array of
+      phenomena, from cosmic cycles to the interaction between internal organs, and from the
+      succession of political regimes to the properties of medicinal drugs.
+    </p>
+  </div>
+
+  <!-- 3D Rotating Carousel -->
+  <div class="carousel-wrapper">
+    <div class="carousel" id="carousel">
+
+      <!-- Water -->
+      <div class="card card-water" style="transform: rotateY(0deg) translateZ(360px)">
+        <img
+          src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd0187e58ee29e9a04540_water.jpg"
+          alt="Water"
+          onerror="this.style.cssText='width:100%;height:65%;display:block;background:#1a3a5c';this.removeAttribute('src')"
+        />
+        <div class="card-body">
+          <div class="card-label">Water</div>
+          <div class="card-desc">A period of retreat, where stillness, contracting and coolness.</div>
+        </div>
+      </div>
+
+      <!-- Soil -->
+      <div class="card card-soil" style="transform: rotateY(-72deg) translateZ(360px)">
+        <img
+          src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018fd6f9556ec944e2a_soil.jpg"
+          alt="Soil"
+          onerror="this.style.cssText='width:100%;height:65%;display:block;background:#3d2b0f';this.removeAttribute('src')"
+        />
+        <div class="card-body">
+          <div class="card-label">Soil</div>
+          <div class="card-desc">It can be seen as a transitional period between the other phases or seasons.</div>
+        </div>
+      </div>
+
+      <!-- Gold -->
+      <div class="card card-gold" style="transform: rotateY(-144deg) translateZ(360px)">
+        <img
+          src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd0181703207f32b99d4e_gold.jpg"
+          alt="Gold"
+          onerror="this.style.cssText='width:100%;height:65%;display:block;background:#2a220a';this.removeAttribute('src')"
+        />
+        <div class="card-body">
+          <div class="card-label">Gold</div>
+          <div class="card-desc">A period of harvesting, collecting and dryness.</div>
+        </div>
+      </div>
+
+      <!-- Fire -->
+      <div class="card card-fire" style="transform: rotateY(-216deg) translateZ(360px)">
+        <img
+          src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018fccac25c5b5c0c3e_fire.jpg"
+          alt="Fire"
+          onerror="this.style.cssText='width:100%;height:65%;display:block;background:#3d1408';this.removeAttribute('src')"
+        />
+        <div class="card-body">
+          <div class="card-label">Fire</div>
+          <div class="card-desc">A period of swelling, flowering, expanding with heat.</div>
+        </div>
+      </div>
+
+      <!-- Wood -->
+      <div class="card card-wood" style="transform: rotateY(-288deg) translateZ(360px)">
+        <img
+          src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018af5a8b5fa17f5542_wood.jpg"
+          alt="Wood"
+          onerror="this.style.cssText='width:100%;height:65%;display:block;background:#112a12';this.removeAttribute('src')"
+        />
+        <div class="card-body">
+          <div class="card-label">Wood</div>
+          <div class="card-desc">A period of growth, which generates abundant vitality, movement and wind.</div>
+        </div>
+      </div>
+
+    </div><!-- /carousel -->
+  </div><!-- /carousel-wrapper -->
+
+  <!-- Bottom Mini Cards -->
+  <div class="bottom-cards">
+
+    <div class="mini-card card-water">
+      <img src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd0187e58ee29e9a04540_water.jpg" alt="Water"
+           onerror="this.style.cssText='width:100%;height:105px;display:block;background:#1a3a5c';this.removeAttribute('src')">
+      <div class="mini-card-body">
+        <div class="mini-label" style="color:#5ba3d9">Water</div>
+        <div class="mini-desc"  style="color:#9bc4e8">Stillness, contracting and coolness.</div>
+      </div>
+    </div>
+
+    <div class="mini-card card-soil">
+      <img src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018fd6f9556ec944e2a_soil.jpg" alt="Soil"
+           onerror="this.style.cssText='width:100%;height:105px;display:block;background:#3d2b0f';this.removeAttribute('src')">
+      <div class="mini-card-body">
+        <div class="mini-label" style="color:#c4a25a">Soil</div>
+        <div class="mini-desc"  style="color:#d9c090">Transitional period between phases.</div>
+      </div>
+    </div>
+
+    <div class="mini-card card-gold">
+      <img src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd0181703207f32b99d4e_gold.jpg" alt="Gold"
+           onerror="this.style.cssText='width:100%;height:105px;display:block;background:#2a220a';this.removeAttribute('src')">
+      <div class="mini-card-body">
+        <div class="mini-label" style="color:#d4a520">Gold</div>
+        <div class="mini-desc"  style="color:#e8cc7a">Harvesting, collecting and dryness.</div>
+      </div>
+    </div>
+
+    <div class="mini-card card-fire">
+      <img src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018fccac25c5b5c0c3e_fire.jpg" alt="Fire"
+           onerror="this.style.cssText='width:100%;height:105px;display:block;background:#3d1408';this.removeAttribute('src')">
+      <div class="mini-card-body">
+        <div class="mini-label" style="color:#d9503a">Fire</div>
+        <div class="mini-desc"  style="color:#f0907a">Swelling, flowering, expanding with heat.</div>
+      </div>
+    </div>
+
+    <div class="mini-card card-wood">
+      <img src="https://assets.website-files.com/61abc21f88ad487b4609a77b/61abd018af5a8b5fa17f5542_wood.jpg" alt="Wood"
+           onerror="this.style.cssText='width:100%;height:105px;display:block;background:#112a12';this.removeAttribute('src')">
+      <div class="mini-card-body">
+        <div class="mini-label" style="color:#5aaa60">Wood</div>
+        <div class="mini-desc"  style="color:#90cc94">Growth, vitality, movement and wind.</div>
+      </div>
+    </div>
+
+  </div><!-- /bottom-cards -->
+
+</div><!-- /page -->
+
+<script>
+  /* Pause carousel on hover (handled by CSS :hover too, but this covers touch) */
+  const carousel = document.getElementById('carousel');
+  carousel.addEventListener('touchstart', () => {
+    carousel.style.animationPlayState = 'paused';
+  });
+  carousel.addEventListener('touchend', () => {
+    setTimeout(() => { carousel.style.animationPlayState = 'running'; }, 1500);
+  });
+</script>
+
+</body>
+</html>

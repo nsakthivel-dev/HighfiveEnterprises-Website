@@ -1,60 +1,134 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getWebsiteContextPrompt } from "@/lib/websiteContext";
+// Voiceflow API configuration
+const API_KEY = import.meta.env.VITE_VOICEFLOW_API_KEY || "";
+const VERSION_ID = import.meta.env.VITE_VOICEFLOW_VERSION_ID || "development";
+const BASE_URL = "https://general-runtime.voiceflow.com";
 
-// Initialize Google Generative AI with API key from environment variables
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-console.log("Gemini API Key present:", !!apiKey);
-
-if (!apiKey) {
-  console.error("Gemini API Key is missing. Please set VITE_GEMINI_API_KEY in your .env file.");
-}
-
-const genAI = new GoogleGenerativeAI(apiKey);
-
-// Use the gemini-2.5-flash model as requested
-const model = genAI.getGenerativeModel({ 
-  model: "gemini-2.5-flash",
-  systemInstruction: `You are a helpful assistant for Lupus Venture. You should only answer questions related to Lupus Venture website, its services, or other company-related topics. For any questions that are not related to Lupus Venture or its business, politely decline to answer and suggest contacting the team directly at touch@lupusventure.com.
-
-Use the following website context to provide accurate information:
-${getWebsiteContextPrompt()}`,
-  generationConfig: {
-    temperature: 0.5, // Medium creativity
-    topP: 0.95,
-    topK: 64,
-    maxOutputTokens: 8192,
-  }
-});
+console.log("Voiceflow API Key present:", !!API_KEY);
 
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  type?: string;
+  payload?: any;
 }
 
-export async function sendMessage(messages: ChatMessage[]): Promise<string> {
+/**
+ * Sends a message to the Voiceflow agent "Luna"
+ */
+export async function sendMessage(
+  message: string,
+  userID: string = "user_123"
+): Promise<ChatMessage[]> {
   try {
-    // Check if API key is present
-    if (!apiKey) {
-      return "API key is missing. Please configure your Google Gemini API key.";
+    if (!API_KEY) {
+      return [{
+        role: "assistant",
+        content: "Voiceflow API key is missing. Please configure VITE_VOICEFLOW_API_KEY."
+      }];
     }
-    
-    // Get the latest user message
-    const latestMessage = messages[messages.length - 1]?.content || "";
-    console.log("Sending message to Gemini:", latestMessage);
 
-    // Generate content with the latest message
-    const result = await model.generateContent(latestMessage);
-    const response = await result.response;
-    console.log("Received response from Gemini:", response.text());
-    return response.text();
-  } catch (error: any) {
-    console.error("Error sending message to Gemini:", error);
-    
-    // Provide more specific error messages
-    if (error.message) {
-      return error.message;
-    } else {
-      return "Sorry, I'm having trouble connecting to the AI service right now. Please try again later or contact us directly at touch@lupusventure.com.";
+    const response = await fetch(`${BASE_URL}/state/user/${userID}/interact`, {
+      method: "POST",
+      headers: {
+        Authorization: API_KEY,
+        versionID: VERSION_ID,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: {
+          type: "text",
+          payload: message
+        },
+        config: {
+          tts: false,
+          stripSSML: true
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const traces = await response.json();
+    const messages: ChatMessage[] = [];
+
+    for (const trace of traces) {
+      if (trace.type === "text" || trace.type === "speak") {
+        messages.push({
+          role: "assistant",
+          content: trace.payload.message,
+          type: "text"
+        });
+      } else if (trace.type === "choice") {
+        messages.push({
+          role: "assistant",
+          content: "Please choose an option:",
+          type: "choice",
+          payload: trace.payload.choices
+        });
+      }
+    }
+
+    return messages;
+  } catch (error: any) {
+    console.error("Error sending message to Voiceflow:", error);
+    return [{
+      role: "assistant",
+      content: "Sorry, I'm having trouble connecting to Luna right now. Please try again later."
+    }];
+  }
+}
+
+/**
+ * Starts a new conversation session
+ */
+export async function startConversation(userID: string = "user_123"): Promise<ChatMessage[]> {
+  try {
+    if (!API_KEY) {
+      return [{
+        role: "assistant",
+        content: "Voiceflow API key is missing. Please configure VITE_VOICEFLOW_API_KEY."
+      }];
+    }
+
+    const response = await fetch(`${BASE_URL}/state/user/${userID}/interact`, {
+      method: "POST",
+      headers: {
+        Authorization: API_KEY,
+        versionID: VERSION_ID,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: {
+          type: "launch"
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const traces = await response.json();
+    const messages: ChatMessage[] = [];
+
+    for (const trace of traces) {
+      if (trace.type === "text" || trace.type === "speak") {
+        messages.push({
+          role: "assistant",
+          content: trace.payload.message,
+          type: "text"
+        });
+      }
+    }
+
+    return messages;
+  } catch (error: any) {
+    console.error("Error starting conversation with Voiceflow:", error);
+    return [{
+      role: "assistant",
+      content: "Hi, I'm Luna. I'm having some trouble starting our conversation. Please check my configuration."
+    }];
   }
 }
