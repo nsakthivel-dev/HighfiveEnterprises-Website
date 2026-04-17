@@ -9,9 +9,9 @@
   },
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "cross-env NODE_ENV=development next dev",
+    "build": "cross-env NODE_ENV=production next build",
+    "start": "cross-env NODE_ENV=production next start",
     "server": "cross-env NODE_ENV=production tsx server/index.ts",
     "check": "tsc",
     "db:push": "echo 'Database migrations are managed by Firebase'",
