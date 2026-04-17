@@ -1,18 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // Enable static site generation (SSG)
+  // Vercel handles image optimization natively, 
+  // but we keep this if you want to skip it for static assets.
   images: {
-    unoptimized: true, // Required for static export
+    unoptimized: true, 
   },
-  // Add path aliases to match existing project structure
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': './client/src',
-      '@assets': './assets',
-    };
-    return config;
-  },
+  // We removed the custom webpack config because Next.js 15+ 
+  // uses Turbopack by default and automatically picks up 
+  // path aliases from your tsconfig.json.
 };
 
 export default nextConfig;
