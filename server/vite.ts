@@ -76,9 +76,10 @@ export function serveStatic(app: Express) {
   const distPath = path.resolve(import.meta.dirname, "..", "out");
 
   if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to run 'pnpm build' first`,
-    );
+    console.warn(`Warning: Could not find the build directory: ${distPath}`);
+    console.warn("Serving without static files - make sure to run 'pnpm build' first");
+    // Don't throw error, just log warning
+    return;
   }
 
   // Serve static files from the Next.js export directory

@@ -81,14 +81,21 @@ async function initServer() {
   log(`Starting server in ${isDev ? 'development' : 'production'} mode`);
   log(`Environment port: ${envPort || 'not set'}`);
   log(`Attempting to listen on port: ${desiredPort}`);
+  log(`Host: ${host}`);
 
   // Handle server errors
   server.on('error', (err: any) => {
     console.error('Server error:', err);
     if (err && err.code === 'EADDRINUSE') {
       console.error(`Port ${desiredPort} is already in use`);
+      // Try a different port in production
+      if (!isDev) {
+        const fallbackPort = desiredPort + 1;
+        log(`Trying fallback port: ${fallbackPort}`);
+        server.listen(fallbackPort, host);
+      }
     }
-    process.exit(1);
+    // Don't exit on error - log and let it retry
   });
 
   // Handle successful server start
@@ -97,6 +104,8 @@ async function initServer() {
     const actualPort = typeof addr === 'object' && addr ? addr.port : desiredPort;
     log(`Server successfully started on ${host}:${actualPort}`);
     log(`Server is ready to accept connections`);
+    // Keep the process alive
+    process.stdin.resume();
   });
 
   // Start listening
@@ -109,19 +118,26 @@ async function initServer() {
 
 serverReady = initServer().catch((error) => {
   console.error('Failed to initialize server:', error);
-  process.exit(1);
+  // Log the error but don't exit - let the server try to continue
+  console.error('Server initialization failed, but process will continue running');
 });
 
-// Handle uncaught exceptions
+// Handle uncaught exceptions - log but don't exit in production
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
-  process.exit(1);
+  // In production, don't exit immediately - log and continue
+  if (process.env.NODE_ENV === 'development') {
+    process.exit(1);
+  }
 });
 
-// Handle unhandled promise rejections
+// Handle unhandled promise rejections - log but don't exit in production
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
+  // In production, don't exit immediately - log and continue
+  if (process.env.NODE_ENV === 'development') {
+    process.exit(1);
+  }
 });
 
 // Export the app

@@ -55,8 +55,10 @@ async function initializeVectorDb() {
   }
 }
 
-// Initialize Vector database
-initializeVectorDb();
+// Initialize Vector database (non-blocking)
+initializeVectorDb().catch((error) => {
+  console.warn("Vector database initialization failed (non-critical):", (error as Error).message);
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
