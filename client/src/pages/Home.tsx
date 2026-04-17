@@ -11,6 +11,7 @@ import {
   Cpu, 
   Layout,
   Code2,
+  Sparkles,
   ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
@@ -18,36 +19,85 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 const bentoFeatures = [
   {
-    icon: <Zap className="w-6 h-6" />,
+    icon: <Zap className="w-8 h-8" />,
     title: "High Performance",
-    description: "Experience blazing fast load times and smooth interactions with our optimized engine. We focus on performance-first architecture to ensure your users never have to wait.",
-    className: "md:col-span-2 bg-primary/5 border-primary/10 hover:border-primary/30",
+    highlight: "99.9%",
+    description: "Blazing fast load times and smooth interactions.",
+    className: "md:col-span-1 md:row-span-2 bg-primary/5 border-primary/10 hover:border-primary/30",
     delay: 0.1,
-    color: "primary"
+    color: "primary",
+    large: true
   },
   {
     icon: <ShieldCheck className="w-6 h-6" />,
-    title: "Enterprise Security",
-    description: "Built-in protection for your data and users. We implement industry-standard security protocols and encryption by default.",
-    className: "md:col-span-1 bg-indigo-500/5 border-indigo-500/10 hover:border-indigo-500/30",
+    title: "Secure",
+    description: "Built-in data protection.",
+    className: "md:col-span-1 md:row-span-1 bg-secondary/50 border-border/50 hover:border-primary/30",
     delay: 0.2,
-    color: "indigo-500"
+    color: "primary"
   },
   {
-    icon: <Cpu className="w-6 h-6" />,
-    title: "Scalable Core",
-    description: "Robust architecture that grows alongside your business needs without compromising stability.",
-    className: "md:col-span-1 bg-cyan-500/5 border-cyan-500/10 hover:border-cyan-500/30",
+    icon: <Cpu className="w-8 h-8" />,
+    title: "Scalable",
+    highlight: "Cloud",
+    description: "Grows with your business needs.",
+    className: "md:col-span-1 md:row-span-2 bg-cyan-500/5 border-cyan-500/10 hover:border-cyan-500/30",
     delay: 0.3,
-    color: "cyan-500"
+    color: "cyan-600",
+    large: true
   },
   {
-    icon: <Layout className="w-6 h-6" />,
-    title: "Bespoke UI Design",
-    description: "Pixel-perfect interfaces tailored to your brand's unique identity. We create intuitive user experiences that drive engagement and conversion.",
-    className: "md:col-span-2 bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30",
+    icon: <Target className="w-6 h-6" />,
+    title: "Goal Oriented",
+    description: "Focused on your objectives.",
+    className: "md:col-span-1 md:row-span-1 bg-secondary/50 border-border/50 hover:border-primary/30",
     delay: 0.4,
-    color: "amber-500"
+    color: "primary"
+  },
+  {
+    icon: <Layout className="w-8 h-8" />,
+    title: "UI/UX Design",
+    highlight: "Custom",
+    description: "Pixel-perfect interfaces tailored to your brand.",
+    className: "md:col-span-2 md:row-span-1 bg-amber-500/5 border-amber-500/10 hover:border-amber-500/30",
+    delay: 0.5,
+    color: "amber-600",
+    large: true
+  },
+  {
+    icon: <Code2 className="w-6 h-6" />,
+    title: "Modern Tech",
+    description: "Latest reliable technology.",
+    className: "md:col-span-1 md:row-span-1 bg-secondary/50 border-border/50 hover:border-primary/30",
+    delay: 0.6,
+    color: "primary"
+  },
+  {
+    icon: <Compass className="w-6 h-6" />,
+    title: "Cloud Native",
+    highlight: "VPC",
+    description: "Modern cloud architecture.",
+    className: "md:col-span-1 md:row-span-1 bg-violet-500/5 border-violet-500/10 hover:border-violet-500/30",
+    delay: 0.7,
+    color: "violet-600"
+  },
+  {
+    icon: <ArrowRight className="w-6 h-6" />,
+    title: "Global Edge",
+    highlight: "CDN",
+    description: "Fast delivery anywhere.",
+    className: "md:col-span-1 md:row-span-1 bg-blue-500/5 border-blue-500/10 hover:border-blue-500/30",
+    delay: 0.8,
+    color: "blue-600"
+  },
+  {
+    icon: <Sparkles className="w-6 h-6" />,
+    title: "AI Powered",
+    highlight: "Smart",
+    description: "Next-gen intelligent solutions.",
+    className: "md:col-span-1 md:row-span-1 bg-fuchsia-500/5 border-fuchsia-500/10 hover:border-fuchsia-500/30",
+    delay: 0.9,
+    color: "fuchsia-600"
   }
 ];
 
@@ -58,7 +108,7 @@ function FeatureCard({ feature }: { feature: typeof bentoFeatures[0] }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: feature.delay }}
-      className={`group relative rounded-3xl border p-8 transition-all duration-700 hover:shadow-2xl overflow-hidden ${feature.className}`}
+      className={`group relative rounded-[1.5rem] border p-4 md:p-5 transition-all duration-700 hover:shadow-2xl overflow-hidden flex flex-col justify-between ${feature.className}`}
     >
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.07] transition-opacity duration-700">
@@ -75,17 +125,24 @@ function FeatureCard({ feature }: { feature: typeof bentoFeatures[0] }) {
             repeat: Infinity, 
             ease: "easeInOut" 
           }}
-          className={`w-14 h-14 rounded-2xl bg-background border border-border flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-primary/50 transition-all duration-500 text-${feature.color} shadow-lg shadow-black/5`}
+          className={`w-9 h-9 md:w-10 md:h-10 rounded-xl bg-background border border-border flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 group-hover:border-primary/50 transition-all duration-500 text-${feature.color} shadow-lg shadow-black/5`}
         >
-          {feature.icon}
+          {React.cloneElement(feature.icon as React.ReactElement, { className: "w-5 h-5 md:w-6 md:h-6" })}
         </motion.div>
         
-        <h4 className="text-2xl font-bold mb-4 tracking-tight group-hover:text-primary transition-colors duration-300">
-          {feature.title}
-        </h4>
-        <p className="text-muted-foreground leading-relaxed font-light group-hover:text-foreground transition-colors duration-500">
-          {feature.description}
-        </p>
+        <div className="space-y-2 mt-auto pb-2">
+          {feature.highlight && (
+            <div className={`text-2xl md:text-3xl font-bold tracking-tighter text-${feature.color} opacity-80 mb-0.5`}>
+              {feature.highlight}
+            </div>
+          )}
+          <h4 className={`font-bold tracking-tight group-hover:text-primary transition-colors duration-300 ${feature.large ? 'text-lg md:text-xl' : 'text-base md:text-lg'}`}>
+            {feature.title}
+          </h4>
+          <p className={`text-muted-foreground leading-relaxed font-light group-hover:text-foreground transition-colors duration-500 ${feature.large ? 'text-xs md:text-sm' : 'text-[9px] md:text-[11px]'}`}>
+            {feature.description}
+          </p>
+        </div>
       </div>
 
       {/* Dynamic Border Beam Effect */}
@@ -117,6 +174,11 @@ function FeatureCard({ feature }: { feature: typeof bentoFeatures[0] }) {
           --glow-rgb: ${feature.color === 'primary' ? '99, 102, 241' : 
                         feature.color === 'indigo-500' ? '79, 70, 229' : 
                         feature.color === 'cyan-500' ? '6, 182, 212' : 
+                        feature.color === 'emerald-500' ? '16, 185, 129' :
+                        feature.color === 'rose-500' ? '244, 63, 94' :
+                        feature.color === 'violet-500' ? '139, 92, 246' :
+                        feature.color === 'blue-500' ? '59, 130, 246' :
+                        feature.color === 'fuchsia-500' ? '217, 70, 239' :
                         '245, 158, 11'};
         }
       `}</style>
@@ -160,9 +222,9 @@ export default function Home() {
       </section>
 
       {/* Core Capabilities Section */}
-      <section className="py-32 px-6 bg-background relative overflow-hidden">
+      <section className="py-24 pb-32 px-6 bg-background relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-20">
+          <div className="mb-12">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -184,7 +246,7 @@ export default function Home() {
             </motion.h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:auto-rows-[185px] grid-flow-dense">
             {bentoFeatures.map((feature, index) => (
               <FeatureCard key={index} feature={feature} />
             ))}
@@ -192,65 +254,52 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mission/Vision: Sticky Side Scroll */}
-      <section className="py-32 px-6 bg-secondary/30 relative">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-20">
-            <div className="space-y-12">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="group p-12 rounded-[3rem] bg-card border border-border/50 hover:border-primary/50 transition-all duration-500"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8">
-                  <Target className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl font-bold mb-6">Our Mission</h3>
-                <p className="text-xl text-muted-foreground font-light leading-relaxed">
-                  "At our core, it's about people. Through fearless collaboration and operational brilliance, we deliver solutions that define tomorrow's standard."
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="group p-12 rounded-[3rem] bg-card border border-border/50 hover:border-primary/50 transition-all duration-500"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8">
-                  <Compass className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl font-bold mb-6">Our Vision</h3>
-                <p className="text-xl text-muted-foreground font-light leading-relaxed">
-                  To inspire excellence globally by delivering unmatched experiences and championing innovation in every project we touch.
-                </p>
-              </motion.div>
-            </div>
-
-            <div className="relative hidden lg:block">
-              <div className="sticky top-40 aspect-square rounded-[3rem] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-indigo-500/20 animate-pulse" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-2/3 h-2/3">
-                    <motion.div 
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-0 border-[1px] border-primary/20 rounded-full"
-                    />
-                    <motion.div 
-                      animate={{ rotate: -360 }}
-                      transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                      className="absolute inset-8 border-[1px] border-indigo-500/20 rounded-full"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Code2 className="w-16 h-16 text-primary opacity-50" />
-                    </div>
+      {/* Mission & Vision: Modern Split Focus */}
+      <section className="py-24 px-6 bg-secondary/20 relative overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-1 px-1 bg-border/20 rounded-[3rem] overflow-hidden border border-border/50">
+            {/* Mission Panel */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="group relative p-10 md:p-16 bg-background/60 backdrop-blur-md hover:bg-background/80 transition-all duration-700"
+            >
+              <div className="relative z-10 space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500 shadow-sm">
+                    <Target className="w-6 h-6" />
                   </div>
+                  <h3 className="text-sm font-bold uppercase tracking-[0.4em] text-muted-foreground/60 group-hover:text-primary transition-colors duration-500">Mission</h3>
                 </div>
+                <p className="text-2xl md:text-3xl font-bold tracking-tight leading-[1.15] text-foreground">
+                  "At our core, it's about <span className="text-primary italic">people</span>. Through fearless collaboration, we deliver tomorrow's standard."
+                </p>
               </div>
-            </div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-[60px] group-hover:bg-primary/10 transition-colors duration-700" />
+            </motion.div>
+
+            {/* Vision Panel */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="group relative p-10 md:p-16 bg-background/40 backdrop-blur-md hover:bg-background/80 transition-all duration-700 border-t md:border-t-0 md:border-l border-border/50"
+            >
+              <div className="relative z-10 space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:scale-110 transition-transform duration-500 shadow-sm">
+                    <Compass className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-sm font-bold uppercase tracking-[0.4em] text-muted-foreground/60 group-hover:text-indigo-500 transition-colors duration-500">Vision</h3>
+                </div>
+                <p className="text-2xl md:text-3xl font-bold tracking-tight leading-[1.15] text-foreground">
+                  To inspire excellence globally by delivering <span className="text-indigo-500 italic">unmatched</span> experiences in every project we touch.
+                </p>
+              </div>
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-[60px] group-hover:bg-indigo-500/10 transition-colors duration-700" />
+            </motion.div>
           </div>
         </div>
       </section>
