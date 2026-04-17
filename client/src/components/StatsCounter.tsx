@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useRef } from "react";
 import { Rocket, Users, Target, Calendar } from "lucide-react";
 import { motion, useInView } from "framer-motion";

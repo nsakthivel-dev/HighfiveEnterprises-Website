@@ -1,4 +1,7 @@
-import { Link } from "wouter";
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
 import { Facebook, Github, Instagram, Linkedin, Mail, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
 import logo from "@assets/logos/logo-light.png";
 import logoDark from "@assets/logos/logo-dark.png";
@@ -39,7 +42,13 @@ export default function Footer() {
               <div className="flex items-center gap-3 mb-8 cursor-pointer group w-fit">
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg group-hover:blur-xl transition-all" />
-                  <img src={currentLogo} alt="Logo" className="relative h-12 w-12 object-contain" />
+                  <Image 
+                    src={currentLogo} 
+                    alt="Logo" 
+                    width={48}
+                    height={48}
+                    className="relative object-contain" 
+                  />
                 </div>
                 <span className="text-2xl font-bold font-heading tracking-tight">
                   Lupus <span className="text-primary">Venture</span>

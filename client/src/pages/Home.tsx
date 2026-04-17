@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useState, useEffect } from "react";
 import Hero from "@/components/Hero";
 import StatsCounter from "@/components/StatsCounter";
@@ -14,7 +16,7 @@ import {
   Sparkles,
   ChevronRight
 } from "lucide-react";
-import { Link } from "wouter";
+import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 
 const bentoFeatures = [

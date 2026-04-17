@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Loader2, RefreshCw } from "lucide-react";
@@ -15,13 +17,18 @@ const ChatWidget: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [userID] = useState(() => {
+  const [userID, setUserID] = useState<string>("");
+
+  useEffect(() => {
     const savedID = localStorage.getItem("vf_user_id");
-    if (savedID) return savedID;
-    const newID = nanoid();
-    localStorage.setItem("vf_user_id", newID);
-    return newID;
-  });
+    if (savedID) {
+      setUserID(savedID);
+    } else {
+      const newID = nanoid();
+      localStorage.setItem("vf_user_id", newID);
+      setUserID(newID);
+    }
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();

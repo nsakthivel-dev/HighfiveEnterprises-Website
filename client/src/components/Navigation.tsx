@@ -1,4 +1,8 @@
-import { Link, useLocation } from "wouter";
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Moon, Sun, Menu, X, ArrowRight } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
@@ -8,7 +12,7 @@ import logo from "@assets/logos/logo-light.png";
 import logoDark from "@assets/logos/logo-dark.png";
 
 export default function Navigation() {
-  const [location] = useLocation();
+  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -45,10 +49,13 @@ export default function Navigation() {
             <div className="flex items-center gap-3 cursor-pointer group transition-transform duration-300 hover:scale-105">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg group-hover:blur-xl transition-all" />
-                <img 
+                <Image 
                   src={currentLogo} 
                   alt="Lupus Venture Logo" 
-                  className="relative w-10 h-10 object-contain" 
+                  width={40}
+                  height={40}
+                  className="relative object-contain" 
+                  priority
                 />
               </div>
               <span className="text-xl font-bold font-heading tracking-tight text-foreground">
@@ -63,7 +70,7 @@ export default function Navigation() {
               <Link key={item.path} href={item.path}>
                 <button
                   className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 relative group ${
-                    location === item.path
+                    pathname === item.path
                       ? "text-primary-foreground bg-primary shadow-lg shadow-primary/25"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
@@ -142,7 +149,7 @@ export default function Navigation() {
                   <Link key={item.path} href={item.path}>
                     <button
                       className={`w-full text-left px-6 py-4 rounded-2xl text-lg font-semibold transition-all ${
-                        location === item.path
+                        pathname === item.path
                           ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20"
                           : "text-foreground hover:bg-secondary"
                       }`}

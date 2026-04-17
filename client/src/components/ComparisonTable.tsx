@@ -1,10 +1,12 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Check, X, Sparkles, Zap, Shield, Crown, ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import Link from "next/link";
 
 interface PackageFeature {
   name: string;

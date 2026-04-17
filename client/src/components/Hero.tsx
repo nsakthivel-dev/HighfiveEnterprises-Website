@@ -1,6 +1,6 @@
 import { ArrowRight, Sparkles, ChevronDown, Rocket, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 
@@ -10,7 +10,6 @@ export default function Hero() {
   
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-  const scale = useTransform(scrollY, [0, 300], [1, 1.1]);
 
   return (
     <section 
@@ -74,7 +73,7 @@ export default function Hero() {
               transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
               className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl leading-relaxed font-light"
             >
-              We engineer scalable, high-performance digital ecosystems for visionaries. Bridge the gap between complexity and intuitive experiences.
+              We build scalable web apps, mobile apps, and custom tech solutions for visionaries. Our team turns complex ideas into high-performance digital products that help your business grow.
             </motion.p>
 
             <motion.div

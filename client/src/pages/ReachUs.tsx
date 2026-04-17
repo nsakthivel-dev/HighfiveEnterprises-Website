@@ -1,3 +1,5 @@
+"use client";
+
 import ContactForm from "@/components/ContactForm";
 import FeedbackForm from "@/components/FeedbackForm";
 import FeedbackDisplay from "@/components/FeedbackDisplay";

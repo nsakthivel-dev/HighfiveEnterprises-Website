@@ -1,10 +1,12 @@
+"use client";
+
 import ServiceCard from "@/components/ServiceCard";
 import ComparisonTable from "@/components/ComparisonTable";
 import { Code2, Palette, Rocket, Layers, Shield, Zap, Globe, Cpu, ArrowRight, Sparkles, LayoutPanelTop, Network, Fingerprint } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Link } from "wouter";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 type ApiService = {

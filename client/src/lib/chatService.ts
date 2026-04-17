@@ -1,6 +1,6 @@
 // Voiceflow API configuration
-const API_KEY = import.meta.env.VITE_VOICEFLOW_API_KEY || "";
-const VERSION_ID = import.meta.env.VITE_VOICEFLOW_VERSION_ID || "development";
+const API_KEY = process.env.NEXT_PUBLIC_VOICEFLOW_API_KEY || "";
+const VERSION_ID = process.env.NEXT_PUBLIC_VOICEFLOW_VERSION_ID || "development";
 const BASE_URL = "https://general-runtime.voiceflow.com";
 
 console.log("Voiceflow API Key present:", !!API_KEY);

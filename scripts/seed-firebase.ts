@@ -1,4 +1,4 @@
-import { adminDb } from "../server/firebase.ts";
+import { adminDb } from "../server/firebase";
 
 const services = [
   {

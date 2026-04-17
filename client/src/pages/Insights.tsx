@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Lightbulb, Sparkles, X, Cpu, Globe, Zap, Shield } from "lucide-react";

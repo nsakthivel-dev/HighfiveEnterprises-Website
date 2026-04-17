@@ -1,1 +1,13 @@
-/* /index.html 200
+# Sitemap and Robots rules
+/sitemap.xml  /sitemap.xml  200
+/robots.txt   /robots.txt   200
+
+# Next.js Static Export Routes
+# This ensures that deep links work correctly on hosts like Netlify
+/who-we-are   /who-we-are.html   200
+/what-we-do   /what-we-do.html   200
+/insights     /insights.html     200
+/reach-us     /reach-us.html     200
+
+# Catch-all for other routes to the home page (optional, 404 is usually better)
+# /*  /index.html  200

@@ -261,12 +261,13 @@
     z-index: -1;
   }
 
-  .toggle-elevate.toggle-elevated::before {
-    background-color: var(--elevate-2);
+  .toggle-elevate[class*="border"]::before,
+  .toggle-elevate-2[class*="border"]::before {
+    inset: -1px;
   }
 
-  .border.toggle-elevate::before {
-    inset: -1px;
+  .toggle-elevate.toggle-elevated::before {
+    background-color: var(--elevate-2);
   }
 
   .hover-elevate:not(.no-default-hover-elevate),
@@ -299,11 +300,10 @@
     background-color: var(--elevate-2);
   }
 
-  .border.hover-elevate:not(.no-hover-interaction-elevate)::after,
-  .border.active-elevate:not(.no-active-interaction-elevate)::after,
-  .border.hover-elevate-2:not(.no-hover-interaction-elevate)::after,
-  .border.active-elevate-2:not(.no-active-interaction-elevate)::after,
-  .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
+  .hover-elevate[class*="border"]:not(.no-hover-interaction-elevate)::after,
+  .active-elevate[class*="border"]:not(.no-active-interaction-elevate)::after,
+  .hover-elevate-2[class*="border"]:not(.no-hover-interaction-elevate)::after,
+  .active-elevate-2[class*="border"]:not(.no-active-interaction-elevate)::after {
     inset: -1px;
   }
 
