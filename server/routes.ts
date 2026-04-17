@@ -1,6 +1,6 @@
 import express, { type Express, type Request, type Response } from "express";
 import { createServer, type Server } from "http";
-import { adminDb, adminStorage } from "./firebase";
+import { adminDb, adminStorage, firebaseInitialized } from "./firebase";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
@@ -73,6 +73,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      if (!firebaseInitialized || !adminStorage) {
+        return res.status(503).json({ error: "Firebase storage not configured" });
       }
 
       const file = req.file;
@@ -364,7 +368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .limit(50)
         .get();
       
-      const activities = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const activities = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(activities);
     } catch (err: any) {
       console.error("Unexpected error in /api/activity:", err);
@@ -419,7 +423,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy("created_at", "desc")
         .get();
       
-      const services = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const services = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(services);
     } catch (err: any) {
       console.error("Unexpected error in /api/services:", err);
@@ -494,7 +498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy("created_at", "desc")
         .get();
       
-      const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const packages = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(packages);
     } catch (err: any) {
       console.error("Unexpected error in /api/packages:", err);
@@ -512,7 +516,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy("sort_order", "asc")
         .orderBy("created_at", "desc")
         .get();
-      const packages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const packages = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(packages);
     } catch (error: any) {
       return res.status(500).json({ message: error.message });
@@ -601,7 +605,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .orderBy("created_at", "desc")
         .get();
       
-      const feedbackList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const feedbackList = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(feedbackList);
     } catch (err: any) {
       console.error("Unexpected error in /api/feedback:", err);
@@ -651,7 +655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const snapshot = await adminDb.collection("feedback")
         .orderBy("created_at", "desc")
         .get();
-      const feedbackList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const feedbackList = snapshot.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
       return res.json(feedbackList);
     } catch (error: any) {
       return res.status(500).json({ message: error.message });

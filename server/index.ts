@@ -72,52 +72,57 @@ async function initServer() {
     serveStatic(app);
   }
 
+  // Get port from environment variable (Render provides this)
   const envPort = process.env.PORT;
-  let desiredPort = envPort ? parseInt(envPort, 10) : 4000;
+  const desiredPort = envPort ? parseInt(envPort, 10) : 4000;
   const host = '0.0.0.0';
 
-  let attempts = 0;
-  const maxAttempts = 10;
+  // Log startup information
+  log(`Starting server in ${isDev ? 'development' : 'production'} mode`);
+  log(`Environment port: ${envPort || 'not set'}`);
+  log(`Attempting to listen on port: ${desiredPort}`);
 
-  const tryListen = (p: number) => {
-    server.removeAllListeners('error');
-    if (p === 0) {
-      server.listen({ port: 0, host }, () => {
-        const addr = server.address();
-        const actualPort = typeof addr === 'object' && addr ? addr.port : p;
-        log(`serving on http://localhost:${actualPort}`);
-      });
-      return;
+  // Handle server errors
+  server.on('error', (err: any) => {
+    console.error('Server error:', err);
+    if (err && err.code === 'EADDRINUSE') {
+      console.error(`Port ${desiredPort} is already in use`);
     }
+    process.exit(1);
+  });
 
-    server.on('error', (err: any) => {
-      if (err && err.code === 'EADDRINUSE') {
-        attempts += 1;
-        if (attempts <= maxAttempts) {
-          const nextPort = p + 1;
-          log(`EADDRINUSE on ${host}:${p}, retrying on ${nextPort}…`);
-          tryListen(nextPort);
-        } else {
-          log(`EADDRINUSE: Exhausted retries up to ${p}.`);
-          throw err;
-        }
-      } else if (err && err.code === 'ENOTSUP') {
-        log(`ENOTSUP: Failed to bind to ${host}:${p}`);
-        tryListen(p + 1);
-      } else {
-        throw err;
-      }
-    });
+  // Handle successful server start
+  server.on('listening', () => {
+    const addr = server.address();
+    const actualPort = typeof addr === 'object' && addr ? addr.port : desiredPort;
+    log(`Server successfully started on ${host}:${actualPort}`);
+    log(`Server is ready to accept connections`);
+  });
 
-    server.listen({ port: p, host }, () => {
-      log(`serving on http://localhost:${p}`);
-    });
-  };
-
-  tryListen(desiredPort);
+  // Start listening
+  server.listen(desiredPort, host, () => {
+    const addr = server.address();
+    const actualPort = typeof addr === 'object' && addr ? addr.port : desiredPort;
+    log(`Express server listening on http://${host}:${actualPort}`);
+  });
 }
 
-serverReady = initServer();
+serverReady = initServer().catch((error) => {
+  console.error('Failed to initialize server:', error);
+  process.exit(1);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
 
 // Export the app
 export { app, serverReady };
