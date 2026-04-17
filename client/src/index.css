@@ -198,6 +198,46 @@
   100% { transform: translate(0px, 0px) scale(1); }
 }
 
+/* 3D Carousel Animations */
+@keyframes spin-carousel {
+  from { transform: rotateY(0deg); }
+  to   { transform: rotateY(-360deg); }
+}
+
+.carousel-3d-container {
+  perspective: 800px;
+  perspective-origin: 50% 50%;
+}
+
+@media (min-width: 768px) {
+  .carousel-3d-container {
+    perspective: 1200px;
+  }
+}
+
+.carousel-3d-inner {
+  --translate-z: 220px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: spin-carousel 25s linear infinite;
+}
+
+@media (min-width: 768px) {
+  .carousel-3d-inner {
+    --translate-z: 400px;
+  }
+}
+
+.carousel-3d-inner:hover {
+  animation-play-state: paused;
+}
+
+.carousel-3d-card {
+  position: absolute;
+  backface-visibility: visible;
+  transform-style: preserve-3d;
+}
+
 @layer utilities {
   .animate-blob {
     animation: blob 7s infinite;

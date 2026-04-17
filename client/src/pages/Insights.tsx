@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Target, Lightbulb, TrendingUp, Sparkles, ArrowRight, X, Cpu, Globe, Zap, Shield } from "lucide-react";
+import { Rocket, Lightbulb, Sparkles, X, Cpu, Globe, Zap, Shield } from "lucide-react";
 
 interface InsightGoal {
   icon: React.ReactNode;
@@ -80,6 +80,21 @@ export default function Insights() {
       bg: "bg-purple-500/10",
       delay: 0.4,
       floatingProps: { duration: 9, xRange: [30, -30], yRange: [-20, 20] }
+    },
+    {
+      icon: <Lightbulb className="w-8 h-8" />,
+      title: "Innovation Lab",
+      description: "A dedicated space for experimental R&D in emerging technologies.",
+      details: [
+        "Quantum computing explorations",
+        "Web3 decentralized applications",
+        "Mixed reality enterprise tools",
+        "Bio-metric data security"
+      ],
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+      delay: 0.5,
+      floatingProps: { duration: 11, xRange: [-25, 25], yRange: [25, -25] }
     }
   ];
 
@@ -92,82 +107,56 @@ export default function Insights() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 px-6 z-10">
-        <div className="max-w-5xl mx-auto text-center">
+      <section className="relative pt-24 md:pt-32 pb-12 md:pb-16 px-6 z-10">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-md">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary uppercase tracking-widest">What's Cooking</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 md:mb-8 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[10px] md:text-sm font-semibold text-primary uppercase tracking-widest">What's Cooking</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 tracking-tight font-heading">
+            <h1 className="text-4xl md:text-7xl font-bold mb-6 md:mb-8 tracking-tight font-heading leading-tight">
               Future <span className="text-primary">Insights</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed">
+            <p className="text-base md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed px-4">
               Peek into our laboratory where we're building the tools of tomorrow.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Floating Cards Section */}
-      <section className="relative py-24 px-6 min-h-[600px] flex items-center justify-center">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-            {futureGoals.map((goal, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1,
-                  x: goal.floatingProps.xRange,
-                  y: goal.floatingProps.yRange,
-                }}
-                transition={{
-                  x: {
-                    duration: goal.floatingProps.duration,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut",
-                  },
-                  y: {
-                    duration: goal.floatingProps.duration * 1.2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut",
-                  },
-                  opacity: { duration: 0.5, delay: goal.delay },
-                  scale: { duration: 0.5, delay: goal.delay }
-                }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  zIndex: 20,
-                  transition: { duration: 0.2 }
-                }}
-                onClick={() => setSelectedGoal(goal)}
-                className="cursor-pointer group relative"
-              >
-                <div className="p-8 rounded-[2rem] bg-card/40 backdrop-blur-xl border border-white/5 hover:border-primary/30 transition-all duration-500 shadow-xl hover:shadow-primary/10 flex flex-col items-center text-center h-full">
-                  <div className={`w-16 h-16 rounded-2xl ${goal.bg} ${goal.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
-                    {goal.icon}
+      {/* 3D Carousel Section */}
+      <section className="relative py-16 md:py-24 px-6 min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center overflow-visible z-10">
+        <div className="carousel-3d-container w-full flex justify-center h-[300px] md:h-[400px] mb-12 md:mb-20">
+          <div className="carousel-3d-inner w-[180px] h-[260px] md:w-[260px] md:h-[340px]">
+            {futureGoals.map((goal, index) => {
+              const rotation = index * (360 / futureGoals.length);
+              return (
+                <div 
+                  key={index}
+                  className="carousel-3d-card w-[170px] h-[240px] md:w-[240px] md:h-[320px] left-[5px] md:left-[10px] top-[5px] md:top-[10px] rounded-[1.5rem] md:rounded-[2rem] border border-border bg-card/40 backdrop-blur-xl overflow-hidden cursor-pointer group hover:border-primary/30 transition-all duration-500 shadow-xl hover:shadow-primary/10"
+                  style={{ 
+                    transform: `rotateY(-${rotation}deg) translateZ(var(--translate-z))`,
+                  }}
+                  onClick={() => setSelectedGoal(goal)}
+                >
+                  <div className="h-[55%] md:h-[60%] w-full overflow-hidden bg-gradient-to-br from-primary/10 to-transparent flex items-center justify-center p-6 md:p-8 group-hover:scale-105 transition-transform duration-500">
+                    <div className={`w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl ${goal.bg} ${goal.color} flex items-center justify-center shadow-lg`}>
+                      {React.cloneElement(goal.icon as React.ReactElement, { className: "w-6 h-6 md:w-8 md:h-8" })}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">{goal.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed font-light mb-6 line-clamp-3">
-                    {goal.description}
-                  </p>
-                  <div className="mt-auto flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Details <ArrowRight className="w-3 h-3" />
+                  <div className="h-[45%] md:h-[40%] p-4 md:p-6 flex flex-col justify-center text-center">
+                    <div className={`text-[10px] md:text-xs font-bold tracking-widest uppercase mb-1 md:mb-2 ${goal.color}`}>{goal.title}</div>
+                    <div className="text-[11px] md:text-sm text-muted-foreground leading-relaxed line-clamp-2 font-light">
+                      {goal.description}
+                    </div>
                   </div>
                 </div>
-
-                {/* Glow Effect */}
-                <div className="absolute inset-0 -z-10 bg-primary/5 rounded-[2rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
