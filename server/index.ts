@@ -2,8 +2,16 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import dotenv from "dotenv";
+import { createServer } from "http";
 
 dotenv.config();
+
+// Immediate startup logging
+console.log("=== SERVER STARTUP INITIATED ===");
+console.log("Node version:", process.version);
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("PORT:", process.env.PORT);
+console.log("Working directory:", process.cwd());
 
 const app = express();
 
@@ -12,6 +20,7 @@ declare module 'http' {
     rawBody: unknown
   }
 }
+
 app.use(express.json({
   verify: (req, _res, buf) => {
     req.rawBody = buf;
@@ -49,97 +58,103 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register routes and set up the server
-let serverReady: Promise<void>;
-
-async function initServer() {
-  const server = await registerRoutes(app);
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
+// Health check endpoint for Render
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Highfive Enterprises API is running",
+    timestamp: new Date().toISOString()
   });
+});
 
-  // Setup vite/static serving and listen
-  const isDev = process.env.NODE_ENV === "development" || app.get("env") === "development";
-  
-  if (isDev) {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    uptime: process.uptime()
+  });
+});
 
-  // Get port from environment variable (Render provides this)
-  const envPort = process.env.PORT;
-  const desiredPort = envPort ? parseInt(envPort, 10) : 4000;
-  const host = '0.0.0.0';
+// Error handler middleware
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('Express error:', err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+});
 
-  // Log startup information
-  log(`Starting server in ${isDev ? 'development' : 'production'} mode`);
-  log(`Environment port: ${envPort || 'not set'}`);
-  log(`Attempting to listen on port: ${desiredPort}`);
-  log(`Host: ${host}`);
+// Start the server
+async function start() {
+  try {
+    console.log("Step 1: Registering routes...");
+    const httpServer = await registerRoutes(app);
+    console.log("Step 1: Routes registered successfully");
 
-  // Handle server errors
-  server.on('error', (err: any) => {
-    console.error('Server error:', err);
-    if (err && err.code === 'EADDRINUSE') {
-      console.error(`Port ${desiredPort} is already in use`);
-      // Try a different port in production
-      if (!isDev) {
-        const fallbackPort = desiredPort + 1;
-        log(`Trying fallback port: ${fallbackPort}`);
-        server.listen(fallbackPort, host);
+    const isDev = process.env.NODE_ENV === "development";
+    
+    if (!isDev) {
+      console.log("Step 2: Setting up static file serving...");
+      try {
+        serveStatic(app);
+        console.log("Step 2: Static file serving configured");
+      } catch (staticError) {
+        console.warn("Warning: Static file serving setup failed:", staticError);
       }
     }
-    // Don't exit on error - log and let it retry
-  });
 
-  // Handle successful server start
-  server.on('listening', () => {
-    const addr = server.address();
-    const actualPort = typeof addr === 'object' && addr ? addr.port : desiredPort;
-    log(`Server successfully started on ${host}:${actualPort}`);
-    log(`Server is ready to accept connections`);
-    // Keep the process alive
-    process.stdin.resume();
-  });
+    // Render provides the PORT environment variable
+    const port = parseInt(process.env.PORT || "4000", 10);
+    const host = '0.0.0.0';
 
-  // Start listening
-  server.listen(desiredPort, host, () => {
-    const addr = server.address();
-    const actualPort = typeof addr === 'object' && addr ? addr.port : desiredPort;
-    log(`Express server listening on http://${host}:${actualPort}`);
-  });
+    console.log(`Step 3: Starting HTTP server on ${host}:${port}...`);
+    
+    // Set a timeout to detect if server fails to start
+    const startupTimeout = setTimeout(() => {
+      console.error("Server failed to start within 30 seconds");
+      process.exit(1);
+    }, 30000);
+    
+    httpServer.listen(port, host, () => {
+      clearTimeout(startupTimeout);
+      console.log("=== SERVER STARTED SUCCESSFULLY ===");
+      console.log(`Express server listening on http://${host}:${port}`);
+      console.log(`Environment: ${isDev ? 'development' : 'production'}`);
+      console.log("Server is ready to accept connections");
+      console.log("=====================================");
+    });
+
+    httpServer.on('error', (error: any) => {
+      clearTimeout(startupTimeout);
+      console.error("HTTP Server Error:", error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${port} is already in use`);
+        process.exit(1);
+      }
+    });
+
+  } catch (error) {
+    console.error("=== SERVER STARTUP FAILED ===");
+    console.error("Fatal error during server startup:", error);
+    console.error("Error stack:", (error as Error).stack);
+    // Exit with error code so Render knows the deployment failed
+    process.exit(1);
+  }
 }
 
-serverReady = initServer().catch((error) => {
-  console.error('Failed to initialize server:', error);
-  // Log the error but don't exit - let the server try to continue
-  console.error('Server initialization failed, but process will continue running');
-});
+// Start the server
+start();
 
-// Handle uncaught exceptions - log but don't exit in production
+// Keep process alive
+process.stdin.resume();
+
+// Handle fatal errors
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
-  // In production, don't exit immediately - log and continue
-  if (process.env.NODE_ENV === 'development') {
-    process.exit(1);
-  }
+  console.error('Stack:', error.stack);
 });
 
-// Handle unhandled promise rejections - log but don't exit in production
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // In production, don't exit immediately - log and continue
-  if (process.env.NODE_ENV === 'development') {
-    process.exit(1);
-  }
+  console.error('Unhandled Rejection at:', promise);
+  console.error('Reason:', reason);
 });
 
-// Export the app
-export { app, serverReady };
-export default app;
+console.log("Server module loaded, starting initialization...");

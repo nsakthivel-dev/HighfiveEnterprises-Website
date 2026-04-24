@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: highfive-enterprises
+    env: node
+    buildCommand: pnpm install && pnpm run build
+    startCommand: pnpm run server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT is automatically provided by Render
+      # Add your Firebase credentials below:
+      # - key: FIREBASE_PROJECT_ID
+      #   sync: false
+      # - key: FIREBASE_CLIENT_EMAIL
+      #   sync: false
+      # - key: FIREBASE_PRIVATE_KEY
+      #   sync: false
+    healthCheckPath: /
+    autoDeploy: true

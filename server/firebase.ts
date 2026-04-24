@@ -37,10 +37,13 @@ if (!admin.apps.length) {
       console.log("Firebase Admin SDK initialized with limited configuration (projectId only)");
     } else {
       console.warn("Firebase Admin SDK: FIREBASE_PROJECT_ID not set. Firebase features will be disabled.");
+      console.warn("Application will continue running without Firebase functionality.");
     }
   } catch (error) {
     console.error("Error initializing Firebase Admin SDK:", error);
+    console.warn("Application will continue running without Firebase functionality.");
     // Don't exit the process, just warn that Firebase won't be available
+    firebaseInitialized = false;
   }
 }
 
