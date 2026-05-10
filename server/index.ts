@@ -59,27 +59,12 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint for Render
-app.get("/", (_req, res) => {
-  res.status(200).json({
-    status: "ok",
-    message: "Highfive Enterprises API is running",
-    timestamp: new Date().toISOString()
-  });
-});
-
 app.get("/health", (_req, res) => {
   res.status(200).json({
     status: "healthy",
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
   });
-});
-
-// Error handler middleware
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error('Express error:', err);
-  const status = err.status || err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  res.status(status).json({ message });
 });
 
 // Start the server
@@ -100,6 +85,14 @@ async function start() {
         console.warn("Warning: Static file serving setup failed:", staticError);
       }
     }
+
+    // Error handler middleware - MUST be after all routes and static files
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      console.error('Express error:', err);
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      res.status(status).json({ message });
+    });
 
     // Render provides the PORT environment variable
     const port = parseInt(process.env.PORT || "4000", 10);

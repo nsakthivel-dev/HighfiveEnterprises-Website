@@ -30,11 +30,12 @@ const isFirebaseConfigured = () => {
 let vectorDb: any = null;
 let documentTable: any = null;
 let vectorDbInitialized = false;
+let vectorDbInitializing = false;
 
 async function initializeVectorDb() {
-  if (vectorDbInitialized) return;
-  vectorDbInitialized = true;
-
+  if (vectorDbInitialized || vectorDbInitializing) return;
+  vectorDbInitializing = true;
+  
   try {
     const lancedb = await import("@lancedb/lancedb");
     const db = await lancedb.connect("./data/lancedb");
@@ -49,16 +50,17 @@ async function initializeVectorDb() {
     }
     
     vectorDb = db;
+    vectorDbInitialized = true;
     console.log("Vector database initialized successfully");
   } catch (error) {
     console.warn("Vector database not available (expected in serverless):", (error as Error).message);
+    vectorDbInitialized = false;
+  } finally {
+    vectorDbInitializing = false;
   }
 }
 
-// Initialize Vector database (non-blocking)
-initializeVectorDb().catch((error) => {
-  console.warn("Vector database initialization failed (non-critical):", (error as Error).message);
-});
+// Don't initialize vector DB automatically - it will be initialized on first use
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Configure multer for file uploads
@@ -163,6 +165,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   async function processDocumentInBackground(documentId: string, buffer: Buffer, url: string) {
     try {
       console.log(`Processing document ${documentId}`);
+      
+      // Initialize vector DB on first use
+      await initializeVectorDb();
       
       // Parse PDF to extract text
       const pdfParseFn = await getPdfParse();
@@ -314,6 +319,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!message) {
         return res.status(400).json({ error: "Message is required" });
       }
+      
+      // Initialize vector DB on first use
+      await initializeVectorDb();
       
       // Step 1: Search vector database for relevant document chunks
       let context = "";
