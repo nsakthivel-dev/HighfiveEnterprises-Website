@@ -61,10 +61,10 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="text-7xl md:text-[11rem] font-bold mb-6 tracking-tighter leading-[0.85] text-foreground"
+              className="text-7xl md:text-[8rem] font-bold mb-6 tracking-tighter leading-[0.85] text-foreground"
             >
-              Lupus <br />
-              <span className="bg-gradient-to-r from-primary via-indigo-500 to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Venture</span>
+              Custom Web & <br />
+              <span className="bg-gradient-to-r from-primary via-indigo-500 to-primary bg-clip-text text-transparent bg-[length:200%_auto] animate-shimmer">Mobile App Development for Startups</span>
             </motion.h1>
 
             <motion.p

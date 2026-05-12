@@ -13,7 +13,7 @@ interface StatItem {
 }
 
 function Counter({ value, suffix }: { value: number; suffix?: string }) {
-  const [displayValue, setDisplayValue] = useState(0);
+  const [displayValue, setDisplayValue] = useState(value); // Initialize with real value for SSR
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
 
@@ -35,6 +35,11 @@ function Counter({ value, suffix }: { value: number; suffix?: string }) {
       }, 16);
 
       return () => clearInterval(timer);
+    } else {
+      // Ensure it's 0 before it comes into view if we want it to animate from 0
+      // but keep it as 'value' for SSR.
+      // However, if we are already in client, we might want to start at 0.
+      setDisplayValue(0);
     }
   }, [value, isInView]);
 

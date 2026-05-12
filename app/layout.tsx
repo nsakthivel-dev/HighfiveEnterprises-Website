@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://lupusventure.com"),
+  metadataBase: new URL("https://www.lupusventure.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://lupusventure.com",
+    url: "https://www.lupusventure.com",
     siteName: "Lupus Venture",
     title: "Lupus Venture | Scalable Web & App Solutions",
     description: "Engineering high-performance digital ecosystems for startups and businesses.",
@@ -89,6 +89,49 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased min-h-screen`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.lupusventure.com/#organization",
+                  "name": "Lupus Venture",
+                  "url": "https://www.lupusventure.com",
+                  "logo": "https://www.lupusventure.com/og-image.png",
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "email": "touch@lupusventure.com",
+                    "contactType": "customer support"
+                  },
+                  "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Chennai",
+                    "addressRegion": "Tamil Nadu",
+                    "addressCountry": "IN"
+                  },
+                  "sameAs": [
+                    "https://www.linkedin.com/company/lupus-venture/",
+                    "https://github.com/lupus-venture",
+                    "https://instagram.com/lupus.venture",
+                    "https://www.facebook.com/LupusVenture"
+                  ]
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.lupusventure.com/#website",
+                  "url": "https://www.lupusventure.com",
+                  "name": "Lupus Venture",
+                  "publisher": {
+                    "@id": "https://www.lupusventure.com/#organization"
+                  }
+                }
+              ]
+            }),
+          }}
+        />
         <Providers>
           <div className="relative flex flex-col min-h-screen">
             <Navigation />

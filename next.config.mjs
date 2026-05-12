@@ -4,6 +4,16 @@ const nextConfig = {
   images: {
     unoptimized: true, 
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'lupusventure.com' }],
+        destination: 'https://www.lupusventure.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
