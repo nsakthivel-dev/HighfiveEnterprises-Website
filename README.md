@@ -76,20 +76,6 @@ This is the consolidated documentation for **Lupus Venture**, a modern, AI-assis
 
 ---
 
-## 🔐 Admin Access & Authentication
-
-The admin panel is restricted to authorized administrators.
-
-### Authorized Administrators
-| Email | Password | Role |
-|-------|----------|------|
-| nsakthiveldev@gmail.com | @whitedevil12345 | Founder |
-| aaminathamiz@gmail.com | @aamin12345 | Client Manager |
-| hiteshreem2007@gmail.com | @hiteshree12345 | HR |
-| hariharan.b17706@gmail.com | @hariharan12345 | CTO |
-| fazeelaofficial1609@gmail.com | @fazeela12345 | CFO |
-| arjungova111@gmail.com | @arjun12345 | Brand Ambassador |
-
 ### Setup Instructions
 1. Run `npx tsx scripts/seed-firebase.ts` to initialize basic content in Firestore.
 2. Enable **Email/Password** provider in your Firebase project under "Authentication" -> "Sign-in method".
